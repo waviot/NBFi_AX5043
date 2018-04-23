@@ -288,7 +288,6 @@ static void NBFi_ProcessRxPackets()
 
 void NBFi_ParseReceivedPacket(struct axradio_status *st)
 {
-    uint16_t ccrc;
     int16_t rtc_offset;
 
     if((nbfi.mode != TRANSPARENT) && (!NBFi_Match_ID((uint8_t *)st->u.rx.pktdata))) return;
@@ -304,8 +303,6 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
         {
         NBFi_XTEA_OFB((uint8_t*)(st->u.rx.pktdata + 4), st->u.rx.pktlen - 5 - 3, st->u.rx.pktdata[3]&0x1f);
         }
-        ccrc = CRC16((uint8_t *)(st->u.rx.pktdata + 4), st->u.rx.pktlen - 5 - 3, 0xFFFF);
-
         if(*((uint16_t*)(&st->u.rx.pktdata[st->u.rx.pktlen - 4])) != CRC16((uint8_t *)(st->u.rx.pktdata + 4), st->u.rx.pktlen - 5 - 3, 0xFFFF)) return;
     }
 #endif
@@ -343,7 +340,7 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
 
     uint32_t mask = 0;
     uint8_t i = 1;
-
+    uint32_t rtc;
     if(phy_pkt->SYS)
     {
             /* System messages */
@@ -408,7 +405,8 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
                 }
                 break;
             case 0x09:  //time correction
-              NBFi_set_RTC(*((uint32_t*)(&phy_pkt->payload[1])));
+              memcpy(&rtc, &phy_pkt->payload[1], 4);
+              NBFi_set_RTC(rtc);
               break;
             }
             if(phy_pkt->ACK && !NBFi_Calc_Queued_Sys_Packets_With_Type(0))    //send ACK on system packet
@@ -551,7 +549,8 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
 
                 if(pkt->phy_data.SYS && (pkt->phy_data.payload[0] == 0x08))
                 {
-                  *((uint32_t*)(&pkt->phy_data.payload[1])) = NBFi_get_RTC();
+                  uint32_t rtc = NBFi_get_RTC();
+                  memcpy(&pkt->phy_data.payload[1], &rtc, 4);
                 }
 
                 if(wait_RxEnd) {wait_RxEnd = 0; wtimer0_remove(&dl_drx_desc);}
