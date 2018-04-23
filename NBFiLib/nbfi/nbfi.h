@@ -133,4 +133,6 @@ nbfi_status_t   NBFi_Send(uint8_t* payload, uint8_t length);
 uint8_t         NBFi_Packets_To_Send();
 nbfi_state_t*   NBFi_get_state();
 uint8_t         NBFi_can_sleep();
+uint32_t        NBFi_get_RTC();
+void            NBFi_set_RTC(uint32_t time);
 #endif // NBFI_H

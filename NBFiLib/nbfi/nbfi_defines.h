@@ -1,7 +1,7 @@
 #ifndef _DEFINES_H
 #define _DEFINES_H
 
-#define NBFI_REV        3
+#define NBFI_REV        4
 #define NBFI_SUBREV     1
 
 #define HARDWARE_ID     5 //BIGTIFFANY

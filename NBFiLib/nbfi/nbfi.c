@@ -49,10 +49,10 @@ rx_handler_t  rx_handler;
 
 uint8_t not_acked = 0;
 
-
 uint8_t aver_tx_snr = 0;
 uint8_t aver_rx_snr = 0;
 int16_t noise = -150;
+uint8_t nbfi_last_snr = 0;
 
 int16_t noise_summ = 0;
 uint8_t noise_cntr = 0;
@@ -68,6 +68,9 @@ _Bool rx_complete = 0;
 uint32_t info_timer;
 
 uint32_t MinVoltage = 0;
+
+uint32_t nbfi_rtc = 0;
+
 
 
 static void    NBFi_Receive_Timeout_cb(struct wtimer_desc *desc);
@@ -281,10 +284,12 @@ static void NBFi_ProcessRxPackets()
 }
 
 
-uint16_t ccrc;
+
 
 void NBFi_ParseReceivedPacket(struct axradio_status *st)
 {
+    uint16_t ccrc;
+    int16_t rtc_offset;
 
     if((nbfi.mode != TRANSPARENT) && (!NBFi_Match_ID((uint8_t *)st->u.rx.pktdata))) return;
 
@@ -310,6 +315,8 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
     uint8_t snr;
     if(st->u.rx.phy.rssi < noise) snr = 0;
     else snr = (st->u.rx.phy.rssi - noise) & 0xff;
+
+    nbfi_last_snr = snr;
 
     nbfi_state.last_rssi = st->u.rx.phy.rssi;
     nbfi_state.aver_rx_snr = (((uint16_t)nbfi_state.aver_rx_snr)*3 + snr)>>2;
@@ -357,6 +364,13 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
                     }
                     nbfi_state.aver_tx_snr = (((uint16_t)nbfi_state.aver_tx_snr)*3 + phy_pkt->payload[5])>>2;
                     nbfi_station_info.info = phy_pkt->payload[7];
+                    
+                    if(nbfi_station_info.RTC_MSB&0x20) rtc_offset = 0xC0 | nbfi_station_info.RTC_MSB;
+                    else rtc_offset = nbfi_station_info.RTC_MSB;
+                    rtc_offset <<= 8;
+                    rtc_offset |= phy_pkt->payload[6];
+                    if(rtc_offset) NBFi_set_RTC(NBFi_get_RTC() + rtc_offset);
+
                     do
                     {
                         mask = (mask << 8) + phy_pkt->payload[i];
@@ -393,6 +407,9 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
                     ack_pkt->state = PACKET_NEED_TO_SEND_RIGHT_NOW;
                 }
                 break;
+            case 0x09:  //time correction
+              NBFi_set_RTC(*((uint32_t*)(&phy_pkt->payload[1])));
+              break;
             }
             if(phy_pkt->ACK && !NBFi_Calc_Queued_Sys_Packets_With_Type(0))    //send ACK on system packet
             {
@@ -531,6 +548,11 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
                 else pkt->state = PACKET_SENT;
                 nbfi_active_pkt = pkt;
                 if(pkt->phy_data.SYS && !pkt->phy_data.ACK && NBFi_GetQueuedTXPkt()) pkt->phy_data.header |= MULTI_FLAG;
+
+                if(pkt->phy_data.SYS && (pkt->phy_data.payload[0] == 0x08))
+                {
+                  *((uint32_t*)(&pkt->phy_data.payload[1])) = NBFi_get_RTC();
+                }
 
                 if(wait_RxEnd) {wait_RxEnd = 0; wtimer0_remove(&dl_drx_desc);}
                 NBFi_TX(pkt);
@@ -681,11 +703,44 @@ static void NBFi_Wait_Extra_Handler(struct wtimer_desc *desc)
 }
 
 
+static void NBFi_update_RTC()
+{
+    static uint32_t old_time_cur = 0;
+    uint32_t delta;
+    uint32_t tmp = (wtimer_state[0].time.cur >> 10);
+
+    if(old_time_cur <= tmp)
+    {
+        delta = tmp - old_time_cur;
+    }
+    else delta = old_time_cur - tmp;
+
+    nbfi_rtc += delta;
+
+    old_time_cur = tmp;
+}
+
+uint32_t NBFi_get_RTC()
+{
+    NBFi_update_RTC();
+    return nbfi_rtc;
+}
+
+void NBFi_set_RTC(uint32_t time)
+{
+   NBFi_update_RTC();
+   nbfi_rtc = time;
+}
+
+
 static void NBFi_SendHeartBeats(struct wtimer_desc *desc)
 {
 
     static uint16_t hb_timer = 0;
     static uint16_t osccal_timer = 0;
+
+    NBFi_update_RTC();
+
     if(hb_timer == 0) hb_timer = rand()%nbfi.heartbeat_interval;
     if(nbfi.mode <= DRX)
     {

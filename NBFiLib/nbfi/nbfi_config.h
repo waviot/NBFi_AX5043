@@ -95,7 +95,7 @@ typedef union
 {
         struct
         {
-            uint8_t Reserved         : 6;//LSB
+            uint8_t RTC_MSB          : 6;//LSB
             uint8_t DL_SPEED_NOT_MAX : 1;
             uint8_t UL_SPEED_NOT_MAX : 1;
         };
