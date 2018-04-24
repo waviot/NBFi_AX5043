@@ -38,11 +38,6 @@
 #include "easyax5043.h"    
 #include "wtimer.h"    
     
-    
-/* USER CODE BEGIN 0 */
-//#include "ax5043.h"
-
-/* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 extern LPTIM_HandleTypeDef hlptim1;
@@ -56,12 +51,7 @@ extern LPTIM_HandleTypeDef hlptim1;
 */
 void NMI_Handler(void)
 {
-  /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
 
-  /* USER CODE END NonMaskableInt_IRQn 0 */
-  /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
-
-  /* USER CODE END NonMaskableInt_IRQn 1 */
 }
 
 /**
@@ -69,17 +59,12 @@ void NMI_Handler(void)
 */
 void HardFault_Handler(void)
 {
-  /* USER CODE BEGIN HardFault_IRQn 0 */
 
-  /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
-    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-    /* USER CODE END W1_HardFault_IRQn 0 */
-  }
-  /* USER CODE BEGIN HardFault_IRQn 1 */
 
-  /* USER CODE END HardFault_IRQn 1 */
+  }
+
 }
 
 /**
@@ -87,12 +72,7 @@ void HardFault_Handler(void)
 */
 void SVC_Handler(void)
 {
-  /* USER CODE BEGIN SVC_IRQn 0 */
 
-  /* USER CODE END SVC_IRQn 0 */
-  /* USER CODE BEGIN SVC_IRQn 1 */
-
-  /* USER CODE END SVC_IRQn 1 */
 }
 
 /**
@@ -100,12 +80,7 @@ void SVC_Handler(void)
 */
 void PendSV_Handler(void)
 {
-  /* USER CODE BEGIN PendSV_IRQn 0 */
 
-  /* USER CODE END PendSV_IRQn 0 */
-  /* USER CODE BEGIN PendSV_IRQn 1 */
-
-  /* USER CODE END PendSV_IRQn 1 */
 }
 
 /**
@@ -113,14 +88,8 @@ void PendSV_Handler(void)
 */
 void SysTick_Handler(void)
 {
-  /* USER CODE BEGIN SysTick_IRQn 0 */
-
-  /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
-  /* USER CODE BEGIN SysTick_IRQn 1 */
-
-  /* USER CODE END SysTick_IRQn 1 */
 }
 
 /******************************************************************************/
@@ -135,14 +104,11 @@ void SysTick_Handler(void)
 */
 void EXTI0_1_IRQHandler(void)
 {
-  /* USER CODE BEGIN EXTI0_1_IRQn 0 */
-	axradio_isr();
+  
+  axradio_isr();
 
-  /* USER CODE END EXTI0_1_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
-  /* USER CODE BEGIN EXTI0_1_IRQn 1 */
 
-  /* USER CODE END EXTI0_1_IRQn 1 */
 }
 
 /**
@@ -150,19 +116,11 @@ void EXTI0_1_IRQHandler(void)
 */
 void LPTIM1_IRQHandler(void)
 {
-  /* USER CODE BEGIN LPTIM1_IRQn 0 */
-	if (__HAL_LPTIM_GET_FLAG(&hlptim1, LPTIM_FLAG_CMPM) != RESET) {
+  if (__HAL_LPTIM_GET_FLAG(&hlptim1, LPTIM_FLAG_CMPM) != RESET) {
 		__HAL_LPTIM_CLEAR_FLAG(&hlptim1, LPTIM_FLAG_CMPM);
 		wtimer_cc0_irq();
 	}
-  /* USER CODE END LPTIM1_IRQn 0 */
-  HAL_LPTIM_IRQHandler(&hlptim1);
-  /* USER CODE BEGIN LPTIM1_IRQn 1 */
-
-  /* USER CODE END LPTIM1_IRQn 1 */
+  //HAL_LPTIM_IRQHandler(&hlptim1);
 }
 
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

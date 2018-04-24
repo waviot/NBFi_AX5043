@@ -77,6 +77,7 @@ void MX_LPTIM1_Init(void)
   hlptim1.Init.OutputPolarity = LPTIM_OUTPUTPOLARITY_HIGH;
   hlptim1.Init.UpdateMode = LPTIM_UPDATE_IMMEDIATE;
   hlptim1.Init.CounterSource = LPTIM_COUNTERSOURCE_INTERNAL;
+  
   if (HAL_LPTIM_Init(&hlptim1) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);

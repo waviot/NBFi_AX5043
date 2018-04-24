@@ -132,7 +132,7 @@ void wtimer0_update(void)
 	uint16_t t;
 	t = __wtimer_cnt_get(0);
 	{
-		uint16_t t1 = wtimer_state[0].time.ref;
+		uint16_t t1 =  wtimer_state[0].time.ref;
 		wtimer_state[0].time.ref = t;
 		t -= t1;
 	}
@@ -168,9 +168,15 @@ static uint8_t wtimer_checkexpired(void)
 			return 1;
 	}
 
-	if (__wtimer_check_cc_irq(0))//|| __wtimer_check_cc_irq(1))
-		return 1;
-	return 0;
+	if (__wtimer_check_cc_irq(0) != 0)
+        {
+          return 1;
+        }
+        else
+        {
+          
+          return 0;
+        }
 }
 
 uint8_t wtimer_cansleep(void)

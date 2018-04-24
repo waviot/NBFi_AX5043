@@ -104,6 +104,8 @@ void (* __nbfi_read_default_settings)(nbfi_settings_t*) = 0;
 void (* __nbfi_read_flash_settings)(nbfi_settings_t*)  = 0;
 void (* __nbfi_write_flash_settings)(nbfi_settings_t*) = 0;
 uint32_t (* __nbfi_measure_voltage_or_temperature)(uint8_t) = 0;
+uint32_t (* __nbfi_update_rtc)(void) = 0;
+void (* __nbfi_rtc_synchronized)(uint32_t) = 0;
 
 void NBFI_reg_func(uint8_t name, void* fn)
 {
@@ -130,6 +132,12 @@ void NBFI_reg_func(uint8_t name, void* fn)
 	case NBFI_MEASURE_VOLTAGE_OR_TEMPERATURE:
 		__nbfi_measure_voltage_or_temperature = (uint32_t(*)(uint8_t))fn;
 		break;
+        case NBFI_UPDATE_RTC:
+                __nbfi_update_rtc = (uint32_t(*)(void))fn;
+                break;
+        case NBFI_RTC_SYNCHRONIZED:
+                __nbfi_rtc_synchronized = (void(*)(uint32_t))fn;
+                break;
 	default:
 		break;
 	}
@@ -367,7 +375,7 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
                     rtc_offset <<= 8;
                     rtc_offset |= phy_pkt->payload[6];
                     if(rtc_offset) NBFi_set_RTC(NBFi_get_RTC() + rtc_offset);
-
+                    
                     do
                     {
                         mask = (mask << 8) + phy_pkt->payload[i];
@@ -550,6 +558,7 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
                 if(pkt->phy_data.SYS && (pkt->phy_data.payload[0] == 0x08))
                 {
                   uint32_t rtc = NBFi_get_RTC();
+                  pkt->phy_data.SYS = 1;
                   memcpy(&pkt->phy_data.payload[1], &rtc, 4);
                 }
 
@@ -702,10 +711,19 @@ static void NBFi_Wait_Extra_Handler(struct wtimer_desc *desc)
 }
 
 
+
 static void NBFi_update_RTC()
 {
     static uint32_t old_time_cur = 0;
+ 
+    if(__nbfi_update_rtc) 
+    {
+      nbfi_rtc = __nbfi_update_rtc();
+      return;
+    }
+    
     uint32_t delta;
+    
     uint32_t tmp = (wtimer_state[0].time.cur >> 10);
 
     if(old_time_cur <= tmp)
@@ -729,6 +747,7 @@ void NBFi_set_RTC(uint32_t time)
 {
    NBFi_update_RTC();
    nbfi_rtc = time;
+   if(__nbfi_rtc_synchronized) __nbfi_rtc_synchronized(nbfi_rtc);
 }
 
 

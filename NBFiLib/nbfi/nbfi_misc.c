@@ -395,6 +395,7 @@ void NBFi_Send_Clear_Cmd(uint8_t iter)
     nbfi_transport_packet_t* pkt =  NBFi_AllocateTxPkt(8);
     if(!pkt) return;
     pkt->phy_data.payload[0] = 0x08; //clear RX buffer
+    
     pkt->phy_data.payload[5] = nbfi_last_snr;
     pkt->phy_data.payload[6] = (uint8_t)(noise + 150);
     pkt->phy_data.payload[7] = you_should_dl_power_step_down + you_should_dl_power_step_up + (nbfi.tx_pwr & 0x3f);

@@ -143,18 +143,28 @@ void wtimer_cc_set(uint8_t chan, uint16_t data)
 
 uint16_t wtimer_cc_get(uint8_t chan)
 {
-	return (uint16_t) hlptim1.Instance->CMP;
+  return (uint16_t) hlptim1.Instance->CMP;
 }
 
 uint16_t wtimer_cnt_get(uint8_t chan)
 {
-	return (uint16_t) hlptim1.Instance->CNT;
+  static uint16_t prev = 0; 
+  uint16_t timer = (uint16_t) hlptim1.Instance->CNT;
+  if((timer < prev) && ((prev - timer) < 10000))
+  {
+    return prev;
+  }
+  prev = timer;
+  return timer;
+  //return (uint16_t) hlptim1.Instance->CNT;
 }
 
 uint8_t wtimer_check_cc_irq(uint8_t chan)
 {
 	return __HAL_LPTIM_GET_FLAG(&hlptim1, LPTIM_IT_CMPM);
 }
+
+
 
 
 void nbfi_before_tx()
@@ -191,6 +201,21 @@ uint32_t nbfi_measure_valtage_or_temperature(uint8_t val)
 {
 	return 0;
 }
+
+uint32_t nbfi_update_rtc()
+{
+  //you should use this callback when external RTC used
+  //return rtc_counter;  
+  return 0;
+}
+
+void nbfi_rtc_synchronized(uint32_t time)
+{
+  //you should use this callback for RTC counter correction when external RTC used
+  //rtc_counter = time;
+  
+}
+
 
 void nbfi_receive_complete(uint8_t * data, uint16_t length)
 {
@@ -232,7 +257,11 @@ void ax5043_init(void)
 	NBFI_reg_func(NBFI_WRITE_FLASH_SETTINGS, (void*)nbfi_write_flash_settings);
         NBFI_reg_func(NBFI_READ_DEFAULT_SETTINGS, (void*)nbfi_read_default_settings);
 	NBFI_reg_func(NBFI_MEASURE_VOLTAGE_OR_TEMPERATURE, (void*)nbfi_measure_valtage_or_temperature);
-
+        
+        //register callbacks when external RTC used
+        //NBFI_reg_func(NBFI_UPDATE_RTC, (void*)nbfi_update_rtc);
+        //NBFI_reg_func(NBFI_RTC_SYNCHRONIZED, (void*)nbfi_rtc_synchronized);
+        
 	nbfi_dev_info_t info = {MODEM_ID, (uint32_t*)KEY, TX_MIN_POWER, TX_MAX_POWER, HW_ID, HW_REV, BAND, SEND_INFO_PERIOD};
 
 	NBFi_Config_Set_Device_Info(&info);
