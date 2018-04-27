@@ -14,9 +14,9 @@ void (*__ax5043_disable_global_irq)(void);
 void (*__ax5043_enable_pin_irq)(void);
 void (*__ax5043_disable_pin_irq)(void);
 uint8_t (*__ax5043_get_irq_pin_state)(void);
-void (*__spi_rx)(uint8_t *, uint16_t, uint32_t);
-void (*__spi_tx)(uint8_t *, uint16_t, uint32_t);
-void (*__spi_tx_rx)(uint8_t *, uint8_t *, uint16_t, uint32_t);
+void (*__spi_rx)(uint8_t *, uint16_t);
+void (*__spi_tx)(uint8_t *, uint16_t);
+void (*__spi_tx_rx)(uint8_t *, uint8_t *, uint16_t);
 void (*__spi_cs_set)(uint8_t);
 void (*__axradio_statuschange)(struct axradio_status *st);
 
@@ -41,13 +41,13 @@ void ax5043_reg_func(uint8_t name, void*  fn)
 		__ax5043_get_irq_pin_state = (uint8_t(*)(void))fn;
 		break;
 	case AXRADIO_SPI_RX:
-		__spi_rx = (void(*)(uint8_t*,uint16_t,uint32_t))fn;
+		__spi_rx = (void(*)(uint8_t*,uint16_t))fn;
 		break;
 	case AXRADIO_SPI_TX:
-		__spi_tx = (void(*)(uint8_t*,uint16_t,uint32_t))fn;
+		__spi_tx = (void(*)(uint8_t*,uint16_t))fn;
 		break;
 	case AXRADIO_SPI_TX_RX:
-		__spi_tx_rx = (void(*)(uint8_t*,uint8_t*,uint16_t,uint32_t))fn;
+		__spi_tx_rx = (void(*)(uint8_t*,uint8_t*,uint16_t))fn;
 		break;
 	case AXRADIO_SPI_CS_WRITE:
 		__spi_cs_set = (void(*)(uint8_t))fn;
@@ -135,9 +135,9 @@ void ax5043_spi_read_fifo(uint8_t *ptr, uint8_t len)
 	__spi_cs_set(0);
 
 	spi_tx_buf[0] = AX5043_FIFODATA;
-	__spi_tx(spi_tx_buf, 1, 1);
+	__spi_tx(spi_tx_buf, 1);
 	while(len--)
-		__spi_rx(ptr++, 1, 1);
+		__spi_rx(ptr++, 1);
 
 	__spi_cs_set(1);
 	__ax5043_enable_pin_irq();
@@ -151,9 +151,9 @@ void ax5043_spi_write_fifo(uint8_t *ptr, uint8_t len)
 	__spi_cs_set(0);
 
 	spi_tx_buf[0] = AX5043_FIFODATA | 0x80;
-	__spi_tx(spi_tx_buf, 1, 1);
+	__spi_tx(spi_tx_buf, 1);
 	while(len--)
-		__spi_tx(ptr++, 1, 1);
+		__spi_tx(ptr++, 1);
 
 	__spi_cs_set(1);
 	__ax5043_enable_pin_irq();
@@ -172,7 +172,7 @@ uint8_t ax5043_spi_write(uint32_t add, uint8_t data)
 		spi_tx_buf[0] = (add >> 8) | 0x80;
 		spi_tx_buf[1] = add & 0xFF;
 		spi_tx_buf[2] = data;
-		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 3, 1);
+		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 3);
 		__spi_cs_set(1);
 	}
 	else
@@ -180,7 +180,7 @@ uint8_t ax5043_spi_write(uint32_t add, uint8_t data)
 		__spi_cs_set(0);
 		spi_tx_buf[0] = add | 0x80;
 		spi_tx_buf[1] = data;
-		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 2, 1);
+		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 2);
 		__spi_cs_set(1);
 	}
 	__ax5043_enable_pin_irq();
@@ -198,7 +198,7 @@ uint8_t ax5043_spi_read(uint32_t add)
 		spi_tx_buf[0] = add >> 8;
 		spi_tx_buf[1] = add & 0xFF;
 		spi_tx_buf[2] = 0x00;
-		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 3, 1);
+		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 3);
 		__spi_cs_set(1);
 		__ax5043_enable_pin_irq();
 		return spi_rx_buf[2];
@@ -208,7 +208,7 @@ uint8_t ax5043_spi_read(uint32_t add)
 		__spi_cs_set(0);
 		spi_tx_buf[0] = add;
 		spi_tx_buf[1] = 0x00;
-		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 2, 1);
+		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 2);
 		__spi_cs_set(1);
 		__ax5043_enable_pin_irq();
 		return spi_rx_buf[1];
@@ -228,7 +228,7 @@ uint16_t ax5043_spi_read16(uint32_t add)
 		spi_tx_buf[1] = add & 0xFF;
 		spi_tx_buf[2] = 0x00;
 		spi_tx_buf[3] = 0x00;
-		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 4, 1);
+		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 4);
 		__spi_cs_set(1);
 		__ax5043_enable_pin_irq();
 		return (uint16_t)spi_rx_buf[2] << 8 | (uint16_t)spi_rx_buf[3];
@@ -239,7 +239,7 @@ uint16_t ax5043_spi_read16(uint32_t add)
 		spi_tx_buf[0] = add;
 		spi_tx_buf[1] = 0x00;
 		spi_tx_buf[2] = 0x00;
-		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 3, 1);
+		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 3);
 		__spi_cs_set(1);
 		__ax5043_enable_pin_irq();
 		return (uint16_t)spi_rx_buf[1] << 8 | (uint16_t)spi_rx_buf[2];
@@ -259,7 +259,7 @@ uint32_t ax5043_spi_read24(uint32_t add)
 		spi_tx_buf[2] = 0x00;
 		spi_tx_buf[3] = 0x00;
 		spi_tx_buf[4] = 0x00;
-		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 5, 1);
+		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 5);
 		__spi_cs_set(1);
 		__ax5043_enable_pin_irq();
 		return (uint32_t)spi_rx_buf[2] << 16 | (uint32_t)spi_rx_buf[3]  << 8 | (uint32_t)spi_rx_buf[4];
@@ -271,7 +271,7 @@ uint32_t ax5043_spi_read24(uint32_t add)
 		spi_tx_buf[1] = 0x00;
 		spi_tx_buf[2] = 0x00;
 		spi_tx_buf[3] = 0x00;
-		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 4, 1);
+		__spi_tx_rx(spi_tx_buf, spi_rx_buf, 4);
 		__spi_cs_set(1);
 		__ax5043_enable_pin_irq();
 		return (uint32_t)spi_rx_buf[1] << 16 | (uint32_t)spi_rx_buf[2]  << 8 | (uint32_t)spi_rx_buf[3];

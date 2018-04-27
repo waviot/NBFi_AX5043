@@ -12,9 +12,9 @@ struct wtimer_desc test_desc;
 
 void send_data(struct wtimer_desc *desc) {
 
-  NBFi_Send("Hello everybody!", sizeof("Hello everybody!"));
-
-  ScheduleTask(desc, 0, RELATIVE, SECONDS(30));
+  if(!NBFi_Packets_To_Send())
+      NBFi_Send("Hello everybody!", sizeof("Hello everybody!"));
+   ScheduleTask(desc, 0, RELATIVE, SECONDS(30));
 
 }
 
@@ -27,20 +27,14 @@ int main(void)
   
   MX_GPIO_Init();
   
-  MX_LPTIM1_Init();
-  
-  MX_SPI2_Init();
-  
   MX_NVIC_Init();
   
-  HAL_LPTIM_Counter_Start(&hlptim1, 0xffff);
-
   ax5043_init();
 
-  ScheduleTask(&test_desc, send_data, RELATIVE, SECONDS(5));
+  ScheduleTask(&test_desc, send_data, RELATIVE, SECONDS(1));
 
   while (1) 
-  {
+  {     
       wtimer_runcallbacks();
       if (axradio_cansleep()&& NBFi_can_sleep()) 
       {

@@ -63,6 +63,7 @@ struct axradio_address  fastdladdress = {
 
 extern void (* __nbfi_before_tx)(void);
 extern void (* __nbfi_before_rx)(void);
+extern void (* __nbfi_before_off)(void);
 
 void RF_SetModeAndPower(int8_t dBm, rf_direction_t mode, rf_antenna_t ant)
 {
@@ -77,7 +78,9 @@ void RF_SetModeAndPower(int8_t dBm, rf_direction_t mode, rf_antenna_t ant)
     else // mode == RX or IDLE
     {
         ax5043_spi_write(AX5043_MODCFGA, PA_DIFFERENTIAL | PA_SHAPING);
-        if(__nbfi_before_rx) __nbfi_before_rx();
+        if(mode == RX)
+           if(__nbfi_before_rx) __nbfi_before_rx();
+        else if(__nbfi_before_off) __nbfi_before_off();
     }
 
 }

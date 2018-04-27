@@ -604,7 +604,7 @@ void NBFi_ReadConfig()
 
 	__nbfi_read_flash_settings(&nbfi);
 
-	if(nbfi.mode != 0xff) return;
+	if((nbfi.tx_phy_channel != 0xff) && (nbfi.tx_phy_channel != 0)) return;
 
 read_default:
 

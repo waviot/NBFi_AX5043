@@ -17,9 +17,6 @@ uint32_t last_pkt_crc = 0;
 
 const uint8_t protD_preambula[] = {0x97, 0x15, 0x7A, 0x6F};
 
-static uint8_t full_ul_buf[90];
-
-uint8_t *ul_buf = &full_ul_buf[24];
 
 uint32_t tx_freq, rx_freq;
 
@@ -29,6 +26,7 @@ extern _Bool wait_RxEnd;
 
 nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
 {
+    uint8_t ul_buf[64];
     uint8_t len = 0;
     static _Bool parity = 0;
     uint8_t lastcrc8;
@@ -124,8 +122,7 @@ nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
 
     RF_Init(nbfi.tx_phy_channel, (rf_antenna_t)nbfi.tx_antenna, nbfi.tx_pwr, tx_freq);
 
-    if(nbfi.tx_phy_channel == UL_DBPSK_3200_PROT_D) RF_Transmit(full_ul_buf, len + ZCODE_LEN + 24, PADDING_4TO1, NONBLOCKING);
-    else  RF_Transmit(ul_buf, len + ZCODE_LEN, PADDING_4TO1, NONBLOCKING);
+    RF_Transmit(ul_buf, len + ZCODE_LEN, PADDING_4TO1, NONBLOCKING);
 
     nbfi_state.UL_total++;
 

@@ -100,6 +100,7 @@ extern uint8_t current_rx_rate;
 
 void (* __nbfi_before_tx)(void) = 0;
 void (* __nbfi_before_rx)(void) = 0;
+void (* __nbfi_before_off)(void) = 0;
 void (* __nbfi_read_default_settings)(nbfi_settings_t*) = 0;
 void (* __nbfi_read_flash_settings)(nbfi_settings_t*)  = 0;
 void (* __nbfi_write_flash_settings)(nbfi_settings_t*) = 0;
@@ -116,6 +117,9 @@ void NBFI_reg_func(uint8_t name, void* fn)
 		break;
 	case NBFI_BEFORE_RX:
 		__nbfi_before_tx = (void(*)(void))fn;
+		break;
+        case NBFI_BEFORE_OFF:
+		__nbfi_before_off = (void(*)(void))fn;
 		break;
 	case NBFI_RECEIVE_COMLETE:
 		rx_handler = (rx_handler_t)fn;

@@ -111,16 +111,5 @@ void EXTI0_1_IRQHandler(void)
 
 }
 
-/**
-* @brief This function handles LPTIM1 global interrupt / LPTIM1 wake-up interrupt through EXTI line 29.
-*/
-void LPTIM1_IRQHandler(void)
-{
-  if (__HAL_LPTIM_GET_FLAG(&hlptim1, LPTIM_FLAG_CMPM) != RESET) {
-		__HAL_LPTIM_CLEAR_FLAG(&hlptim1, LPTIM_FLAG_CMPM);
-		wtimer_cc0_irq();
-	}
-  //HAL_LPTIM_IRQHandler(&hlptim1);
-}
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

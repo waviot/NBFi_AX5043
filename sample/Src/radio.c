@@ -8,9 +8,9 @@
 #include "nbfi_config.h"
 #include "stm32l0xx_hal_conf.h"
 
-#define MODEM_ID  0x71b759  
-const uint32_t KEY[8] = {0x29be5a2f,0xe2f40443,0x8a69ea5c,0x4ed60948,0x23578b53,0x0fb4556d,0x512cba03,0x83189933};  //2F5ABE294304F4E25CEA698A4809D64E538B57236D55B40F03BA2C5133991883
-   
+#define MODEM_ID  *((const uint32_t*)0x0801ff80)  
+#define KEY  ((const uint32_t*)0x0801ff84)            
+
 #define HW_ID     255
 #define HW_REV    0
 #define TX_MAX_POWER 15
@@ -69,14 +69,108 @@ const nbfi_settings_t nbfi_set_default =
     TX_MAX_POWER,       //tx_pwr;
     3600*6,             //heartbeat_interval
     255,                //heartbeat_num
-    NBFI_FLG_NO_REDUCE_TX_PWR,//additional_flags
+    0,                  //additional_flags
     NBFI_UL_FREQ_BASE,
     NBFI_DL_FREQ_BASE
 };
 
+static SPI_HandleTypeDef hspi;
 
-extern SPI_HandleTypeDef hspi2;
-extern LPTIM_HandleTypeDef hlptim1;
+static LPTIM_HandleTypeDef hlptim;
+
+#define SPI_TIMEOUT	1000
+
+void RADIO_SPI_Init(void)
+{
+
+  hspi.Instance = SPI2;
+  hspi.Init.Mode = SPI_MODE_MASTER;
+  hspi.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi.Init.NSS = SPI_NSS_SOFT;
+  hspi.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi.Init.CRCPolynomial = 7;
+  if (HAL_SPI_Init(&hspi) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+  __HAL_SPI_ENABLE(&hspi);
+
+}
+
+void RADIO_LPTIM_Init(void)
+{
+
+  hlptim.Instance = LPTIM1;
+  hlptim.Init.Clock.Source = LPTIM_CLOCKSOURCE_APBCLOCK_LPOSC;
+  hlptim.Init.Clock.Prescaler = LPTIM_PRESCALER_DIV32;
+  hlptim.Init.Trigger.Source = LPTIM_TRIGSOURCE_SOFTWARE;
+  hlptim.Init.OutputPolarity = LPTIM_OUTPUTPOLARITY_HIGH;
+  hlptim.Init.UpdateMode = LPTIM_UPDATE_IMMEDIATE;
+  hlptim.Init.CounterSource = LPTIM_COUNTERSOURCE_INTERNAL;
+  
+  if (HAL_LPTIM_Init(&hlptim) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+
+void LPTIM1_IRQHandler(void)
+{
+  if (__HAL_LPTIM_GET_FLAG(&hlptim, LPTIM_FLAG_CMPM) != RESET) {
+		__HAL_LPTIM_CLEAR_FLAG(&hlptim, LPTIM_FLAG_CMPM);
+		wtimer_cc0_irq();
+	}
+}
+
+void SPI_RX(uint8_t* byte, uint16_t len) {
+	volatile uint16_t timeout;
+	
+	for (uint16_t i = 0; i < len; i++)
+	{
+		hspi.Instance->DR = 0x00;
+		timeout = SPI_TIMEOUT;
+		while(__HAL_SPI_GET_FLAG(&hspi, SPI_FLAG_RXNE) == RESET && timeout--);
+		timeout = SPI_TIMEOUT;
+		while(__HAL_SPI_GET_FLAG(&hspi, SPI_FLAG_BSY) == SET && timeout--);
+		byte[i] = hspi.Instance->DR;
+	}
+}
+
+void SPI_TX(uint8_t *byte, uint16_t len) {
+	volatile uint16_t timeout;
+
+	for (uint16_t i = 0; i < len; i++)
+	{
+		hspi.Instance->DR = byte[i];
+		timeout = SPI_TIMEOUT;
+		while(__HAL_SPI_GET_FLAG(&hspi, SPI_FLAG_TXE) == RESET && timeout--);
+		timeout = SPI_TIMEOUT;
+		while(__HAL_SPI_GET_FLAG(&hspi, SPI_FLAG_BSY) == SET && timeout--);
+		__HAL_SPI_CLEAR_OVRFLAG(&hspi);
+	}
+}
+
+void SPI_RX_TX(uint8_t *byteTx, uint8_t *byteRx, uint16_t len) {
+	volatile uint16_t timeout;
+
+	for (uint16_t i = 0; i < len; i++)
+	{
+		hspi.Instance->DR = byteTx[i];
+		timeout = SPI_TIMEOUT;
+		while(__HAL_SPI_GET_FLAG(&hspi, SPI_FLAG_RXNE) == RESET && timeout--);
+		timeout = SPI_TIMEOUT;
+		while(__HAL_SPI_GET_FLAG(&hspi, SPI_FLAG_BSY) == SET && timeout--);
+		byteRx[i] = hspi.Instance->DR;
+	}
+}
 
 void ax5043_enable_global_irq(void)
 {
@@ -103,19 +197,20 @@ uint8_t ax5043_get_irq_pin_state(void)
   return HAL_GPIO_ReadPin(AX_IRQ_PORT, AX_IRQ_PIN);
 }
 
-void ax5043_spi_rx(uint8_t *pData, uint16_t Size, uint32_t Timeout)
+void ax5043_spi_rx(uint8_t *pData, uint16_t Size)
 {
-  HAL_SPI_Receive(&hspi2, pData, Size, Timeout);
+  SPI_RX(pData, Size);
+  
 }
 
-void ax5043_spi_tx(uint8_t *pData, uint16_t Size, uint32_t Timeout)
+void ax5043_spi_tx(uint8_t *pData, uint16_t Size)
 {
-  HAL_SPI_Transmit(&hspi2, pData, Size, Timeout);
+  SPI_TX(pData, Size);
 }
 
-void ax5043_spi_tx_rx(uint8_t *pTxData, uint8_t *pRxData, uint16_t Size, uint32_t Timeout)
+void ax5043_spi_tx_rx(uint8_t *pTxData, uint8_t *pRxData, uint16_t Size)
 {
-  HAL_SPI_TransmitReceive(&hspi2, pTxData, pRxData, Size, Timeout);
+  SPI_RX_TX(pTxData, pRxData, Size);
 }
 
 void ax5043_spi_write_cs(uint8_t state)
@@ -128,51 +223,53 @@ void ax5043_spi_write_cs(uint8_t state)
 
 void wtimer_cc_irq_enable(uint8_t chan)
 {
-	__HAL_LPTIM_ENABLE_IT(&hlptim1, LPTIM_IT_CMPM);
+	__HAL_LPTIM_ENABLE_IT(&hlptim, LPTIM_IT_CMPM);
 }
 
 void wtimer_cc_irq_disable(uint8_t chan)
 {
-	__HAL_LPTIM_DISABLE_IT(&hlptim1, LPTIM_IT_CMPM);
+	__HAL_LPTIM_DISABLE_IT(&hlptim, LPTIM_IT_CMPM);
 }
 
 void wtimer_cc_set(uint8_t chan, uint16_t data)
 {
-	hlptim1.Instance->CMP = data;
+	hlptim.Instance->CMP = data;
 }
 
 uint16_t wtimer_cc_get(uint8_t chan)
 {
-  return (uint16_t) hlptim1.Instance->CMP;
+  return (uint16_t) hlptim.Instance->CMP;
 }
 
 uint16_t wtimer_cnt_get(uint8_t chan)
 {
   static uint16_t prev = 0; 
-  uint16_t timer = (uint16_t) hlptim1.Instance->CNT;
+  uint16_t timer = (uint16_t) hlptim.Instance->CNT;
   if((timer < prev) && ((prev - timer) < 10000))
   {
     return prev;
   }
   prev = timer;
   return timer;
-  //return (uint16_t) hlptim1.Instance->CNT;
 }
 
 uint8_t wtimer_check_cc_irq(uint8_t chan)
 {
-	return __HAL_LPTIM_GET_FLAG(&hlptim1, LPTIM_IT_CMPM);
+	return __HAL_LPTIM_GET_FLAG(&hlptim, LPTIM_IT_CMPM);
 }
-
-
 
 
 void nbfi_before_tx()
 {
-
+  //you can 
 }
 
 void nbfi_before_rx()
+{
+
+}
+
+void nbfi_before_off()
 {
 
 }
@@ -187,15 +284,23 @@ void nbfi_read_default_settings(nbfi_settings_t* settings)
 }
 
 
+#define EEPROM_INT_nbfi_data (DATA_EEPROM_BASE + 1024*5)
+
 void  nbfi_read_flash_settings(nbfi_settings_t* settings) 
 {
-  memset((void*)settings, 0xff, sizeof(nbfi_settings_t));
+  memcpy((void*)settings, ((const void*)EEPROM_INT_nbfi_data), sizeof(nbfi_settings_t));
 }
 
 void nbfi_write_flash_settings(nbfi_settings_t* settings)
 {
-
+    if(HAL_FLASHEx_DATAEEPROM_Unlock() != HAL_OK) return;
+    for(uint8_t i = 0; i != sizeof(nbfi_settings_t); i++)
+    {
+      if(HAL_FLASHEx_DATAEEPROM_Program(FLASH_TYPEPROGRAMDATA_BYTE, EEPROM_INT_nbfi_data + i, ((uint8_t *)settings)[i]) != HAL_OK) break;
+    }
+    HAL_FLASHEx_DATAEEPROM_Lock(); 
 }
+
 
 uint32_t nbfi_measure_valtage_or_temperature(uint8_t val)
 {
@@ -226,7 +331,12 @@ void nbfi_receive_complete(uint8_t * data, uint16_t length)
 
 void ax5043_init(void)
 {
-       
+        RADIO_LPTIM_Init();       
+        
+        HAL_LPTIM_Counter_Start(&hlptim, 0xffff);
+        
+        RADIO_SPI_Init();
+        
 	ax5043_reg_func(AXRADIO_ENABLE_GLOBAL_IRQ, (void*)ax5043_enable_global_irq);
 	ax5043_reg_func(AXRADIO_DISABLE_GLOBAL_IRQ, (void*)ax5043_disable_global_irq);
 	ax5043_reg_func(AXRADIO_ENABLE_IRQ_PIN, (void*)ax5043_enable_pin_irq);
@@ -252,6 +362,7 @@ void ax5043_init(void)
 
 	NBFI_reg_func(NBFI_BEFORE_TX, (void*)nbfi_before_tx);
 	NBFI_reg_func(NBFI_BEFORE_RX, (void*)nbfi_before_rx);
+        NBFI_reg_func(NBFI_BEFORE_OFF, (void*)nbfi_before_rx);
 	NBFI_reg_func(NBFI_RECEIVE_COMLETE, (void*)nbfi_receive_complete);
 	NBFI_reg_func(NBFI_READ_FLASH_SETTINGS, (void*)nbfi_read_flash_settings);
 	NBFI_reg_func(NBFI_WRITE_FLASH_SETTINGS, (void*)nbfi_write_flash_settings);
