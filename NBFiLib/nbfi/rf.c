@@ -14,9 +14,13 @@ nbfi_phy_channel_t nbfi_phy_channel;
 
 uint8_t PSK_BAND;
 
+NBFi_ax5043_pins_s  nbfi_ax5043_pins;
+
 void    NBFi_TX_Finished();
 void    NBFi_ParseReceivedPacket(struct axradio_status *st);
 void    ax5043_set_constants(void);
+
+
 
 void axradio_statuschange(struct axradio_status  *st)
 {
@@ -61,26 +65,31 @@ struct axradio_address  fastdladdress = {
 	{ 0x6f, 0x6f, 0x6f, 0x6f}
 };
 
-extern void (* __nbfi_before_tx)(void);
-extern void (* __nbfi_before_rx)(void);
-extern void (* __nbfi_before_off)(void);
+extern void (* __nbfi_before_tx)(NBFi_ax5043_pins_s *);
+extern void (* __nbfi_before_rx)(NBFi_ax5043_pins_s *);
+extern void (* __nbfi_before_off)(NBFi_ax5043_pins_s *);
 
 void RF_SetModeAndPower(int8_t dBm, rf_direction_t mode, rf_antenna_t ant)
 {
     if(mode == TX)
     {
-            ax5043_spi_write(AX5043_TXPWRCOEFFB1, AX5043_power[dBm + 10] >> 8);
-            ax5043_spi_write(AX5043_TXPWRCOEFFB0, AX5043_power[dBm + 10] &0xFF);
+            nbfi_ax5043_pins.txpwr = AX5043_power[dBm + 10];
+            //ax5043_spi_write(AX5043_TXPWRCOEFFB1, AX5043_power[dBm + 10] >> 8);
+            //ax5043_spi_write(AX5043_TXPWRCOEFFB0, AX5043_power[dBm + 10] &0xFF);
             // select differential PA
-            ax5043_spi_write(AX5043_MODCFGA, 0x1); //5
-            if(__nbfi_before_tx) __nbfi_before_tx();
+            nbfi_ax5043_pins.cfga = PA_DIFFERENTIAL;
+            
+            //ax5043_spi_write(AX5043_MODCFGA, PA_DIFFERENTIAL); //5
+            
+            if(__nbfi_before_tx) __nbfi_before_tx(&nbfi_ax5043_pins);
     }
     else // mode == RX or IDLE
     {
-        ax5043_spi_write(AX5043_MODCFGA, PA_DIFFERENTIAL | PA_SHAPING);
+        //ax5043_spi_write(AX5043_MODCFGA, PA_DIFFERENTIAL | PA_SHAPING);
+        nbfi_ax5043_pins.cfga = PA_DIFFERENTIAL;
         if(mode == RX)
-           if(__nbfi_before_rx) __nbfi_before_rx();
-        else if(__nbfi_before_off) __nbfi_before_off();
+           if(__nbfi_before_rx) __nbfi_before_rx(&nbfi_ax5043_pins);
+        else if(__nbfi_before_off) __nbfi_before_off(&nbfi_ax5043_pins);
     }
 
 }
@@ -114,6 +123,11 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
     case UL_DBPSK_400_PROT_D:
     case UL_DBPSK_3200_PROT_D:
         ax5043_set_constants();
+        
+        RF_SetModeAndPower(power, TX, antenna);
+        
+        RF_SetFreq(freq);
+        
         er = axradio_init();    // Init radio registers
         if (er != AXRADIO_ERR_NOERROR)
         {
@@ -124,8 +138,7 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
         {
             rf_busy = 0;return ERR;
         }
-        RF_SetFreq(freq);
-        RF_SetModeAndPower(power, TX, antenna);
+        
         rf_busy = 0;
         rf_state = STATE_TX;
         return OK;
@@ -136,6 +149,7 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
     case DL_PSK_500:
     case DL_PSK_5000:
         ax5043_set_constants();
+        
         RF_SetModeAndPower(power, RX, antenna);
 
         RF_SetLocalAddress((uint8_t *)&fastdladdress);

@@ -102,6 +102,8 @@ typedef union
         uint8_t info;
 }NBFi_station_info_s;
 
+ 
+
 extern NBFi_station_info_s nbfi_station_info;
 
 void NBFi_Config_Set_Device_Info(nbfi_dev_info_t *);

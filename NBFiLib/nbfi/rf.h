@@ -27,6 +27,17 @@ typedef enum
     BLOCKING,
 }rf_blocking_t;
 
+
+typedef struct
+{
+  uint8_t sysclk;
+  uint8_t dclk;
+  uint8_t data;
+  uint8_t antsel;
+  uint8_t cfga;
+  uint16_t txpwr;
+} NBFi_ax5043_pins_s;
+
 extern  struct axradio_address fastdladdress;
 extern _Bool send_auto_corr;
 extern uint8_t PSK_BAND;

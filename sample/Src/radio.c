@@ -5,6 +5,7 @@
 #include "wtimer.h"
 #include "string.h"
 #include "nbfi.h"
+#include "rf.h"
 #include "nbfi_config.h"
 #include "stm32l0xx_hal_conf.h"
 
@@ -64,8 +65,8 @@ const nbfi_settings_t nbfi_set_default =
     {0},                //full_ID[6];
     0,                  //tx_freq;
     0,                  //rx_freq;
-    PCB,                //tx_antenna - no effect;
-    PCB,                //rx_antenna - no effect;
+    PCB,                //tx_antenna;
+    PCB,                //rx_antenna;
     TX_MAX_POWER,       //tx_pwr;
     3600*6,             //heartbeat_interval
     255,                //heartbeat_num
@@ -259,19 +260,20 @@ uint8_t wtimer_check_cc_irq(uint8_t chan)
 }
 
 
-void nbfi_before_tx()
+void nbfi_before_tx(NBFi_ax5043_pins_s * pins)
 {
-  //you can 
+    pins->sysclk = 1; // TX Led ON
 }
 
-void nbfi_before_rx()
+void nbfi_before_rx(NBFi_ax5043_pins_s * pins)
 {
-
+    pins->sysclk = 0; // TX Led OFF
+    
 }
 
-void nbfi_before_off()
+void nbfi_before_off(NBFi_ax5043_pins_s * pins)
 {
-
+    pins->sysclk = 0; // TX Led OFF
 }
 
 

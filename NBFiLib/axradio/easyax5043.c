@@ -718,7 +718,7 @@ void axradio_isr(void)
 
 void ax5043_receiver_on_continuous(void)
 {
-    uint8_t rschanged_int = (axradio_framing_enable_sfdcallback | (axradio_mode == AXRADIO_MODE_SYNC_ACK_SLAVE) | (axradio_mode == AXRADIO_MODE_SYNC_SLAVE) );
+    uint8_t rschanged_int = ((axradio_framing_enable_sfdcallback != 0) || (axradio_mode == AXRADIO_MODE_SYNC_ACK_SLAVE) || (axradio_mode == AXRADIO_MODE_SYNC_SLAVE) );
     if(rschanged_int)
         ax5043_spi_write(AX5043_RADIOEVENTMASK0, 0x04);
     ax5043_spi_write(AX5043_RSSIREFERENCE, axradio_phy_rssireference);
