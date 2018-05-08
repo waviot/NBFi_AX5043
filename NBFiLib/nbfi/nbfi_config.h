@@ -58,7 +58,7 @@ extern nbfi_settings_t nbfi;
 #define NBFI_FLG_NO_XTEA                0x08
 #define NBFI_FLG_DO_OSCCAL              0x10
 #define NBFI_FLG_NO_REDUCE_TX_PWR       0x20
-
+#define NBFI_OFF_MODE_ON_INIT           0x40
 
 typedef struct
 {
@@ -109,6 +109,7 @@ extern NBFi_station_info_s nbfi_station_info;
 void NBFi_Config_Set_Device_Info(nbfi_dev_info_t *);
 nbfi_settings_t* NBFi_get_settings();
 _Bool NBFi_Config_Parser(uint8_t* buf);
+void NBFi_Clear_Saved_Configuration();
 void NBFi_Config_Set_FastDl(_Bool);
 _Bool NBFi_Is_Mode_Normal();
 

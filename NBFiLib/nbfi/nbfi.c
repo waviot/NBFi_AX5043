@@ -514,6 +514,13 @@ place_to_stack:
 static void NBFi_ProcessTasks(struct wtimer_desc *desc)
 {
    nbfi_transport_packet_t* pkt;
+   if(nbfi.mode == OFF)
+   {
+        NBFi_RX_Controller();
+        NBFi_Clear_TX_Buffer();
+        ScheduleTask(desc, 0, RELATIVE, SECONDS(30));
+        return;
+   }
    if(rf_busy == 0)
    {
         switch(nbfi_active_pkt->state)
@@ -767,11 +774,10 @@ static void NBFi_SendHeartBeats(struct wtimer_desc *desc)
     if(nbfi.mode <= DRX)
     {
         ScheduleTask(&nbfi_heartbeat_desc, NBFi_SendHeartBeats, RELATIVE, SECONDS(60));
+        if(nbfi.mode == OFF) return;
     }
     else ScheduleTask(&nbfi_heartbeat_desc, NBFi_SendHeartBeats, RELATIVE, SECONDS(1));
 
-
-    //if(CheckTask(&nbfi_send_mode_delay)) return;
 
     if(++hb_timer >= nbfi.heartbeat_interval + 1)
     {
@@ -792,7 +798,7 @@ static void NBFi_SendHeartBeats(struct wtimer_desc *desc)
         ack_pkt->phy_data.payload[7] = nbfi.tx_pwr;            // output power
         ack_pkt->phy_data.ITER = nbfi_state.UL_iter++ & 0x1f;;
         ack_pkt->phy_data.header |= SYS_FLAG;
-        if(nbfi.mode != NRX)
+        if(nbfi.mode > NRX)
         {
             if(nbfi.handshake_mode != HANDSHAKE_NONE)  ack_pkt->handshake = HANDSHAKE_SIMPLE;
             ack_pkt->phy_data.header |= ACK_FLAG;
@@ -837,6 +843,26 @@ nbfi_state_t* NBFi_get_state()
     return &nbfi_state;
 }
 
+void NBFi_Go_To_Sleep(_Bool sleep)
+{
+    static _Bool old_state = 1;
+    if(sleep)
+    {
+        nbfi.mode = OFF;
+        NBFi_Clear_TX_Buffer();
+        NBFi_RX_Controller();
+    }
+    else
+    {
+        if(old_state != sleep)
+        {
+            NBFi_Config_Set_Default();
+            NBFi_Config_Send_Current_Mode(0);
+            NBFi_Force_process();
+        }
+    }
+    old_state = sleep;
+}
 
 nbfi_status_t NBFI_Init()
 {
@@ -849,14 +875,23 @@ nbfi_status_t NBFI_Init()
 
 
     info_timer = dev_info.send_info_interval - 300 - rand()%600;
+
     RF_Init(nbfi.tx_phy_channel, (rf_antenna_t)nbfi.tx_antenna, nbfi.tx_pwr, nbfi.dl_freq_base);
 
-    NBFi_RX_Controller();
-    NBFi_Config_Send_Current_Mode(0);
-
-    NBFi_Force_process();
-    __nbfi_measure_voltage_or_temperature(1);
-    ScheduleTask(&nbfi_heartbeat_desc, NBFi_SendHeartBeats, RELATIVE, SECONDS(1));
+    if(nbfi.additional_flags&NBFI_OFF_MODE_ON_INIT)
+    {
+      NBFi_Go_To_Sleep(1);
+      ScheduleTask(&nbfi_heartbeat_desc, NBFi_SendHeartBeats, RELATIVE, SECONDS(60));
+    }
+    else
+    {
+      NBFi_RX_Controller();
+      NBFi_Config_Send_Current_Mode(0);
+      NBFi_Force_process();
+      __nbfi_measure_voltage_or_temperature(1);
+      ScheduleTask(&nbfi_heartbeat_desc, NBFi_SendHeartBeats, RELATIVE, SECONDS(1));
+    }
+    
     return OK;
 }
 

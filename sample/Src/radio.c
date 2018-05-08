@@ -70,7 +70,7 @@ const nbfi_settings_t nbfi_set_default =
     TX_MAX_POWER,       //tx_pwr;
     3600*6,             //heartbeat_interval
     255,                //heartbeat_num
-    0,                  //additional_flags
+    NBFI_OFF_MODE_ON_INIT,                  //additional_flags
     NBFI_UL_FREQ_BASE,
     NBFI_DL_FREQ_BASE
 };
@@ -327,7 +327,7 @@ void nbfi_rtc_synchronized(uint32_t time)
 void nbfi_receive_complete(uint8_t * data, uint16_t length)
 {
 
-  NBFi_Send(data, length); //loopback
+ // NBFi_Send(data, length); //loopback
   
 }
 
@@ -378,7 +378,7 @@ void ax5043_init(void)
 	nbfi_dev_info_t info = {MODEM_ID, (uint32_t*)KEY, TX_MIN_POWER, TX_MAX_POWER, HW_ID, HW_REV, BAND, SEND_INFO_PERIOD};
 
 	NBFi_Config_Set_Device_Info(&info);
-
+        //NBFi_Clear_Saved_Configuration(); //if you need to clear previously saved nbfi configuration in EEPROM
 	NBFI_Init(0);
   
 }

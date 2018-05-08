@@ -11,10 +11,11 @@
 
 typedef enum
 {
-    NRX         =   0,
-    DRX         =   1,
-    CRX         =   2,
-    TRANSPARENT =   3,
+    OFF         =   0,    
+    NRX         =   1,
+    DRX         =   2,
+    CRX         =   3,
+    TRANSPARENT =   4
 }nbfi_mode_t;
 
 typedef enum
@@ -132,6 +133,7 @@ enum nbfi_func_t
 
 void 	        NBFI_reg_func(uint8_t name, void*);
 nbfi_status_t   NBFI_Init();
+void            NBFi_Go_To_Sleep(_Bool sleep);
 nbfi_status_t   NBFi_Send(uint8_t* payload, uint8_t length);
 uint8_t         NBFi_Packets_To_Send();
 nbfi_state_t*   NBFi_get_state();

@@ -120,6 +120,18 @@ nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
 
     if(!nbfi.tx_freq) parity = !parity;
 
+    if((nbfi.mode <= NRX) && parity) // For NRX send in ALOHA mode
+    {
+      
+      RF_Init(nbfi.tx_phy_channel, (rf_antenna_t)nbfi.tx_antenna, nbfi.tx_pwr, tx_freq);
+      
+      RF_Transmit(ul_buf, len + ZCODE_LEN, PADDING_4TO1, BLOCKING);
+      
+      nbfi_state.UL_total++;
+      
+      return NBFi_TX_ProtocolD(pkt);
+    }
+    
     RF_Init(nbfi.tx_phy_channel, (rf_antenna_t)nbfi.tx_antenna, nbfi.tx_pwr, tx_freq);
 
     RF_Transmit(ul_buf, len + ZCODE_LEN, PADDING_4TO1, NONBLOCKING);
@@ -217,13 +229,16 @@ nbfi_status_t NBFi_RX_Controller()
             if(rf_state != STATE_RX) return NBFi_RX();
             break;
         default:
-            if(rf_state != STATE_OFF)
-                return RF_Deinit();
+            if(rf_state != STATE_OFF)  return RF_Deinit();
         }
         break;
     case CRX:
     case TRANSPARENT:
         if(rf_state != STATE_RX) return NBFi_RX();
+        break;
+    case OFF:
+        if(rf_state != STATE_OFF)  return RF_Deinit();
+        break;
     }
     return OK;
 }

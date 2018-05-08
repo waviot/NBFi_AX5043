@@ -167,7 +167,7 @@ void NBFI_Config_Check_State()
     #ifdef FIXED_BAUD_RATE
     return;
     #endif // FIXED_BAUD_RATE
-    if(nbfi.mode == NRX) return;
+    if(nbfi.mode <= NRX) return;
     if(nbfi.additional_flags&NBFI_FLG_FIXED_BAUD_RATE) return;
     if(nbfi.handshake_mode == HANDSHAKE_NONE) return;
     switch(nbfi_active_pkt->state)
@@ -516,12 +516,13 @@ _Bool NBFi_Config_Parser(uint8_t* buf)
     return 1;
 }
 
+
 void NBFi_Config_Return()
 {
     memcpy_xdata(&nbfi, &nbfi_prev, sizeof(nbfi));
     current_tx_rate = prev_tx_rate;
     current_rx_rate = prev_rx_rate;
-    if(nbfi.mode == NRX) nbfi.handshake_mode = HANDSHAKE_NONE;
+    if(nbfi.mode <= NRX) nbfi.handshake_mode = HANDSHAKE_NONE;
     NBFi_Config_Send_Mode(0, NBFI_PARAM_MODE);
 }
 
@@ -568,7 +569,7 @@ void NBFi_Config_Set_FastDl(_Bool fast)
         {
             ((uint8_t*)&nbfi)[i] = ((uint8_t*)&nbfi_fastdl)[i];
         }
-        nbfi.rx_freq = dl_base_freq + 1000000;
+        nbfi.tx_freq = nbfi.rx_freq = dl_base_freq + 1000000;
         NBFi_Configure_IDs();
         for(uint8_t i = 0; i != 3; i++) nbfi.dl_ID[i] = nbfi.temp_ID[i];   //default DL address
 
@@ -619,6 +620,14 @@ void NBFi_WriteConfig()
 	__nbfi_write_flash_settings(&nbfi);
 }
 
+void NBFi_Clear_Saved_Configuration()
+{
+  if(__nbfi_write_flash_settings == 0) return;
+  nbfi_settings_t empty;
+  empty.tx_phy_channel = DL_PSK_200;
+  __nbfi_write_flash_settings(&empty);
+}
+
 
 void NBFi_Config_Set_TX_Chan(nbfi_phy_channel_t ch)
 {
@@ -660,6 +669,7 @@ _Bool NBFi_Is_Mode_Normal()
 {
     return (nbfi.tx_phy_channel != UL_PSK_FASTDL);
 }
+
 
 void NBFi_Config_Set_Device_Info(nbfi_dev_info_t *info)
 {

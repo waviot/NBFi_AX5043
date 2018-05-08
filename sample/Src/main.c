@@ -14,7 +14,7 @@ void send_data(struct wtimer_desc *desc) {
 
   if(!NBFi_Packets_To_Send())
       NBFi_Send("Hello everybody!", sizeof("Hello everybody!"));
-   ScheduleTask(desc, 0, RELATIVE, SECONDS(30));
+   ScheduleTask(desc, 0, RELATIVE, SECONDS(120));
 
 }
 
