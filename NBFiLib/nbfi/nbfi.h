@@ -10,12 +10,12 @@
 #define NBFI_RX_PKTBUF_SIZE     32
 
 typedef enum
-{
-    OFF         =   0,    
-    NRX         =   1,
-    DRX         =   2,
-    CRX         =   3,
-    TRANSPARENT =   4
+{   
+    NRX         =   0,
+    DRX         =   1,
+    CRX         =   2,
+    TRANSPARENT =   3,
+    OFF         =   4
 }nbfi_mode_t;
 
 typedef enum

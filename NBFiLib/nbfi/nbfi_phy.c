@@ -120,7 +120,7 @@ nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
 
     if(!nbfi.tx_freq) parity = !parity;
 
-    if((nbfi.mode <= NRX) && parity) // For NRX send in ALOHA mode
+    if((nbfi.mode == NRX) && parity) // For NRX send in ALOHA mode
     {
       
       RF_Init(nbfi.tx_phy_channel, (rf_antenna_t)nbfi.tx_antenna, nbfi.tx_pwr, tx_freq);

@@ -771,10 +771,16 @@ static void NBFi_SendHeartBeats(struct wtimer_desc *desc)
     NBFi_update_RTC();
 
     if(hb_timer == 0) hb_timer = rand()%nbfi.heartbeat_interval;
+
+    if(nbfi.mode == OFF) 
+    {
+      ScheduleTask(&nbfi_heartbeat_desc, NBFi_SendHeartBeats, RELATIVE, SECONDS(60));
+      return;
+    }
+
     if(nbfi.mode <= DRX)
     {
         ScheduleTask(&nbfi_heartbeat_desc, NBFi_SendHeartBeats, RELATIVE, SECONDS(60));
-        if(nbfi.mode == OFF) return;
     }
     else ScheduleTask(&nbfi_heartbeat_desc, NBFi_SendHeartBeats, RELATIVE, SECONDS(1));
 
@@ -798,7 +804,7 @@ static void NBFi_SendHeartBeats(struct wtimer_desc *desc)
         ack_pkt->phy_data.payload[7] = nbfi.tx_pwr;            // output power
         ack_pkt->phy_data.ITER = nbfi_state.UL_iter++ & 0x1f;;
         ack_pkt->phy_data.header |= SYS_FLAG;
-        if(nbfi.mode > NRX)
+        if(nbfi.mode != NRX)
         {
             if(nbfi.handshake_mode != HANDSHAKE_NONE)  ack_pkt->handshake = HANDSHAKE_SIMPLE;
             ack_pkt->phy_data.header |= ACK_FLAG;

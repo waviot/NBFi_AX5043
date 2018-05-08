@@ -167,7 +167,7 @@ void NBFI_Config_Check_State()
     #ifdef FIXED_BAUD_RATE
     return;
     #endif // FIXED_BAUD_RATE
-    if(nbfi.mode <= NRX) return;
+    if(nbfi.mode == NRX) return;
     if(nbfi.additional_flags&NBFI_FLG_FIXED_BAUD_RATE) return;
     if(nbfi.handshake_mode == HANDSHAKE_NONE) return;
     switch(nbfi_active_pkt->state)
@@ -522,7 +522,7 @@ void NBFi_Config_Return()
     memcpy_xdata(&nbfi, &nbfi_prev, sizeof(nbfi));
     current_tx_rate = prev_tx_rate;
     current_rx_rate = prev_rx_rate;
-    if(nbfi.mode <= NRX) nbfi.handshake_mode = HANDSHAKE_NONE;
+    if(nbfi.mode == NRX) nbfi.handshake_mode = HANDSHAKE_NONE;
     NBFi_Config_Send_Mode(0, NBFI_PARAM_MODE);
 }
 
