@@ -521,7 +521,7 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
         ScheduleTask(desc, 0, RELATIVE, SECONDS(30));
         return;
    }
-   if(rf_busy == 0)
+   if((rf_busy == 0)&&(transmit == 0))
    {
         switch(nbfi_active_pkt->state)
         {
@@ -591,8 +591,8 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
     }
     else
     {
-        uint32_t t = __nbfi_measure_voltage_or_temperature(1);
-        if(t < MinVoltage) MinVoltage = t;
+          uint32_t t = __nbfi_measure_voltage_or_temperature(1);
+          if(t < MinVoltage) MinVoltage = t;
     }
 
     if(rf_state == STATE_RX)
@@ -620,12 +620,11 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
 
         }
     }
-    if(nbfi.mode <= DRX && !NBFi_GetQueuedTXPkt() && (rf_busy == 0) )
+    if(nbfi.mode <= DRX && !NBFi_GetQueuedTXPkt() && (rf_busy == 0) && (transmit == 0) )
     {
         NBFi_RX_Controller();
         if(rf_state == STATE_OFF) ScheduleTask(desc, 0, RELATIVE, SECONDS(10));
         else ScheduleTask(desc, 0, RELATIVE, MILLISECONDS(50));
-
     }
     else ScheduleTask(desc, 0, RELATIVE, MILLISECONDS(50));
 
@@ -856,7 +855,7 @@ void NBFi_Go_To_Sleep(_Bool sleep)
     {
         nbfi.mode = OFF;
         NBFi_Clear_TX_Buffer();
-        NBFi_RX_Controller();
+        RF_Deinit();
     }
     else
     {

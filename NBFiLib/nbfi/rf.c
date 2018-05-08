@@ -5,6 +5,7 @@
 #include <libmfwtimer.h>
 
 _Bool rf_busy = 0;
+_Bool transmit = 0;
 
 struct axradio_address rf_destination;
 
@@ -32,7 +33,7 @@ void axradio_statuschange(struct axradio_status  *st)
         break;
 
     case AXRADIO_STAT_TRANSMITEND:
-        rf_busy = 0;
+        transmit = 0;
         NBFi_TX_Finished();
         break;
 
@@ -179,7 +180,7 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
 nbfi_status_t RF_Deinit()
 {
     uint8_t er;
-    //if(rf_busy) return ERR_RF_BUSY;
+    if(rf_busy) return ERR_RF_BUSY;
     RF_SetModeAndPower(0, IDLE, PCB);
     rf_busy = 1;
     axradio_init(); 
@@ -213,21 +214,25 @@ nbfi_status_t RF_Transmit(uint8_t* pkt, uint8_t len,  rf_padding_t padding, rf_b
 {
     if(rf_busy) return ERR_RF_BUSY;
 
-
     rf_busy = 1;
 
     axradio_transmit(&rf_destination, pkt, len, padding);
-
+    
+    rf_busy = 0;
+    
+    transmit = 1;
+    
     if(blocking == BLOCKING)
     {
 
         while(1) // Wait for TX complete
         {
-            if(!rf_busy) break;
+            if(!transmit) break;
             wtimer_runcallbacks();
         }
 
     }
+
     return OK;
 }
 

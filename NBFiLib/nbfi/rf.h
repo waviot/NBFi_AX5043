@@ -44,6 +44,7 @@ extern uint8_t PSK_BAND;
 extern nbfi_rf_state_s rf_state;
 extern nbfi_phy_channel_t nbfi_phy_channel;
 extern _Bool rf_busy;
+extern _Bool transmit;
 
 void axradio_statuschange(struct axradio_status  *st);
 

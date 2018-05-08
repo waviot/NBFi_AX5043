@@ -70,7 +70,7 @@ const nbfi_settings_t nbfi_set_default =
     TX_MAX_POWER,       //tx_pwr;
     3600*6,             //heartbeat_interval
     255,                //heartbeat_num
-    NBFI_OFF_MODE_ON_INIT,                  //additional_flags
+    0,                  //additional_flags
     NBFI_UL_FREQ_BASE,
     NBFI_DL_FREQ_BASE
 };
