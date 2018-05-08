@@ -71,24 +71,20 @@ extern void (* __nbfi_before_off)(NBFi_ax5043_pins_s *);
 
 void RF_SetModeAndPower(int8_t dBm, rf_direction_t mode, rf_antenna_t ant)
 {
-    if(mode == TX)
+    switch(mode)
     {
-            nbfi_ax5043_pins.txpwr = AX5043_power[dBm + 10];
-            //ax5043_spi_write(AX5043_TXPWRCOEFFB1, AX5043_power[dBm + 10] >> 8);
-            //ax5043_spi_write(AX5043_TXPWRCOEFFB0, AX5043_power[dBm + 10] &0xFF);
-            // select differential PA
-            nbfi_ax5043_pins.cfga = PA_DIFFERENTIAL;
-            
-            //ax5043_spi_write(AX5043_MODCFGA, PA_DIFFERENTIAL); //5
-            
-            if(__nbfi_before_tx) __nbfi_before_tx(&nbfi_ax5043_pins);
-    }
-    else // mode == RX or IDLE
-    {
-        //ax5043_spi_write(AX5043_MODCFGA, PA_DIFFERENTIAL | PA_SHAPING);
-        nbfi_ax5043_pins.cfga = PA_DIFFERENTIAL;
-        if(mode == RX)
-           if(__nbfi_before_rx) __nbfi_before_rx(&nbfi_ax5043_pins);
+    case TX:    
+      nbfi_ax5043_pins.txpwr = AX5043_power[dBm + 10];
+      nbfi_ax5043_pins.cfga = PA_DIFFERENTIAL;            
+      if(__nbfi_before_tx) __nbfi_before_tx(&nbfi_ax5043_pins);
+      break;
+    case RX: 
+      nbfi_ax5043_pins.cfga = PA_DIFFERENTIAL;
+      if(__nbfi_before_rx) __nbfi_before_rx(&nbfi_ax5043_pins);
+      break;
+    case IDLE:
+      if(__nbfi_before_off)   __nbfi_before_off(&nbfi_ax5043_pins);
+      break;
     }
 
 }
@@ -183,9 +179,10 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
 nbfi_status_t RF_Deinit()
 {
     uint8_t er;
-    if(rf_busy) return ERR_RF_BUSY;
-    __nbfi_before_off(&nbfi_ax5043_pins);
+    //if(rf_busy) return ERR_RF_BUSY;
+    RF_SetModeAndPower(0, IDLE, PCB);
     rf_busy = 1;
+    axradio_init(); 
     er = axradio_set_mode(AXRADIO_MODE_OFF);
     rf_busy = 0;
     RF_SetModeAndPower(0, RX, PCB);

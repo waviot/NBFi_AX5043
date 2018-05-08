@@ -229,7 +229,7 @@ nbfi_status_t NBFi_RX_Controller()
             if(rf_state != STATE_RX) return NBFi_RX();
             break;
         default:
-            if(rf_state != STATE_OFF)  return RF_Deinit();
+            if((rf_state != STATE_OFF)&&!rf_busy)  return RF_Deinit();
         }
         break;
     case CRX:
@@ -237,7 +237,7 @@ nbfi_status_t NBFi_RX_Controller()
         if(rf_state != STATE_RX) return NBFi_RX();
         break;
     case OFF:
-        if(rf_state != STATE_OFF)  return RF_Deinit();
+        if((rf_state != STATE_OFF)&&!rf_busy)  return RF_Deinit();
         break;
     }
     return OK;
