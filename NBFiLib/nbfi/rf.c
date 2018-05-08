@@ -183,9 +183,10 @@ nbfi_status_t RF_Deinit()
     if(rf_busy) return ERR_RF_BUSY;
     RF_SetModeAndPower(0, IDLE, PCB);
     rf_busy = 1;
-    axradio_init(); 
+    ax5043_set_registers(); 
     er = axradio_set_mode(AXRADIO_MODE_OFF);
     rf_busy = 0;
+    transmit = 0;
     RF_SetModeAndPower(0, RX, PCB);
     delay_ms(1);
     ax5043_tcxo_set_reset(0);
