@@ -89,7 +89,6 @@ void RF_SetModeAndPower(int8_t dBm, rf_direction_t mode, rf_antenna_t ant)
         nbfi_ax5043_pins.cfga = PA_DIFFERENTIAL;
         if(mode == RX)
            if(__nbfi_before_rx) __nbfi_before_rx(&nbfi_ax5043_pins);
-        else if(__nbfi_before_off) __nbfi_before_off(&nbfi_ax5043_pins);
     }
 
 }
@@ -185,6 +184,7 @@ nbfi_status_t RF_Deinit()
 {
     uint8_t er;
     if(rf_busy) return ERR_RF_BUSY;
+    __nbfi_before_off(&nbfi_ax5043_pins);
     rf_busy = 1;
     er = axradio_set_mode(AXRADIO_MODE_OFF);
     rf_busy = 0;
