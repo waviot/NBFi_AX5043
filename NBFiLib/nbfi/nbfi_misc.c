@@ -185,7 +185,7 @@ uint8_t NBFi_Packets_To_Send()
         break;
     }
 
-    if((rf_busy == 1) && (packets_free == NBFI_TX_PKTBUF_SIZE))
+    if((transmit == 1) && (packets_free == NBFI_TX_PKTBUF_SIZE))
     {
         packets_free--;
     }
