@@ -18,6 +18,12 @@ void send_data(struct wtimer_desc *desc) {
 
 }
 
+extern uint8_t nbfi_lock;
+void HAL_SYSTICK_Callback(void)
+{
+  if(!nbfi_lock) wtimer_runcallbacks();
+}
+
 int main(void)
 {
 
@@ -35,7 +41,8 @@ int main(void)
 
   while (1) 
   {     
-      wtimer_runcallbacks();
+      
+      NBFi_ProcessRxPackets(1);
       if (axradio_cansleep()&& NBFi_can_sleep()) 
       {
           HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);

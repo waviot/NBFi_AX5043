@@ -75,6 +75,7 @@ const nbfi_settings_t nbfi_set_default =
     NBFI_DL_FREQ_BASE
 };
 
+
 static SPI_HandleTypeDef hspi;
 
 static LPTIM_HandleTypeDef hlptim;
@@ -329,6 +330,13 @@ void nbfi_receive_complete(uint8_t * data, uint16_t length)
 
  // NBFi_Send(data, length); //loopback
   
+}
+
+uint8_t nbfi_lock = 0;
+
+void nbfi_lock_unlock_nbfi_irq(uint8_t lock)
+{
+    nbfi_lock = lock;
 }
 
 void ax5043_init(void)

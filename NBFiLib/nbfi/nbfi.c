@@ -45,7 +45,7 @@ struct wtimer_desc nbfi_heartbeat_desc;
 int16_t rssi = 0;
 int16_t offset = 0;
 
-rx_handler_t  rx_handler;
+rx_handler_t  rx_handler = 0;
 
 uint8_t not_acked = 0;
 
@@ -71,13 +71,13 @@ uint32_t MinVoltage = 0;
 
 uint32_t nbfi_rtc = 0;
 
+_Bool process_rx_external = 0;
 
 
 static void    NBFi_Receive_Timeout_cb(struct wtimer_desc *desc);
 static void    NBFi_RX_DL_EndHandler(struct wtimer_desc *desc);
 static void    NBFi_Wait_Extra_Handler(struct wtimer_desc *desc);
 static void    NBFi_SendHeartBeats(struct wtimer_desc *desc);
-static void    NBFi_ProcessRxPackets();
 static void    NBFi_Force_process();
 
 _Bool NBFi_Config_Tx_Power_Change(nbfi_rate_direct_t dir);
@@ -107,6 +107,9 @@ void (* __nbfi_write_flash_settings)(nbfi_settings_t*) = 0;
 uint32_t (* __nbfi_measure_voltage_or_temperature)(uint8_t) = 0;
 uint32_t (* __nbfi_update_rtc)(void) = 0;
 void (* __nbfi_rtc_synchronized)(uint32_t) = 0;
+void (* __nbfi_lock_unlock_nbfi_irq)(uint8_t) = 0;
+
+
 
 void NBFI_reg_func(uint8_t name, void* fn)
 {
@@ -142,6 +145,9 @@ void NBFI_reg_func(uint8_t name, void* fn)
         case NBFI_RTC_SYNCHRONIZED:
                 __nbfi_rtc_synchronized = (void(*)(uint32_t))fn;
                 break;
+        case NBFI_LOCKUNLOCKNBFIIRQ:
+                __nbfi_lock_unlock_nbfi_irq = (void(*)(uint8_t))fn;
+                break; 
 	default:
 		break;
 	}
@@ -247,21 +253,31 @@ nbfi_status_t NBFi_Send(uint8_t* payload, uint8_t length)
     return OK;
 }
 
-static void NBFi_ProcessRxPackets()
+void NBFi_ProcessRxPackets(_Bool external)
 {
     nbfi_transport_packet_t* pkt;
-    uint8_t *data;
+    uint8_t data[256];
     uint8_t groupe;
     uint16_t total_length;
+    
+    process_rx_external = external;
+    
     while(1)
     {
 
+        if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(1);
+        
         pkt = NBFi_Get_QueuedRXPkt(&groupe, &total_length);
 
-        if(!pkt)    return;
+        if(!pkt)    
+        {
+          if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
+          return;
+        }
 
-        data = malloc(total_length);
-        if(!data)   return;
+        
+        //data = malloc(total_length);
+        //if(!data)   return;
         if((pkt->phy_data.SYS) && (pkt->phy_data.payload[0] & 0x80))
         {
             total_length = pkt->phy_data.payload[0] & 0x7f;
@@ -288,9 +304,11 @@ static void NBFi_ProcessRxPackets()
             }
         }
         
-        rx_handler((uint8_t *)data, total_length);
-
-        free(data);
+        if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
+        
+        if(rx_handler) rx_handler((uint8_t *)data, total_length);
+        
+        //free(data);
     }
 
 }
@@ -479,7 +497,7 @@ place_to_stack:
         }
     }
 
-    NBFi_ProcessRxPackets();
+    if(process_rx_external == 0) NBFi_ProcessRxPackets(0);
 
     if(phy_pkt->MULTI && !phy_pkt->ACK)
     {

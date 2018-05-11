@@ -128,13 +128,15 @@ enum nbfi_func_t
 	NBFI_WRITE_FLASH_SETTINGS,
 	NBFI_MEASURE_VOLTAGE_OR_TEMPERATURE,
         NBFI_UPDATE_RTC,
-        NBFI_RTC_SYNCHRONIZED
+        NBFI_RTC_SYNCHRONIZED,
+        NBFI_LOCKUNLOCKNBFIIRQ
 };
 
 void 	        NBFI_reg_func(uint8_t name, void*);
 nbfi_status_t   NBFI_Init();
 void            NBFi_Go_To_Sleep(_Bool sleep);
 nbfi_status_t   NBFi_Send(uint8_t* payload, uint8_t length);
+void            NBFi_ProcessRxPackets(_Bool external);
 uint8_t         NBFi_Packets_To_Send();
 nbfi_state_t*   NBFi_get_state();
 uint8_t         NBFi_can_sleep();
