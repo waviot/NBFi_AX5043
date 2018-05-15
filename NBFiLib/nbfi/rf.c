@@ -183,6 +183,8 @@ nbfi_status_t RF_Deinit()
     if(rf_busy) return ERR_RF_BUSY;
     RF_SetModeAndPower(0, IDLE, PCB);
     rf_busy = 1;
+    ax5043_spi_write(AX5043_PWRMODE, 0x80);
+    ax5043_spi_write(AX5043_PWRMODE, AX5043_PWRSTATE_POWERDOWN);
     ax5043_set_registers(); 
     er = axradio_set_mode(AXRADIO_MODE_OFF);
     rf_busy = 0;
