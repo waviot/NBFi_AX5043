@@ -294,7 +294,7 @@ void NBFi_ProcessRxPackets(_Bool external)
             {
                 uint8_t len;
                 uint8_t first = 0;
-                if((i == 0)&&(groupe > 1)) {len = 6; first = 2;}
+                if((i == 0)&&(groupe > 1)) {len = nbfi.max_payload_len - 2; first = 2;}
                 else len = (memcpy_len>=nbfi.max_payload_len)?nbfi.max_payload_len:memcpy_len%nbfi.max_payload_len;
                 memcpy_xdata(data + i*nbfi.max_payload_len - 2*(i != 0), (void const*)(&nbfi_RX_pktBuf[(iter + i)&0x1f]->phy_data.payload[first]), len);
                 memcpy_len -= len;
