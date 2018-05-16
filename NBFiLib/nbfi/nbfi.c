@@ -317,6 +317,8 @@ void NBFi_ProcessRxPackets(_Bool external)
         }
         else data_ptr = &data[0];
         
+        if(groupe > 1) NBFi_Wait_Extra_Handler(0);
+        
         if(rx_handler) rx_handler(data_ptr, total_length);
         
         //free(data);
