@@ -259,7 +259,7 @@ void NBFi_ProcessRxPackets(_Bool external)
     uint8_t data[256];
     uint8_t groupe;
     uint16_t total_length;
-    
+    _Bool group_with_crc = 0;
     process_rx_external = external;
     
     while(1)
@@ -281,12 +281,14 @@ void NBFi_ProcessRxPackets(_Bool external)
         if((pkt->phy_data.SYS) && (pkt->phy_data.payload[0] & 0x80))
         {
             total_length = pkt->phy_data.payload[0] & 0x7f;
+            total_length = total_length%nbfi.max_payload_len;
             memcpy_xdata(data, (void const*)(&pkt->phy_data.payload[1]), total_length);
             if(nbfi.mack_mode < MACK_2) NBFi_RxPacket_Free(pkt);
         }
         else
         {
             uint8_t iter = pkt->phy_data.ITER;
+            group_with_crc = ((pkt->phy_data.SYS) && (nbfi_RX_pktBuf[(iter)&0x1f]->phy_data.payload[0] == 0x02));
             uint16_t memcpy_len = total_length;
             for(uint8_t i = 0; i != groupe; i++)
             {
@@ -306,7 +308,16 @@ void NBFi_ProcessRxPackets(_Bool external)
         
         if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
         
-        if(rx_handler) rx_handler((uint8_t *)data, total_length);
+        uint8_t *data_ptr;
+        if(group_with_crc)
+        {
+            total_length--;
+            if(CRC8((unsigned char*)(&data[1]), (unsigned char)(total_length)) != data[0]) return;
+            data_ptr = &data[1];
+        }
+        else data_ptr = &data[0];
+        
+        if(rx_handler) rx_handler(data_ptr, total_length);
         
         //free(data);
     }
@@ -407,6 +418,7 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
 
                 }
                 break;
+                
             case 03:    //ACK on system packet received
                 if((nbfi_active_pkt->state == PACKET_WAIT_ACK))
                 {
@@ -419,7 +431,8 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
             case 0x04:  //clear RX buffer message received
                 NBFi_Clear_RX_Buffer();
                 break;
-            case 0x05:  //start packet of the groupe
+            case 0x02:  //start packet of the groupe
+            case 0x05:  
                 goto place_to_stack;
             case 0x06:  //nbfi configure
 
