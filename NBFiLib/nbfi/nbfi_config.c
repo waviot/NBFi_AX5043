@@ -388,6 +388,9 @@ _Bool NBFi_Config_Parser(uint8_t* buf)
                     case NBFI_PARAM_DL_ADD:
                         for(uint8_t i = 0; i != 3; i++)  buf[1 + i] = nbfi.dl_ID[i];
                         break;
+                    case NBFI_PARAM_BROADCAST_ADD:
+                        for(uint8_t i = 0; i != 3; i++)  buf[1 + i] = nbfi.broadcast_ID[i];
+                        break;
                     case NBFI_PARAM_HEART_BEAT:
                         buf[1] = nbfi.heartbeat_num;
                         buf[2] = nbfi.heartbeat_interval >> 8;
@@ -483,6 +486,9 @@ _Bool NBFi_Config_Parser(uint8_t* buf)
                     case NBFI_PARAM_DL_ADD:
                         for(uint8_t i = 0; i != 3; i++)  nbfi.dl_ID[i] = buf[1 + i];
                         break;
+                    case NBFI_PARAM_BROADCAST_ADD:
+                        for(uint8_t i = 0; i != 3; i++)  nbfi.broadcast_ID[i] = buf[1 + i];
+                        break;                       
                     case NBFI_PARAM_HEART_BEAT:
                         nbfi.heartbeat_num = buf[1];
                         nbfi.heartbeat_interval  = buf[2];

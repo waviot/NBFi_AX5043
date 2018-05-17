@@ -6,22 +6,24 @@
 #define WRITE_PARAM_WITH_ACK_CMD    0x02
 #define WRITE_PARAM_AND_SAVE_CMD    0x03
 
-#define NBFI_PARAM_MODE         0x00
-#define NBFI_PARAM_HANDSHAKE    0x01
-#define NBFI_PARAM_MAXLEN       0x02
-#define NBFI_PARAM_TXFREQ       0x03
-#define NBFI_PARAM_RXFREQ       0x04
-#define NBFI_PARAM_ANT          0x05
-#define NBFI_PARAM_DL_ADD       0x06
-#define NBFI_PARAM_HEART_BEAT   0x07
-#define NBFI_PARAM_TX_BRATES    0x08
-#define NBFI_PARAM_RX_BRATES    0x09
-#define NBFI_PARAM_VERSION      0x0A
-#define NBFI_ADD_FLAGS          0x0B
-#define NBFI_QUALITY            0x0C
-#define NBFI_UL_BASE_FREQ       0x0D
-#define NBFI_DL_BASE_FREQ       0x0E
-#define NBFI_QUALITY_EX         0x0F
+#define NBFI_PARAM_MODE                 0x00
+#define NBFI_PARAM_HANDSHAKE            0x01
+#define NBFI_PARAM_MAXLEN               0x02
+#define NBFI_PARAM_TXFREQ               0x03
+#define NBFI_PARAM_RXFREQ               0x04
+#define NBFI_PARAM_ANT                  0x05
+#define NBFI_PARAM_DL_ADD               0x06
+#define NBFI_PARAM_HEART_BEAT           0x07
+#define NBFI_PARAM_TX_BRATES            0x08
+#define NBFI_PARAM_RX_BRATES            0x09
+#define NBFI_PARAM_VERSION              0x0A
+#define NBFI_ADD_FLAGS                  0x0B
+#define NBFI_QUALITY                    0x0C
+#define NBFI_UL_BASE_FREQ               0x0D
+#define NBFI_DL_BASE_FREQ               0x0E
+#define NBFI_QUALITY_EX                 0x0F
+#define NBFI_PARAM_BROADCAST_ADD        0x10
+
 
 typedef struct
 {
