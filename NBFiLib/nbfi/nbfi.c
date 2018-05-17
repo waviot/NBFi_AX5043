@@ -275,9 +275,6 @@ void NBFi_ProcessRxPackets(_Bool external)
           return;
         }
 
-        
-        //data = malloc(total_length);
-        //if(!data)   return;
         if((pkt->phy_data.SYS) && (pkt->phy_data.payload[0] & 0x80))
         {
             total_length = pkt->phy_data.payload[0] & 0x7f;
@@ -321,7 +318,6 @@ void NBFi_ProcessRxPackets(_Bool external)
         
         if(rx_handler) rx_handler(data_ptr, total_length);
         
-        //free(data);
     }
 
 }
@@ -512,13 +508,14 @@ place_to_stack:
         }
     }
 
-    if(process_rx_external == 0) NBFi_ProcessRxPackets(0);
-
     if(phy_pkt->MULTI && !phy_pkt->ACK)
     {
         //wait for extra packets
-        nbfi_active_pkt_old_state = nbfi_active_pkt->state;
-        nbfi_active_pkt->state = PACKET_WAIT_FOR_EXTRA_PACKETS;
+        if(nbfi_active_pkt->state != PACKET_WAIT_FOR_EXTRA_PACKETS)
+        {
+          nbfi_active_pkt_old_state = nbfi_active_pkt->state;
+          nbfi_active_pkt->state = PACKET_WAIT_FOR_EXTRA_PACKETS;
+        }
         ScheduleTask(&wait_for_extra_desc, NBFi_Wait_Extra_Handler, RELATIVE, NBFI_DL_LISTEN_TIME[nbfi.rx_phy_channel]);
         wait_Extra = 1;
     }
@@ -527,7 +524,9 @@ place_to_stack:
         if(nbfi_active_pkt->state == PACKET_WAIT_FOR_EXTRA_PACKETS) nbfi_active_pkt->state = nbfi_active_pkt_old_state;
 
     }
-
+    
+    if(process_rx_external == 0) NBFi_ProcessRxPackets(0);
+        
     if(!phy_pkt->ACK) NBFI_Config_Check_State();
     if(NBFi_GetQueuedTXPkt()) NBFi_Force_process();
     else
