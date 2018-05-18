@@ -105,7 +105,7 @@ _Bool NBFi_Config_Tx_Power_Change(nbfi_rate_direct_t dir);
 void NBFi_Config_Return();
 _Bool NBFi_Config_Send_Mode(_Bool, uint8_t);
 void NBFi_Config_Set_Default();
-void NBFi_ReadConfig();
+void NBFi_ReadConfig(nbfi_settings_t *settings);
 void NBFi_WriteConfig();
 void NBFi_Config_Set_TX_Chan(nbfi_phy_channel_t ch);
 void NBFi_Config_Set_RX_Chan(nbfi_phy_channel_t ch);
@@ -303,12 +303,6 @@ _Bool NBFi_Config_Tx_Power_Change(nbfi_rate_direct_t dir)
     return (nbfi.tx_pwr != old_pwr);
 }
 
-
-void NBFi_Config_Send_Current_Mode(struct wtimer_desc *desc)
-{
-    NBFi_Config_Send_Mode(0, NBFI_PARAM_MODE);
-    NBFi_Send_Clear_Cmd(0);
-}
 
 _Bool NBFi_Config_Send_Mode(_Bool ack, uint8_t param)
 {
@@ -549,7 +543,7 @@ void NBFi_Configure_IDs()
 void NBFi_Config_Set_Default()
 {
 
-    NBFi_ReadConfig();
+    NBFi_ReadConfig(0);
 
     NBFi_Configure_IDs();
 
@@ -565,10 +559,14 @@ void NBFi_Config_Set_Default()
 
 }
 
-void NBFi_Config_Set_FastDl(_Bool fast)
+void NBFi_Config_Set_FastDl(_Bool fast, _Bool save_settings)
 {
+  
+    static nbfi_settings_t settings;
+    
     if(fast)
     {
+        if(save_settings) settings = nbfi;
         NBFi_Clear_TX_Buffer();
         uint32_t dl_base_freq = nbfi.dl_freq_base;
         for(uint8_t i = 0; i != sizeof(nbfi_settings_t); i++)
@@ -582,7 +580,15 @@ void NBFi_Config_Set_FastDl(_Bool fast)
     }
     else
     {
-        NBFi_Config_Set_Default();
+        if(save_settings) 
+        {
+                NBFi_Clear_TX_Buffer();
+                nbfi = settings;
+                NBFi_Config_Set_TX_Chan(settings.tx_phy_channel);
+                NBFi_Config_Set_RX_Chan(settings.rx_phy_channel);
+                rf_state = STATE_CHANGED;
+        }
+        else NBFi_Config_Set_Default();
     }
 
     if(rf_state == STATE_RX) NBFi_RX();
@@ -605,17 +611,18 @@ _Bool NBFi_Config_Tx_Idle()
 
 extern void (* __nbfi_read_flash_settings)(nbfi_settings_t*);
 extern void (* __nbfi_read_default_settings)(nbfi_settings_t*);
-void NBFi_ReadConfig()
+void NBFi_ReadConfig(nbfi_settings_t *settings)
 {
+        if(settings == 0) settings = &nbfi;
 	if(__nbfi_read_flash_settings == 0) goto read_default;
 
-	__nbfi_read_flash_settings(&nbfi);
+	__nbfi_read_flash_settings(settings);
 
 	if((nbfi.tx_phy_channel != 0xff) && (nbfi.tx_phy_channel != 0)) return;
 
 read_default:
 
-	if(__nbfi_read_default_settings) __nbfi_read_default_settings(&nbfi);
+	if(__nbfi_read_default_settings) __nbfi_read_default_settings(settings);
 
 }
 

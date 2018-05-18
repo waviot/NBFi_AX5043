@@ -84,12 +84,11 @@ _Bool NBFi_Config_Tx_Power_Change(nbfi_rate_direct_t dir);
 void NBFi_Config_Return();
 _Bool NBFi_Config_Send_Mode(_Bool, uint8_t);
 void NBFi_Config_Set_Default();
-void NBFi_ReadConfig();
+void NBFi_ReadConfig(nbfi_settings_t *settings);
 void NBFi_WriteConfig();
 void NBFi_Config_Set_TX_Chan(nbfi_phy_channel_t ch);
 void NBFi_Config_Set_RX_Chan(nbfi_phy_channel_t ch);
 void NBFi_Config_Set_Device_Info(nbfi_dev_info_t *);
-void NBFi_Config_Send_Current_Mode(struct wtimer_desc *desc);
 void NBFI_Config_Check_State();
 
 extern uint8_t you_should_dl_power_step_up;
@@ -893,8 +892,11 @@ void NBFi_Go_To_Sleep(_Bool sleep)
     {
         if(old_state != sleep)
         {
-            NBFi_Config_Set_Default();
-            NBFi_Config_Send_Current_Mode(0);
+            nbfi_settings_t settings;
+            NBFi_ReadConfig(&settings);
+            nbfi.mode = settings.mode;
+            NBFi_Config_Send_Mode(0, NBFI_PARAM_MODE);
+            NBFi_Send_Clear_Cmd(0);
             NBFi_Force_process();
         }
     }
@@ -923,7 +925,8 @@ nbfi_status_t NBFI_Init()
     else
     {
       NBFi_RX_Controller();
-      NBFi_Config_Send_Current_Mode(0);
+      NBFi_Config_Send_Mode(0, NBFI_PARAM_MODE);
+      NBFi_Send_Clear_Cmd(0);
       NBFi_Force_process();
       __nbfi_measure_voltage_or_temperature(1);
       ScheduleTask(&nbfi_heartbeat_desc, NBFi_SendHeartBeats, RELATIVE, SECONDS(1));

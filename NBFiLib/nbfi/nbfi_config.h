@@ -112,7 +112,7 @@ void NBFi_Config_Set_Device_Info(nbfi_dev_info_t *);
 nbfi_settings_t* NBFi_get_settings();
 _Bool NBFi_Config_Parser(uint8_t* buf);
 void NBFi_Clear_Saved_Configuration();
-void NBFi_Config_Set_FastDl(_Bool);
+void NBFi_Config_Set_FastDl(_Bool, _Bool);
 _Bool NBFi_Is_Mode_Normal();
 
 #endif // NBFI_CONFIG_H
