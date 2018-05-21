@@ -566,13 +566,10 @@ void NBFi_Config_Set_FastDl(_Bool fast, _Bool save_settings)
     
     if(fast)
     {
-        if(save_settings) settings = nbfi;
+        if(save_settings) memcpy(&settings, &nbfi, sizeof(nbfi_settings_t));;
         NBFi_Clear_TX_Buffer();
         uint32_t dl_base_freq = nbfi.dl_freq_base;
-        for(uint8_t i = 0; i != sizeof(nbfi_settings_t); i++)
-        {
-            ((uint8_t*)&nbfi)[i] = ((uint8_t*)&nbfi_fastdl)[i];
-        }
+		memcpy(&nbfi, &nbfi_fastdl, sizeof(nbfi_settings_t));
         nbfi.tx_freq = nbfi.rx_freq = dl_base_freq + 1000000;
         NBFi_Configure_IDs();
         for(uint8_t i = 0; i != 3; i++) nbfi.dl_ID[i] = nbfi.temp_ID[i];   //default DL address
@@ -583,7 +580,7 @@ void NBFi_Config_Set_FastDl(_Bool fast, _Bool save_settings)
         if(save_settings) 
         {
                 NBFi_Clear_TX_Buffer();
-                nbfi = settings;
+                memcpy(&nbfi, &settings, sizeof(nbfi_settings_t));
                 NBFi_Config_Set_TX_Chan(settings.tx_phy_channel);
                 NBFi_Config_Set_RX_Chan(settings.rx_phy_channel);
                 rf_state = STATE_CHANGED;
@@ -618,7 +615,7 @@ void NBFi_ReadConfig(nbfi_settings_t *settings)
 
 	__nbfi_read_flash_settings(settings);
 
-	if((nbfi.tx_phy_channel != 0xff) && (nbfi.tx_phy_channel != 0)) return;
+	if((settings->tx_phy_channel != 0xff) && (settings->tx_phy_channel != 0)) return;
 
 read_default:
 
