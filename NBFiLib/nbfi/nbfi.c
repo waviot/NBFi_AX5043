@@ -623,7 +623,7 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
     else
     {
           uint32_t t = __nbfi_measure_voltage_or_temperature(1);
-          if(t < MinVoltage) MinVoltage = t;
+          if(t < MinVoltage || !MinVoltage) MinVoltage = t;
     }
 
     if(rf_state == STATE_RX)
@@ -825,7 +825,7 @@ static void NBFi_SendHeartBeats(struct wtimer_desc *desc)
         if(!ack_pkt)   return;
         ack_pkt->phy_data.payload[0] = 0x01;
         ack_pkt->phy_data.payload[1] = 0;                      //heart beat type
-        ack_pkt->phy_data.payload[2] = (MinVoltage>=300)?0x80:0 + (MinVoltage%100);         //min supply voltage since last heartbeat
+        ack_pkt->phy_data.payload[2] = (MinVoltage >= 300 ? 0x80 : 0) + MinVoltage % 100;         //min supply voltage since last heartbeat
         MinVoltage = 0; //reset min voltage detection
         ack_pkt->phy_data.payload[3] = __nbfi_measure_voltage_or_temperature(0);    //temperature
         ack_pkt->phy_data.payload[4] = nbfi_state.aver_rx_snr; // DL average snr
