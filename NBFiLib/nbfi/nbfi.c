@@ -915,7 +915,7 @@ nbfi_status_t NBFI_Init()
 
     info_timer = dev_info.send_info_interval - 300 - rand()%600;
 
-    RF_Init(nbfi.tx_phy_channel, (rf_antenna_t)nbfi.tx_antenna, nbfi.tx_pwr, nbfi.dl_freq_base);
+    RF_Init(nbfi.rx_phy_channel, (rf_antenna_t)nbfi.rx_antenna, nbfi.tx_pwr, nbfi.dl_freq_base);
 
     if(nbfi.additional_flags&NBFI_OFF_MODE_ON_INIT)
     {
