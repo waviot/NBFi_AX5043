@@ -23,6 +23,10 @@ _Bool NBFi_Config_Tx_Idle();
 nbfi_settings_t nbfi;
 
 
+#ifdef FORMAT_CODE
+#pragma default_function_attributes = @ "NBFi_FUNC"
+#endif
+
 nbfi_dev_info_t dev_info =
 {
     0x700000,
@@ -692,3 +696,6 @@ nbfi_settings_t* NBFi_get_settings()
     return &nbfi;
 }
 
+#ifdef FORMAT_CODE
+#pragma default_function_attributes =
+#endif

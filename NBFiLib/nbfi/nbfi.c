@@ -22,6 +22,10 @@ nbfi_state_t nbfi_state = {0,0,0,0,0,0,0,0,0,0,0};
 
 extern nbfi_dev_info_t dev_info;
 
+#ifdef FORMAT_CODE
+#pragma default_function_attributes = @ "NBFi_FUNC"
+#endif
+
 const uint32_t NBFI_DL_DELAY[10] = {30000, 30000, 30000, 5000, 5000, 5000, 1000, 1000, 500, 500};
 const uint32_t NBFI_DL_LISTEN_TIME[4] = {40000, 40000, 40000, 40000};
 const uint32_t NBFI_DL_ADD_RND_LISTEN_TIME[4] = {20000, 20000, 20000, 20000};
@@ -940,3 +944,6 @@ uint8_t NBFi_can_sleep()
   return (!rf_busy) && (rf_state == STATE_OFF) && (NBFi_Packets_To_Send() == 0);
 }
 
+#ifdef FORMAT_CODE
+#pragma default_function_attributes =
+#endif

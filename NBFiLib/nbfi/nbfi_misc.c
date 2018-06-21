@@ -14,6 +14,9 @@ extern nbfi_state_t nbfi_state;
 extern nbfi_transport_packet_t idle_pkt;
 extern nbfi_transport_packet_t* nbfi_active_pkt;
 
+#ifdef FORMAT_CODE
+#pragma default_function_attributes = @ "NBFi_FUNC"
+#endif
 
 nbfi_transport_packet_t* NBFi_AllocateTxPkt(uint8_t payload_length)
 {
@@ -451,7 +454,7 @@ void NBFi_Resend_Pkt(nbfi_transport_packet_t* act_pkt, uint32_t mask)
         if(act_pkt->phy_data.ITER < last_resending_pkt->phy_data.ITER) last_resending_pkt->mack_num += 32;
         last_resending_pkt->mack_num |= 0x80;
     }
-    else if((act_pkt->mack_num > 1) && (mask == 0))  //all packets delivered, send message to clear receiver's input buffer
+    else if(/*(act_pkt->mack_num > 1) &&*/ (mask == 0))  //all packets delivered, send message to clear receiver's input buffer
     {
          NBFi_Send_Clear_Cmd(nbfi_active_pkt->phy_data.ITER);
     }
@@ -681,3 +684,7 @@ void delay_ms(uint16_t ms)
     }
     while (delaymstimer);
 }
+
+#ifdef FORMAT_CODE
+#pragma default_function_attributes =
+#endif
