@@ -515,13 +515,13 @@ uint8_t CRC8(uint8_t* data, uint8_t len)
 #define POLYNOMIAL (0x104C11DB7)
 
 uint32_t crc_table(uint8_t n)
-{
+{ 
     uint32_t c;
     int k;
     c=((uint32_t)n) << (WIDTH - 8);
     for(k=8;k>0;k--)
     {
-        if(c & TOPBIT)
+             if(c & (uint32_t)TOPBIT)
         {
             c = (c<<1) ^ POLYNOMIAL;
         }
