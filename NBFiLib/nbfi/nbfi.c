@@ -18,7 +18,7 @@ extern nbfi_transport_packet_t * nbfi_TX_pktBuf[NBFI_TX_PKTBUF_SIZE];
 extern nbfi_transport_packet_t* nbfi_RX_pktBuf[NBFI_RX_PKTBUF_SIZE];
 
 
-nbfi_state_t nbfi_state = {0,0,0,0,0,0,0,0,0,0,0};
+nbfi_state_t nbfi_state = {0,0,0,0,0,0,0,0,0,0,0,0};
 
 extern nbfi_dev_info_t dev_info;
 
@@ -350,6 +350,7 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
 #endif
 
     nbfi_state.DL_total++;
+    nbfi_state.DL_last_time = NBFi_get_RTC();
     if(++noise_min_cntr > NBFI_NOISE_DINAMIC[nbfi.rx_phy_channel]) noise_min_cntr =   NBFI_NOISE_DINAMIC[nbfi.rx_phy_channel];
     uint8_t snr;
     if(st->u.rx.phy.rssi < noise) snr = 0;

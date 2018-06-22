@@ -558,7 +558,8 @@ void NBFi_Config_Set_Default()
 
     nbfi_state.aver_tx_snr = nbfi_state.aver_rx_snr = 0;
     current_tx_rate = current_rx_rate = 0;
-
+    you_should_dl_power_step_down = 0;
+    
     if(nbfi_active_pkt->state == PACKET_WAIT_ACK) nbfi_active_pkt->state = PACKET_LOST;
 
 }
