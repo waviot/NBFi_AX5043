@@ -714,7 +714,7 @@ static void NBFi_Receive_Timeout_cb(struct wtimer_desc *desc)
     {
        nbfi_active_pkt->state = PACKET_LOST;
 
-       if(nbfi_active_pkt->phy_data.SYS && (nbfi_active_pkt->phy_data.payload[0] == 0x06)/* && (nbfi_active_pkt->phy_data.payload[1] != RATE_CHANGE_PARAM_CMD)*/)
+        if(nbfi_active_pkt->phy_data.SYS && (nbfi_active_pkt->phy_data.payload[0] == 0x06)/* && (nbfi_active_pkt->phy_data.payload[1] != RATE_CHANGE_PARAM_CMD)*/)
         {
             NBFi_Mark_Lost_All_Unacked();
             NBFi_Config_Return(); //return to previous work configuration

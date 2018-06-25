@@ -178,7 +178,8 @@ void NBFI_Config_Check_State()
     {
         case PACKET_WAIT_ACK:
         case PACKET_WAIT_FOR_EXTRA_PACKETS:
-        return;
+        case PACKET_QUEUED_AGAIN:
+          return;
     }
     
     if(you_should_dl_power_step_down && (nbfi_state.aver_rx_snr < RX_SNRLEVEL_FOR_UP)) you_should_dl_power_step_down = 0;

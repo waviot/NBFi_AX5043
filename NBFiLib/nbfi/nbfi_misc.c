@@ -128,7 +128,7 @@ nbfi_transport_packet_t* NBFi_GetQueuedTXPkt()
             if(nbfi_TX_pktBuf[ptr] == nbfi_active_pkt) continue;
              nbfi_TX_pktBuf[ptr]->state = PACKET_QUEUED_AGAIN;
         case PACKET_QUEUED:
-        case PACKET_QUEUED_AGAIN:
+        //case PACKET_QUEUED_AGAIN:
             return nbfi_TX_pktBuf[ptr];
         }
     }
