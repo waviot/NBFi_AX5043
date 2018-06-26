@@ -449,6 +449,9 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
                     ack_pkt->state = PACKET_NEED_TO_SEND_RIGHT_NOW;
                 }
                 break;
+            case 0x07:
+              while(1);
+              break;
             case 0x09:  //time correction
               memcpy(&rtc, &phy_pkt->payload[1], 4);
               NBFi_set_RTC(rtc);
