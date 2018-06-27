@@ -283,7 +283,7 @@ void NBFi_ProcessRxPackets(_Bool external)
             total_length = pkt->phy_data.payload[0] & 0x7f;
             total_length = total_length%nbfi.max_payload_len;
             memcpy_xdata(data, (void const*)(&pkt->phy_data.payload[1]), total_length);
-            if(nbfi.mack_mode < MACK_2) NBFi_RxPacket_Free(pkt);
+            if(nbfi.mack_mode < MACK_2) pkt->state = PACKET_PROCESSED;//NBFi_RxPacket_Free(pkt);
         }
         else
         {
@@ -301,7 +301,11 @@ void NBFi_ProcessRxPackets(_Bool external)
                 if(nbfi_RX_pktBuf[(iter + i)&0x1f]->phy_data.ACK) nbfi_RX_pktBuf[(iter + i)&0x1f]->state = PACKET_CLEARED;
                 else nbfi_RX_pktBuf[(iter + i)&0x1f]->state = PACKET_PROCESSED;
 
-                if((nbfi.mack_mode < MACK_2) && (groupe == 1)) NBFi_RxPacket_Free(nbfi_RX_pktBuf[(iter + i)&0x1f]);
+                if((nbfi.mack_mode < MACK_2) && (groupe == 1)) 
+                {
+                  //NBFi_RxPacket_Free(nbfi_RX_pktBuf[(iter + i)&0x1f]);
+                  nbfi_RX_pktBuf[(iter + i)&0x1f]->state = PACKET_PROCESSED;
+                }
 
             }
         }
@@ -326,8 +330,6 @@ void NBFi_ProcessRxPackets(_Bool external)
 }
 
 
-
-
 void NBFi_ParseReceivedPacket(struct axradio_status *st)
 {
     int16_t rtc_offset;
@@ -336,7 +338,7 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
 
     rx_complete = 1;
 
-
+    
 #ifndef NOKEYDL
     if(!(nbfi.additional_flags&NBFI_FLG_NO_XTEA))
     {
@@ -449,9 +451,6 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
                     ack_pkt->state = PACKET_NEED_TO_SEND_RIGHT_NOW;
                 }
                 break;
-            case 0x07:
-              while(1);
-              break;
             case 0x09:  //time correction
               memcpy(&rtc, &phy_pkt->payload[1], 4);
               NBFi_set_RTC(rtc);
