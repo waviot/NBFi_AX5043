@@ -76,6 +76,7 @@ typedef struct
     uint32_t UL_iter;
     uint32_t DL_total;
     uint32_t DL_iter;
+    int16_t noise;
     uint8_t  aver_rx_snr;
     uint8_t  aver_tx_snr;
     int16_t success_total;
