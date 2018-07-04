@@ -8,7 +8,11 @@
 #include "ax5043.h"
 #include "easyax5043.h"
 
-
+#ifdef FORMAT_CODE
+#pragma default_function_attributes = @ "AXRADIO_FUNC"
+#endif
+     
+     
 void (*__ax5043_enable_global_irq)(void);
 void (*__ax5043_disable_global_irq)(void);
 void (*__ax5043_enable_pin_irq)(void);
@@ -19,7 +23,7 @@ void (*__spi_tx)(uint8_t *, uint16_t);
 void (*__spi_tx_rx)(uint8_t *, uint8_t *, uint16_t);
 void (*__spi_cs_set)(uint8_t);
 void (*__axradio_statuschange)(struct axradio_status *st);
-
+void (*__ax5043_on_off_pwr)(uint8_t);
 
 void ax5043_reg_func(uint8_t name, void*  fn)
 {
@@ -55,6 +59,9 @@ void ax5043_reg_func(uint8_t name, void*  fn)
 	case AXRADIO_STATUSCHANGE:
 		__axradio_statuschange = (void(*)(struct axradio_status*))fn;
 		break;
+    case AXRADIO_ON_OFF_PWR:
+        __ax5043_on_off_pwr = (void(*)(uint8_t))fn;
+        break;
 	default:
 		break;
 	}
@@ -283,3 +290,16 @@ void ax5043_tcxo_set_reset(uint8_t set)
 {
 	ax5043_spi_write(AX5043_PINFUNCPWRAMP, set);
 }
+
+void ax5043_hard_reset()
+{
+    if(__ax5043_on_off_pwr)
+    {
+        __ax5043_on_off_pwr(0);
+        __ax5043_on_off_pwr(1);
+    }
+}
+
+#ifdef FORMAT_CODE
+#pragma default_function_attributes = 
+#endif

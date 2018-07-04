@@ -38,6 +38,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef FORMAT_CODE
+#pragma default_function_attributes = @ "AXRADIO_FUNC"
+#endif
+
+
 uint16_t (*radio_read16)(uint32_t) = ax5043_spi_read16;
 uint32_t (*radio_read24)(uint32_t) = ax5043_spi_read24;
 void (*ax5043_writefifo)(uint8_t *, uint8_t ) = ax5043_spi_write_fifo;
@@ -359,9 +364,11 @@ dropchunk:
     } // end while( fifo not empty )
 }
 
+
+#define WAIT_FOR_TRANSMIT_ISR_TIMEOUT   100000
 static void transmit_isr(void)
 {
-    for (;;) {
+    for (uint32_t timer = 0; timer < WAIT_FOR_TRANSMIT_ISR_TIMEOUT; timer++) {
         uint8_t cnt = ax5043_spi_read(AX5043_FIFOFREE0);
         if (ax5043_spi_read(AX5043_FIFOFREE1))
             cnt = 0xff;
@@ -812,13 +819,15 @@ void ax5043_off_xtal(void)
     axradio_trxstate = trxstate_off;
 }
 
+#define WAIT_FOR_XTAL_TIMEOUT   100000
 void axradio_wait_for_xtal(void)
 {
-    
+    static uint8_t retry = 0;
     __ax5043_disable_global_irq();
     axradio_trxstate = trxstate_wait_xtal;
     ax5043_spi_write(AX5043_IRQMASK1, ax5043_spi_read(AX5043_IRQMASK1) | (0x01)); // enable xtal ready interrupt
-    for(;;) {
+    uint32_t timer;
+    for(timer = 0; timer < WAIT_FOR_XTAL_TIMEOUT; timer++) {
         __ax5043_disable_global_irq();
         if (axradio_trxstate == trxstate_xtal_ready)
             break;
@@ -827,6 +836,12 @@ void axradio_wait_for_xtal(void)
         wtimer_runcallbacks();
     }
     __ax5043_enable_global_irq();
+    if(timer == WAIT_FOR_XTAL_TIMEOUT)  
+    {
+        if(++retry < 3)  axradio_wait_for_xtal();
+        else ax5043_hard_reset();
+    }
+    retry = 0;    
 }
 
 static void axradio_setaddrregs(void)
@@ -1564,7 +1579,8 @@ uint8_t axradio_init(void)
             }
             ax5043_spi_write(AX5043_PLLRANGINGA, r); // init ranging process starting from "range"
         }
-        for (;;) {
+        #define WAIT_FOR_PLL_RANGING_DONE_TIMEOUT   100000
+        for (uint32_t timer = 0; timer < WAIT_FOR_PLL_RANGING_DONE_TIMEOUT; timer++) {
             __ax5043_disable_global_irq();
             if (axradio_trxstate == trxstate_pll_ranging_done)
                 break;
@@ -2202,3 +2218,7 @@ uint8_t axradio_agc_thaw(void)
 {
     return axradio_set_paramsets(0x00);
 }
+
+#ifdef FORMAT_CODE
+#pragma default_function_attributes = 
+#endif

@@ -100,7 +100,7 @@ extern uint8_t you_should_dl_power_step_down;
 extern uint8_t current_tx_rate;
 extern uint8_t current_rx_rate;
 
-
+void (* __nbfi_on_off_pwr)(uint8_t) = 0;
 void (* __nbfi_before_tx)(NBFi_ax5043_pins_s *) = 0;
 void (* __nbfi_before_rx)(NBFi_ax5043_pins_s *) = 0;
 void (* __nbfi_before_off)(NBFi_ax5043_pins_s *) = 0;
@@ -111,13 +111,14 @@ uint32_t (* __nbfi_measure_voltage_or_temperature)(uint8_t) = 0;
 uint32_t (* __nbfi_update_rtc)(void) = 0;
 void (* __nbfi_rtc_synchronized)(uint32_t) = 0;
 void (* __nbfi_lock_unlock_nbfi_irq)(uint8_t) = 0;
-
+void (* __nbfi_reset)(void) = 0;
 
 
 void NBFI_reg_func(uint8_t name, void* fn)
 {
 	switch(name)
 	{
+        break;
 	case NBFI_BEFORE_TX:
 		__nbfi_before_tx = (void(*)(NBFi_ax5043_pins_s*))fn;
 		break;
@@ -142,15 +143,18 @@ void NBFI_reg_func(uint8_t name, void* fn)
 	case NBFI_MEASURE_VOLTAGE_OR_TEMPERATURE:
 		__nbfi_measure_voltage_or_temperature = (uint32_t(*)(uint8_t))fn;
 		break;
-        case NBFI_UPDATE_RTC:
-                __nbfi_update_rtc = (uint32_t(*)(void))fn;
-                break;
-        case NBFI_RTC_SYNCHRONIZED:
-                __nbfi_rtc_synchronized = (void(*)(uint32_t))fn;
-                break;
-        case NBFI_LOCKUNLOCKNBFIIRQ:
-                __nbfi_lock_unlock_nbfi_irq = (void(*)(uint8_t))fn;
-                break; 
+    case NBFI_UPDATE_RTC:
+        __nbfi_update_rtc = (uint32_t(*)(void))fn;
+        break;
+    case NBFI_RTC_SYNCHRONIZED:
+        __nbfi_rtc_synchronized = (void(*)(uint32_t))fn;
+        break;
+    case NBFI_LOCKUNLOCKNBFIIRQ:
+        __nbfi_lock_unlock_nbfi_irq = (void(*)(uint8_t))fn;
+        break; 
+    case NBFI_RESET:
+        __nbfi_reset = (void(*)(void))fn;
+        break;
 	default:
 		break;
 	}
@@ -450,6 +454,9 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
                     ack_pkt->phy_data.header |= SYS_FLAG;
                     ack_pkt->state = PACKET_NEED_TO_SEND_RIGHT_NOW;
                 }
+                break;
+            case 0x07: //software reset
+                if(__nbfi_reset && (phy_pkt->payload[1] == 0xDE) && (phy_pkt->payload[2] == 0xAD)) __nbfi_reset();
                 break;
             case 0x09:  //time correction
               memcpy(&rtc, &phy_pkt->payload[1], 4);
@@ -932,8 +939,13 @@ nbfi_status_t NBFI_Init()
     else
     {
       NBFi_RX_Controller();
-      NBFi_Config_Send_Mode(0, NBFI_PARAM_MODE);
-      NBFi_Send_Clear_Cmd(0);
+      
+      if(!NBFI_FLG_DO_NOT_SEND_PKTS_ON_START)
+      { 
+            NBFi_Config_Send_Mode(0, NBFI_PARAM_MODE);
+            NBFi_Send_Clear_Cmd(0);
+      }
+      
       NBFi_Force_process();
       __nbfi_measure_voltage_or_temperature(1);
       ScheduleTask(&nbfi_heartbeat_desc, NBFi_SendHeartBeats, RELATIVE, SECONDS(1));

@@ -6,7 +6,13 @@
 #include <nbfi.h>
 #include <rf.h>
 
+#ifdef FORMAT_CODE
+#pragma default_function_attributes = @ "AXRADIO_FUNC"
+#endif
+
+
 #define NAIVE_MEMCPY(x,y,n) for(int i=0;i<(n);i++){x[i]=y[i];}
+
 
 
 extern nbfi_phy_channel_t nbfi_phy_channel;
@@ -2188,3 +2194,8 @@ void ax5043_set_constants(void)
         break;
     }
 }
+
+#ifdef FORMAT_CODE
+#pragma default_function_attributes = 
+#endif
+

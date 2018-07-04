@@ -106,6 +106,9 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
     if(freq > 600000000) PSK_BAND = 1;
     else PSK_BAND = 0;
 
+    ax5043_hard_reset();
+    
+    
     ax5043_tcxo_set_reset(1);
 
 

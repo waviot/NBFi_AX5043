@@ -333,7 +333,7 @@ enum ax5043_reg_t
 
 enum ax5043_func_name_t
 {
-	AXRADIO_ENABLE_GLOBAL_IRQ = 0,
+    AXRADIO_ENABLE_GLOBAL_IRQ = 0,
 	AXRADIO_DISABLE_GLOBAL_IRQ,
 	AXRADIO_ENABLE_IRQ_PIN,
 	AXRADIO_DISABLE_IRQ_PIN,
@@ -342,8 +342,8 @@ enum ax5043_func_name_t
 	AXRADIO_SPI_TX,
 	AXRADIO_SPI_TX_RX,
 	AXRADIO_SPI_CS_WRITE,
-	AXRADIO_STATUSCHANGE
-	//AXRADIO_TCXO_SET_RESET
+	AXRADIO_STATUSCHANGE,
+    AXRADIO_ON_OFF_PWR
 };
 
 #define SILICONREV1 			0x51
@@ -371,5 +371,7 @@ uint8_t ax5043_reset(void);
 uint8_t ax5043_probeirq(void);
 
 void ax5043_tcxo_set_reset(uint8_t set);
+void ax5043_hard_reset();
+
 
 #endif /* AXRADIO_AX5043_H_ */
