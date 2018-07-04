@@ -18,7 +18,7 @@ extern nbfi_transport_packet_t * nbfi_TX_pktBuf[NBFI_TX_PKTBUF_SIZE];
 extern nbfi_transport_packet_t* nbfi_RX_pktBuf[NBFI_RX_PKTBUF_SIZE];
 
 
-nbfi_state_t nbfi_state = {0,0,0,0,0,0,0,0,0,0,0,0};
+nbfi_state_t nbfi_state = {0,0,0,0,-150,0,0,0,0,0,0,0,0};
 
 extern nbfi_dev_info_t dev_info;
 
@@ -53,9 +53,9 @@ rx_handler_t  rx_handler = 0;
 
 uint8_t not_acked = 0;
 
+
 uint8_t aver_tx_snr = 0;
 uint8_t aver_rx_snr = 0;
-int16_t noise = -150;
 uint8_t nbfi_last_snr = 0;
 
 int16_t noise_summ = 0;
@@ -359,8 +359,8 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
     nbfi_state.DL_last_time = NBFi_get_RTC();
     if(++noise_min_cntr > NBFI_NOISE_DINAMIC[nbfi.rx_phy_channel]) noise_min_cntr =   NBFI_NOISE_DINAMIC[nbfi.rx_phy_channel];
     uint8_t snr;
-    if(st->u.rx.phy.rssi < noise) snr = 0;
-    else snr = (st->u.rx.phy.rssi - noise) & 0xff;
+    if(st->u.rx.phy.rssi < nbfi_state.noise) snr = 0;
+    else snr = (st->u.rx.phy.rssi - nbfi_state.noise) & 0xff;
 
     nbfi_last_snr = snr;
 
@@ -475,7 +475,7 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
                         ack_pkt->phy_data.payload[3] = 0;
                         ack_pkt->phy_data.payload[4] = 0;
                         ack_pkt->phy_data.payload[5] = snr;
-                        ack_pkt->phy_data.payload[6] = (uint8_t)(noise + 150);
+                        ack_pkt->phy_data.payload[6] = (uint8_t)(nbfi_state.noise + 150);
                         ack_pkt->phy_data.payload[7] = you_should_dl_power_step_down + you_should_dl_power_step_up + (nbfi.tx_pwr & 0x3f); 
                         ack_pkt->phy_data.ITER = phy_pkt->ITER;
                         ack_pkt->phy_data.header |= SYS_FLAG;
@@ -510,7 +510,7 @@ place_to_stack:
                 ack_pkt->phy_data.payload[3] = (mask >> 8)&0xff;
                 ack_pkt->phy_data.payload[4] = (mask >> 0)&0xff;
                 ack_pkt->phy_data.payload[5] = snr;
-                ack_pkt->phy_data.payload[6] = (uint8_t)(noise + 150);
+                ack_pkt->phy_data.payload[6] = (uint8_t)(nbfi_state.noise + 150);
                 ack_pkt->phy_data.payload[7] = you_should_dl_power_step_down + you_should_dl_power_step_up + (nbfi.tx_pwr & 0x3f); 
                 ack_pkt->phy_data.ITER = nbfi_state.DL_iter&0x1f;
                 ack_pkt->phy_data.header |= SYS_FLAG;
@@ -650,8 +650,8 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
             if(n < noise_min) noise_min = n;
             if(--noise_min_cntr == 0)
             {
-                if(noise_min == -150) noise = n;
-                else noise = noise_min;
+                if(noise_min == -150) nbfi_state.noise = n;
+                else nbfi_state.noise = noise_min;
                 noise_min = 0;
                 noise_min_cntr =  NBFI_NOISE_DINAMIC[nbfi.rx_phy_channel];
             }
@@ -844,7 +844,7 @@ static void NBFi_SendHeartBeats(struct wtimer_desc *desc)
         ack_pkt->phy_data.payload[3] = __nbfi_measure_voltage_or_temperature(0);    //temperature
         ack_pkt->phy_data.payload[4] = nbfi_state.aver_rx_snr; // DL average snr
         ack_pkt->phy_data.payload[5] = nbfi_state.aver_tx_snr; // UL average snr
-        ack_pkt->phy_data.payload[6] = (uint8_t)(noise + 150); // rx noice
+        ack_pkt->phy_data.payload[6] = (uint8_t)(nbfi_state.noise + 150); // rx noice
         ack_pkt->phy_data.payload[7] = nbfi.tx_pwr;            // output power
         ack_pkt->phy_data.ITER = nbfi_state.UL_iter++ & 0x1f;;
         ack_pkt->phy_data.header |= SYS_FLAG;

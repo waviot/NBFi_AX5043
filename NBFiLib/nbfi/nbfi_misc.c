@@ -399,7 +399,6 @@ void NBFi_Clear_TX_Buffer()
 }
 
 extern uint8_t nbfi_last_snr;
-extern int16_t noise;
 extern uint8_t you_should_dl_power_step_down;
 extern uint8_t you_should_dl_power_step_up;
 void NBFi_Send_Clear_Cmd(uint8_t iter)
@@ -409,7 +408,7 @@ void NBFi_Send_Clear_Cmd(uint8_t iter)
     pkt->phy_data.payload[0] = 0x08; //clear RX buffer
     
     pkt->phy_data.payload[5] = nbfi_last_snr;
-    pkt->phy_data.payload[6] = (uint8_t)(noise + 150);
+    pkt->phy_data.payload[6] = (uint8_t)(nbfi_state.noise + 150);
     pkt->phy_data.payload[7] = you_should_dl_power_step_down + you_should_dl_power_step_up + (nbfi.tx_pwr & 0x3f);
     pkt->phy_data.ITER = iter;
     pkt->phy_data.header |= SYS_FLAG;
