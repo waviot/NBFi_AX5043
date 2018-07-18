@@ -5,6 +5,7 @@
 #include "rf.h"
 #include "xtea.h"
 #include "zcode.h"
+#include "zcode_e.h"
 #include <string.h>
 #include <stdlib.h> 
 
@@ -23,6 +24,104 @@ uint32_t tx_freq, rx_freq;
 extern nbfi_state_t nbfi_state;
 extern nbfi_transport_packet_t* nbfi_active_pkt;
 extern _Bool wait_RxEnd;
+
+/*
+nbfi_status_t NBFi_TX_ProtocolE(nbfi_transport_packet_t* pkt)
+{
+    uint8_t ul_buf[64];
+    uint8_t len = 0;
+    static _Bool parity = 0;
+    uint16_t lastcrc16;
+
+    memset_xdata(ul_buf,0,sizeof(ul_buf));
+
+    if(nbfi.mode == TRANSPARENT) pkt->phy_data_length--;
+
+    for(int i=0; i<sizeof(protD_preambula); i++)
+    {
+        ul_buf[len++] = protD_preambula[i];
+    }
+
+    ul_buf[len++] = nbfi.full_ID[0];
+    ul_buf[len++] = nbfi.full_ID[1];
+    ul_buf[len++] = nbfi.full_ID[2];
+    ul_buf[len++] = nbfi.full_ID[3];
+
+    if(nbfi.tx_phy_channel == DL_DBPSK_50_PROT_E) nbfi.tx_phy_channel = UL_DBPSK_50_PROT_E;
+    else if(nbfi.tx_phy_channel == DL_DBPSK_400_PROT_E) nbfi.tx_phy_channel = UL_DBPSK_400_PROT_E;
+    else if(nbfi.tx_phy_channel == DL_DBPSK_3200_PROT_E) nbfi.tx_phy_channel = UL_DBPSK_3200_PROT_E;
+    else if(nbfi.tx_phy_channel == DL_DBPSK_25600_PROT_E) nbfi.tx_phy_channel = UL_DBPSK_25600_PROT_E;
+
+    ul_buf[len++] = pkt->phy_data.header;
+
+    memcpy_xdatageneric(&ul_buf[len], pkt->phy_data.payload, pkt->phy_data_length);
+
+    lastcrc16 =  CRC16(&ul_buf[len], 8, 0xFFFF);
+
+    if(XTEA_Enabled() && XTEA_Available() && !(nbfi.additional_flags&NBFI_FLG_NO_XTEA))
+    {
+        XTEA_Encode(&ul_buf[len]);
+    }
+    len += 8;
+
+    if(nbfi.mode == TRANSPARENT)
+    {
+        ul_buf[len++] = pkt->phy_data.payload[8];
+        ul_buf[len++] = pkt->phy_data.payload[9];
+    }
+    else
+    {
+        ul_buf[len++] = lastcrc16&0xff;
+        ul_buf[len++] = (lastcrc16>>8)&0xff;
+    }
+
+    last_pkt_crc = CRC32(ul_buf + 4, 15); 
+
+    ul_buf[len++] = (uint8_t)(last_pkt_crc >> 16);
+    ul_buf[len++] = (uint8_t)(last_pkt_crc >> 8);
+    ul_buf[len++] = (uint8_t)(last_pkt_crc);
+
+    if(nbfi.tx_freq)
+    {
+        tx_freq = nbfi.tx_freq ;
+        parity = (nbfi.tx_freq > (nbfi.ul_freq_base + 25000));
+    }
+    else
+    {
+        if(nbfi.tx_phy_channel < UL_DBPSK_3200_PROT_D)
+        {
+                tx_freq = nbfi.ul_freq_base + (((*((const uint32_t *)FULL_ID)+lastcrc16)%226)*100);
+                if(parity) tx_freq = tx_freq + 27500;
+        }
+        else
+        {
+            tx_freq = nbfi.ul_freq_base + 1600 + (((*((const uint32_t *)FULL_ID)+lastcrc16)%210)*100);
+            if(parity) tx_freq = tx_freq + 27500 - 1600;
+        }
+    }
+
+    ZCODE_E_Append(&ul_buf[4], &ul_buf[len], 1);
+
+    if(!nbfi.tx_freq) parity = !parity;
+
+    if((nbfi.mode == NRX) && parity)
+    {
+        RF_Init(nbfi.tx_phy_channel, (rf_antenna_t)nbfi.tx_antenna, nbfi.tx_pwr, tx_freq);
+        RF_Transmit(ul_buf, len + ZCODE_LEN, PADDING_4TO1, BLOCKING);
+        nbfi_state.UL_total++;
+        return NBFi_TX_ProtocolE(pkt);
+    }
+
+    RF_Init(nbfi.tx_phy_channel, (rf_antenna_t)nbfi.tx_antenna, nbfi.tx_pwr, tx_freq);
+
+    RF_Transmit(ul_buf, len + ZCODE_LEN, PADDING_4TO1, NONBLOCKING);
+
+    nbfi_state.UL_total++;
+
+    return OK;
+
+}
+*/
 
 nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
 {

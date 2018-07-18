@@ -471,7 +471,6 @@ void NBFi_Resend_Pkt(nbfi_transport_packet_t* act_pkt, uint32_t mask)
 
 
 #define POLY 0xa001
-
 uint16_t CRC16(uint8_t *buf, uint16_t len, uint16_t crc)
 {
     while (len--)
