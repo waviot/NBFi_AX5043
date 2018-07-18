@@ -8,6 +8,7 @@
 #include "rf.h"
 #include "nbfi_config.h"
 #include "stm32l0xx_hal_conf.h"
+#include "adc.h"
 
 #define MODEM_ID  *((const uint32_t*)0x0801ff80)  
 #define KEY  ((const uint32_t*)0x0801ff84)            
@@ -223,6 +224,12 @@ void ax5043_spi_write_cs(uint8_t state)
 	HAL_GPIO_WritePin(SPI2_CS_PORT, SPI2_CS_PIN, GPIO_PIN_RESET);
 }
 
+void ax5043_on_off_pwr(uint8_t pwr)
+{
+  //ax5043 asic external power on/off implementation might be here for hardware reset  
+}
+
+
 void wtimer_cc_irq_enable(uint8_t chan)
 {
 	__HAL_LPTIM_ENABLE_IT(&hlptim, LPTIM_IT_CMPM);
@@ -307,7 +314,8 @@ void nbfi_write_flash_settings(nbfi_settings_t* settings)
 
 uint32_t nbfi_measure_valtage_or_temperature(uint8_t val)
 {
-	return 0;
+	ADC_get();
+	return val ? ADC_vcc / 10 : ADC_temp;
 }
 
 uint32_t nbfi_update_rtc()
@@ -356,6 +364,7 @@ void ax5043_init(void)
 	ax5043_reg_func(AXRADIO_SPI_TX, (void*)ax5043_spi_tx);
 	ax5043_reg_func(AXRADIO_SPI_TX_RX, (void*)ax5043_spi_tx_rx);
 	ax5043_reg_func(AXRADIO_SPI_CS_WRITE, (void*)ax5043_spi_write_cs);
+        ax5043_reg_func(AXRADIO_ON_OFF_PWR,(void*)ax5043_on_off_pwr);
 
 	HAL_GPIO_WritePin(SPI2_CS_PORT, SPI2_CS_PIN, GPIO_PIN_SET);
 

@@ -733,7 +733,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>C:\ITS\AMR\Software\STM\NBFi_AX5043\sample\Src\stm32l071xx_flash.icf</state>
+          <state>$PROJ_DIR$\src\stm32l071xx_flash.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -2027,6 +2027,12 @@
           <name>$PROJ_DIR$\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal.h</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_adc.h</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_adc_ex.h</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_cortex.h</name>
         </file>
         <file>
@@ -2083,11 +2089,20 @@
         <file>
           <name>$PROJ_DIR$\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_tim_ex.h</name>
         </file>
+        <file>
+          <name>$PROJ_DIR$\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_ll_adc.h</name>
+        </file>
       </group>
       <group>
         <name>src</name>
         <file>
           <name>$PROJ_DIR$\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_adc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_adc_ex.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_cortex.c</name>
@@ -2137,11 +2152,17 @@
         <file>
           <name>$PROJ_DIR$\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_tim_ex.c</name>
         </file>
+        <file>
+          <name>$PROJ_DIR$\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_ll_adc.c</name>
+        </file>
       </group>
     </group>
   </group>
   <group>
     <name>inc</name>
+    <file>
+      <name>$PROJ_DIR$\Src\adc.h</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\Inc\main.h</name>
     </file>
@@ -2406,6 +2427,9 @@
   </group>
   <group>
     <name>src</name>
+    <file>
+      <name>$PROJ_DIR$\Src\adc.c</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\Src\main.c</name>
     </file>
