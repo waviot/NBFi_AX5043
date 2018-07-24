@@ -180,6 +180,7 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
     return ERR;
 }
 
+extern void (*__ax5043_on_off_pwr)(uint8_t);
 nbfi_status_t RF_Deinit()
 {
     uint8_t er;
@@ -195,6 +196,7 @@ nbfi_status_t RF_Deinit()
     RF_SetModeAndPower(0, RX, PCB);
     delay_ms(1);
     ax5043_tcxo_set_reset(0);
+    if(__ax5043_on_off_pwr) __ax5043_on_off_pwr(0);
     rf_state = STATE_OFF;
     if (er != AXRADIO_ERR_NOERROR) return ERR;
     return OK;

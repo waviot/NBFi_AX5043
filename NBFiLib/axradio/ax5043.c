@@ -23,7 +23,7 @@ void (*__spi_tx)(uint8_t *, uint16_t);
 void (*__spi_tx_rx)(uint8_t *, uint8_t *, uint16_t);
 void (*__spi_cs_set)(uint8_t);
 void (*__axradio_statuschange)(struct axradio_status *st);
-void (*__ax5043_on_off_pwr)(uint8_t);
+void (*__ax5043_on_off_pwr)(uint8_t) = 0;
 
 void ax5043_reg_func(uint8_t name, void*  fn)
 {
