@@ -166,6 +166,7 @@ nbfi_status_t NBFi_Send(uint8_t* payload, uint8_t length)
     nbfi_transport_packet_t* packet;
     uint8_t groupe = 0;
     uint8_t len = length;
+     
     uint8_t free = NBFI_TX_PKTBUF_SIZE - NBFi_Packets_To_Send();
     if((length <= nbfi.max_payload_len) && (free < nbfi.mack_mode + 3 ) ) return ERR_BUFFER_FULL;
     else if((length/nbfi.max_payload_len + 3) > free) return ERR_BUFFER_FULL;
@@ -209,6 +210,7 @@ nbfi_status_t NBFi_Send(uint8_t* payload, uint8_t length)
         {
             return ERR_BUFFER_FULL;
         }
+        
         memcpy_xdata(packet->phy_data.payload + first, (void const*)&payload[groupe * nbfi.max_payload_len - 3*(groupe != 0)], l);
         packet->state = PACKET_QUEUED;
         packet->handshake = nbfi.handshake_mode;
@@ -255,8 +257,10 @@ nbfi_status_t NBFi_Send(uint8_t* payload, uint8_t length)
         }
 
     }while(length);
-
+    
+    
     NBFi_Force_process();
+
     return OK;
 }
 
