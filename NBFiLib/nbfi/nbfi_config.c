@@ -342,7 +342,7 @@ void bigendian_cpy(uint8_t* from, uint8_t* to, uint8_t len)
 uint8_t CompVersion()
 {
 
-    const char CompTime[] = __TIME__;
+    const char CompTime[] = "Simetime";//__TIME__;
     const char* ptr;
     uint8_t ver = 0;
     ptr = &CompTime[0];
