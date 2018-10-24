@@ -944,7 +944,7 @@ nbfi_status_t NBFI_Init()
     {
       NBFi_RX_Controller();
       
-      if(!nbfi.additional_flags&NBFI_FLG_DO_NOT_SEND_PKTS_ON_START)
+      if(!(nbfi.additional_flags&NBFI_FLG_DO_NOT_SEND_PKTS_ON_START))
       { 
             NBFi_Config_Send_Mode(0, NBFI_PARAM_MODE);
             NBFi_Send_Clear_Cmd(0);
