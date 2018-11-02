@@ -2327,256 +2327,250 @@
       <group>
         <name>axradio</name>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\axradio\ax5043.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\axradio\ax5043.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\axradio\ax5043.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\axradio\ax5043.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\axradio\axradio.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\axradio\axradio.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\axradio\config_united.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\axradio\config_united.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\axradio\easyax5043.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\axradio\easyax5043.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\axradio\easyax5043.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\axradio\easyax5043.h</name>
         </file>
       </group>
       <group>
         <name>libmf</name>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\chksgnlim16.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\chksgnlim16.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\chksgnlim32.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\chksgnlim32.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16b.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16b.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16dnpmsbtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16dnpmsbtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16dnptable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16dnptable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16msb.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16msb.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16msbtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16msbtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16table.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16table.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc32.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc32.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc32b.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc32b.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc32msb.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc32msb.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc32msbtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc32msbtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc32table.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc32table.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8b.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8b.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8ccitt.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8ccitt.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8ccittmsbtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8ccittmsbtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8ccitttable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8ccitttable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8msb.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8msb.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8onewire.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8onewire.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8onewiremsbtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8onewiremsbtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8onewiretable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8onewiretable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crcccittmsbtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crcccittmsbtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crcccitttable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crcccitttable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\fmemcpy.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\fmemcpy.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\fmemset.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\fmemset.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\graydec8.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\graydec8.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\grayenc8.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\grayenc8.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\hweight16.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\hweight16.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\hweight32.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\hweight32.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\hweight8.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\hweight8.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\libmfcrc.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\libmfcrc.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\libmftypes.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\libmftypes.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\libmfwtimer.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\libmfwtimer.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn15adv.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn15adv.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn15advtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn15advtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn15out.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn15out.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn15outtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn15outtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn9.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn9.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn9bit.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn9bit.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn9bits.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn9bits.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn9buf.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn9buf.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn9byte.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn9byte.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn9table.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn9table.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\rev8.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\rev8.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\sgnlim16.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\sgnlim16.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\sgnlim32.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\sgnlim32.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\signext12.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\signext12.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\signext16.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\signext16.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\signext20.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\signext20.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\signext24.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\signext24.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\wt0.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\wt0.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\wt01.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\wt01.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\wtimer.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\wtimer.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\wtimer.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\wtimer.h</name>
         </file>
       </group>
       <group>
         <name>misc</name>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\time.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\misc\XTEA.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\time.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\misc\XTEA.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\XTEA.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\misc\zcode.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\XTEA.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\misc\zcode.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\zcode.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\misc\zcode_e.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\zcode.h</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\zcode_e.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\zcode_e.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\misc\zcode_e.h</name>
         </file>
       </group>
       <group>
         <name>nbfi</name>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_config.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_config.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_config.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_config.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_defines.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_defines.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_misc.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_misc.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_misc.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_misc.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_phy.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_phy.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_phy.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_phy.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\rf.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\rf.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\rf.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\rf.h</name>
         </file>
       </group>
     </group>
@@ -2671,6 +2665,12 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rcc_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc_ex.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_spi.c</name>

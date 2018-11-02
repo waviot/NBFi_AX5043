@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="iso-8859-1"?>
+
 <project>
   <fileVersion>2</fileVersion>
   <configuration>
@@ -225,19 +226,19 @@
         </option>
         <option>
           <name>CCDiagSuppress</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>CCDiagRemark</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>CCDiagWarning</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>CCDiagError</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>CCObjPrefix</name>
@@ -266,7 +267,7 @@
         </option>
         <option>
           <name>IExtraOptions</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>CCLangConformance</name>
@@ -464,15 +465,15 @@
         </option>
         <option>
           <name>AWarnOne</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>AWarnRange1</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>AWarnRange2</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>ADebug</name>
@@ -484,7 +485,7 @@
         </option>
         <option>
           <name>ADefines</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>AList</name>
@@ -580,7 +581,7 @@
         </option>
         <option>
           <name>AUserIncludes</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>AExtraOptionsCheckV2</name>
@@ -588,7 +589,7 @@
         </option>
         <option>
           <name>AExtraOptionsV2</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>AsmNoLiteralPool</name>
@@ -630,22 +631,22 @@
       <name>CUSTOM</name>
       <archiveVersion>3</archiveVersion>
       <data>
-        <extensions />
-        <cmdline />
+        <extensions></extensions>
+        <cmdline></cmdline>
         <hasPrio>0</hasPrio>
       </data>
     </settings>
     <settings>
       <name>BICOMP</name>
       <archiveVersion>0</archiveVersion>
-      <data />
+      <data/>
     </settings>
     <settings>
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild />
-        <postbuild />
+        <prebuild></prebuild>
+        <postbuild></postbuild>
       </data>
     </settings>
     <settings>
@@ -677,31 +678,31 @@
         </option>
         <option>
           <name>IlinkKeepSymbols</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkRawBinaryFile</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkRawBinarySymbol</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkRawBinarySegment</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkRawBinaryAlign</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkDefines</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkConfigDefines</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkMapFile</name>
@@ -737,7 +738,7 @@
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkEnableRemarks</name>
@@ -745,19 +746,19 @@
         </option>
         <option>
           <name>IlinkSuppressDiags</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkTreatAsRem</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkTreatAsWarn</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkTreatAsErr</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkWarningsAreErrors</name>
@@ -769,7 +770,7 @@
         </option>
         <option>
           <name>IlinkExtraOptions</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkLowLevelInterfaceSlave</name>
@@ -781,7 +782,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -916,11 +917,11 @@
         </option>
         <option>
           <name>IlinkStackControlFile</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkStackCallGraphFile</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>CrcAlgorithm</name>
@@ -942,7 +943,7 @@
         </option>
         <option>
           <name>IlinkIcfFile_AltDefault</name>
-          <state />
+          <state></state>
         </option>
       </data>
     </settings>
@@ -955,7 +956,7 @@
         <debug>1</debug>
         <option>
           <name>IarchiveInputs</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IarchiveOverride</name>
@@ -970,7 +971,7 @@
     <settings>
       <name>BILINK</name>
       <archiveVersion>0</archiveVersion>
-      <data />
+      <data/>
     </settings>
   </configuration>
   <configuration>
@@ -1197,19 +1198,19 @@
         </option>
         <option>
           <name>CCDiagSuppress</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>CCDiagRemark</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>CCDiagWarning</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>CCDiagError</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>CCObjPrefix</name>
@@ -1238,7 +1239,7 @@
         </option>
         <option>
           <name>IExtraOptions</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>CCLangConformance</name>
@@ -1436,15 +1437,15 @@
         </option>
         <option>
           <name>AWarnOne</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>AWarnRange1</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>AWarnRange2</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>ADebug</name>
@@ -1456,7 +1457,7 @@
         </option>
         <option>
           <name>ADefines</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>AList</name>
@@ -1552,7 +1553,7 @@
         </option>
         <option>
           <name>AUserIncludes</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>AExtraOptionsCheckV2</name>
@@ -1560,7 +1561,7 @@
         </option>
         <option>
           <name>AExtraOptionsV2</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>AsmNoLiteralPool</name>
@@ -1602,22 +1603,22 @@
       <name>CUSTOM</name>
       <archiveVersion>3</archiveVersion>
       <data>
-        <extensions />
-        <cmdline />
+        <extensions></extensions>
+        <cmdline></cmdline>
         <hasPrio>0</hasPrio>
       </data>
     </settings>
     <settings>
       <name>BICOMP</name>
       <archiveVersion>0</archiveVersion>
-      <data />
+      <data/>
     </settings>
     <settings>
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild />
-        <postbuild />
+        <prebuild></prebuild>
+        <postbuild></postbuild>
       </data>
     </settings>
     <settings>
@@ -1649,31 +1650,31 @@
         </option>
         <option>
           <name>IlinkKeepSymbols</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkRawBinaryFile</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkRawBinarySymbol</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkRawBinarySegment</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkRawBinaryAlign</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkDefines</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkConfigDefines</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkMapFile</name>
@@ -1709,7 +1710,7 @@
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkEnableRemarks</name>
@@ -1717,19 +1718,19 @@
         </option>
         <option>
           <name>IlinkSuppressDiags</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkTreatAsRem</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkTreatAsWarn</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkTreatAsErr</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkWarningsAreErrors</name>
@@ -1741,7 +1742,7 @@
         </option>
         <option>
           <name>IlinkExtraOptions</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkLowLevelInterfaceSlave</name>
@@ -1753,7 +1754,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -1888,11 +1889,11 @@
         </option>
         <option>
           <name>IlinkStackControlFile</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IlinkStackCallGraphFile</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>CrcAlgorithm</name>
@@ -1914,7 +1915,7 @@
         </option>
         <option>
           <name>IlinkIcfFile_AltDefault</name>
-          <state />
+          <state></state>
         </option>
       </data>
     </settings>
@@ -1927,7 +1928,7 @@
         <debug>1</debug>
         <option>
           <name>IarchiveInputs</name>
-          <state />
+          <state></state>
         </option>
         <option>
           <name>IarchiveOverride</name>
@@ -1942,7 +1943,7 @@
     <settings>
       <name>BILINK</name>
       <archiveVersion>0</archiveVersion>
-      <data />
+      <data/>
     </settings>
   </configuration>
   <group>
@@ -1958,256 +1959,250 @@
       <group>
         <name>axradio</name>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\axradio\ax5043.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\axradio\ax5043.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\axradio\ax5043.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\axradio\ax5043.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\axradio\axradio.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\axradio\axradio.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\axradio\config_united.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\axradio\config_united.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\axradio\easyax5043.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\axradio\easyax5043.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\axradio\easyax5043.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\axradio\easyax5043.h</name>
         </file>
       </group>
       <group>
         <name>libmf</name>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\chksgnlim16.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\chksgnlim16.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\chksgnlim32.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\chksgnlim32.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16b.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16b.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16dnpmsbtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16dnpmsbtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16dnptable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16dnptable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16msb.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16msb.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16msbtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16msbtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc16table.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc16table.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc32.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc32.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc32b.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc32b.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc32msb.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc32msb.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc32msbtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc32msbtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc32table.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc32table.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8b.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8b.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8ccitt.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8ccitt.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8ccittmsbtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8ccittmsbtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8ccitttable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8ccitttable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8msb.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8msb.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8onewire.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8onewire.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8onewiremsbtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8onewiremsbtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crc8onewiretable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crc8onewiretable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crcccittmsbtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crcccittmsbtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\crcccitttable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\crcccitttable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\fmemcpy.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\fmemcpy.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\fmemset.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\fmemset.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\graydec8.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\graydec8.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\grayenc8.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\grayenc8.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\hweight16.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\hweight16.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\hweight32.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\hweight32.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\hweight8.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\hweight8.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\libmfcrc.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\libmfcrc.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\libmftypes.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\libmftypes.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\libmfwtimer.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\libmfwtimer.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn15adv.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn15adv.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn15advtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn15advtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn15out.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn15out.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn15outtable.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn15outtable.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn9.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn9.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn9bit.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn9bit.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn9bits.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn9bits.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn9buf.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn9buf.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn9byte.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn9byte.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\pn9table.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\pn9table.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\rev8.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\rev8.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\sgnlim16.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\sgnlim16.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\sgnlim32.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\sgnlim32.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\signext12.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\signext12.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\signext16.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\signext16.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\signext20.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\signext20.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\signext24.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\signext24.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\wt0.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\wt0.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\wt01.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\wt01.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\wtimer.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\wtimer.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\libmf\wtimer.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\libmf\wtimer.h</name>
         </file>
       </group>
       <group>
         <name>misc</name>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\time.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\misc\XTEA.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\time.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\misc\XTEA.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\XTEA.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\misc\zcode.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\XTEA.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\misc\zcode.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\zcode.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\misc\zcode_e.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\zcode.h</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\zcode_e.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\NBFiLib\misc\zcode_e.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\misc\zcode_e.h</name>
         </file>
       </group>
       <group>
         <name>nbfi</name>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_config.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_config.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_config.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_config.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_defines.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_defines.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_misc.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_misc.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_misc.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_misc.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_phy.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_phy.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\nbfi_phy.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\nbfi_phy.h</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\rf.c</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\rf.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\NBFiLib\nbfi\rf.h</name>
+          <name>$PROJ_DIR$\..\..\NBFiLib\nbfi\rf.h</name>
         </file>
       </group>
     </group>
@@ -2249,15 +2244,6 @@
       <file>
         <name>$PROJ_DIR$\..\Src\waviotdvk.c</name>
       </file>
-      <file>
-        <name>$PROJ_DIR$/../Src/main.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Src/stm32l0xx_it.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Src/stm32l0xx_hal_msp.c</name>
-      </file>
     </group>
   </group>
   <group>
@@ -2266,9 +2252,6 @@
       <name>CMSIS</name>
       <file>
         <name>$PROJ_DIR$\..\Src\system_stm32l0xx.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/..//Src/system_stm32l0xx.c</name>
       </file>
     </group>
     <group>
@@ -2316,6 +2299,12 @@
         <name>$PROJ_DIR$\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rcc_ex.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc_ex.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_spi.c</name>
       </file>
       <file>
@@ -2324,64 +2313,8 @@
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_tim_ex.c</name>
       </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_lptim.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_rtc.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_rtc_ex.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_spi.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_tim.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_tim_ex.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_i2c.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_i2c_ex.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_rcc.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_rcc_ex.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ramfunc.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_flash_ex.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_gpio.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_dma.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_pwr.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_pwr_ex.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Src/stm32l0xx_hal_cortex.c</name>
-      </file>
     </group>
   </group>
 </project>
+
 
