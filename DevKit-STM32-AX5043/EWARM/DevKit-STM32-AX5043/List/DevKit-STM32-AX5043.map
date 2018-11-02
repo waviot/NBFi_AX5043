@@ -1,0 +1,306 @@
+###############################################################################
+#
+# IAR ELF Linker V7.80.4.12462/W32 for ARM                21/Sep/2018  14:53:46
+# Copyright 2007-2017 IAR Systems AB.
+#
+#    Output file  =  
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Exe\DevKit-STM32-AX5043.out
+#    Map file     =  
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\List\DevKit-STM32-AX5043.map
+#    Command line =  
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\font.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\GUI_DRV.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\LCD_DRIVER.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\main.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\startup_stm32l071xx.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_cortex.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_dma.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_flash.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_flash_ex.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_flash_ramfunc.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_gpio.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_i2c.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_i2c_ex.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_msp.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_pwr.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_pwr_ex.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_rcc.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_rcc_ex.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_tim.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_hal_tim_ex.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\stm32l0xx_it.o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj\system_stm32l0xx.o
+#        --redirect _Printf=_PrintfFull --redirect _Scanf=_ScanfFull -o
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Exe\DevKit-STM32-AX5043.out
+#        --map
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\List\DevKit-STM32-AX5043.map
+#        --config
+#        C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM/stm32l071xx_flash.icf
+#        --semihosting --entry __iar_program_start --vfe
+#
+###############################################################################
+
+*******************************************************************************
+*** RUNTIME MODEL ATTRIBUTES
+***
+
+CppFlavor       = *
+__SystemLibrary = DLib
+
+
+*******************************************************************************
+*** PLACEMENT SUMMARY
+***
+
+"A0":  place at 0x08000000 { ro section .intvec };
+"P1":  place in [from 0x08000000 to 0x0802ffff] { ro };
+"P2":  place in [from 0x20000000 to 0x20004fff] { rw, block CSTACK, block HEAP };
+initialize by copy { rw };
+
+  Section            Kind        Address    Size  Object
+  -------            ----        -------    ----  ------
+"A0":                                       0xc0
+  .intvec            ro code  0x08000000    0xc0  startup_stm32l071xx.o [1]
+                            - 0x080000c0    0xc0
+
+"P1":                                     0x2ab8
+  .rodata            const    0x080000c0  0x176c  font.o [1]
+  .text              ro code  0x0800182c   0x658  stm32l0xx_hal_rcc.o [1]
+  .text              ro code  0x08001e84     0xc  stm32l0xx_hal.o [1]
+  .text              ro code  0x08001e90    0x28  stm32l0xx_hal.o [1]
+  .text              ro code  0x08001eb8    0xae  I32DivModFast.o [4]
+  .text              ro code  0x08001f66     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08001f68    0x92  stm32l0xx_hal_cortex.o [1]
+  .text              ro code  0x08001ffa     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08001ffc     0x2  IntDivZer.o [4]
+  .text              ro code  0x08001ffe     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002000   0x428  main.o [1]
+  .text              ro code  0x08002428    0x20  stm32l0xx_hal.o [1]
+  .text              ro code  0x08002448   0x1bc  stm32l0xx_hal_gpio.o [1]
+  .text              ro code  0x08002604    0x24  LCD_DRIVER.o [1]
+  .text              ro code  0x08002628   0x342  GUI_DRV.o [1]
+  .text              ro code  0x0800296a    0x18  stm32l0xx_hal.o [1]
+  .text              ro code  0x08002982     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002984    0x40  stm32l0xx_hal_msp.o [1]
+  .text              ro code  0x080029c4    0x10  strlen.o [4]
+  .text              ro code  0x080029d4    0x74  system_stm32l0xx.o [1]
+  .text              ro code  0x08002a48    0x30  copy_init3.o [4]
+  .text              ro code  0x08002a78    0x28  data_init.o [4]
+  .iar.init_table    const    0x08002aa0    0x14  - Linker created -
+  .text              ro code  0x08002ab4    0x1a  cmain.o [4]
+  .text              ro code  0x08002ace     0x4  low_level_init.o [3]
+  .text              ro code  0x08002ad2     0x8  exit.o [3]
+  .text              ro code  0x08002ada     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002adc     0xa  cexit.o [4]
+  .text              ro code  0x08002ae6     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002ae8    0x14  exit.o [5]
+  .text              ro code  0x08002afc    0x14  stm32l0xx_it.o [1]
+  .text              ro code  0x08002b10    0x10  stm32l0xx_hal.o [1]
+  .text              ro code  0x08002b20    0x10  startup_stm32l071xx.o [1]
+  Initializer bytes  const    0x08002b30    0x10  <for P2-1>
+  .text              ro code  0x08002b40     0xc  cstartup_M.o [4]
+  .text              ro code  0x08002b4c     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b4e     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b50     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b52     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b54     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b56     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b58     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b5a     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b5c     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b5e     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b60     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b62     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b64     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b66     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b68     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b6a     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b6c     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b6e     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b70     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b72     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b74     0x2  startup_stm32l071xx.o [1]
+  .text              ro code  0x08002b76     0x2  startup_stm32l071xx.o [1]
+  .rodata            const    0x08002b78     0x0  copy_init3.o [4]
+                            - 0x08002b78  0x2ab8
+
+"P2", part 1 of 2:                          0x10
+  P2-1                        0x20000000     0xd  <Init block>
+    .data            inited   0x20000000     0x4  GUI_DRV.o [1]
+    .data            inited   0x20000004     0x4  system_stm32l0xx.o [1]
+    .bss             inited   0x20000008     0x4  stm32l0xx_hal.o [1]
+    .bss             inited   0x2000000c     0x1  GUI_DRV.o [1]
+                            - 0x2000000d     0xd
+
+"P2", part 2 of 2:                         0x400
+  CSTACK                      0x20000010   0x400  <Block>
+    CSTACK           uninit   0x20000010   0x400  <Block tail>
+                            - 0x20000410   0x400
+
+
+*******************************************************************************
+*** INIT TABLE
+***
+
+          Address     Size
+          -------     ----
+Copy (__iar_copy_init3)
+    1 source range, total size 0x10 (123% of destination):
+          0x08002b30  0x10
+    1 destination range, total size 0xd:
+          0x20000000   0xd
+
+
+
+*******************************************************************************
+*** MODULE SUMMARY
+***
+
+    Module                  ro code  ro data  rw data
+    ------                  -------  -------  -------
+C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj: [1]
+    GUI_DRV.o                   834        5        5
+    LCD_DRIVER.o                 36
+    font.o                             5 996
+    main.o                    1 064
+    startup_stm32l071xx.o       264
+    stm32l0xx_hal.o             124        4        4
+    stm32l0xx_hal_cortex.o      146
+    stm32l0xx_hal_gpio.o        444
+    stm32l0xx_hal_msp.o          64
+    stm32l0xx_hal_rcc.o       1 624
+    stm32l0xx_it.o               20
+    system_stm32l0xx.o          116        4        4
+    -------------------------------------------------
+    Total:                    4 736    6 009       13
+
+command line: [2]
+    -------------------------------------------------
+    Total:
+
+dl6M_tlf.a: [3]
+    exit.o                        8
+    low_level_init.o              4
+    -------------------------------------------------
+    Total:                       12
+
+rt6M_tl.a: [4]
+    I32DivModFast.o             174
+    IntDivZer.o                   2
+    cexit.o                      10
+    cmain.o                      26
+    copy_init3.o                 48
+    cstartup_M.o                 12
+    data_init.o                  40
+    strlen.o                     16
+    -------------------------------------------------
+    Total:                      328
+
+shb_l.a: [5]
+    exit.o                       20
+    -------------------------------------------------
+    Total:                       20
+
+    Linker created                        23    1 024
+-----------------------------------------------------
+    Grand Total:              5 096    6 032    1 037
+
+
+*******************************************************************************
+*** ENTRY LIST
+***
+
+Entry                      Address    Size  Type      Object
+-----                      -------    ----  ----      ------
+.iar.init_table$$Base   0x08002aa0           --   Gb  - Linker created -
+.iar.init_table$$Limit  0x08002ab4           --   Gb  - Linker created -
+?main                   0x08002ab5          Code  Gb  cmain.o [4]
+AHBPrescTable           0x08002a2c    0x10  Data  Gb  system_stm32l0xx.o [1]
+CSTACK$$Base            0x20000010           --   Gb  - Linker created -
+CSTACK$$Limit           0x20000410           --   Gb  - Linker created -
+HAL_Delay               0x0800296b    0x18  Code  Wk  stm32l0xx_hal.o [1]
+HAL_GPIO_Init           0x08002449   0x190  Code  Gb  stm32l0xx_hal_gpio.o [1]
+HAL_GPIO_WritePin       0x080025dd     0xc  Code  Gb  stm32l0xx_hal_gpio.o [1]
+HAL_GetTick             0x08001e85     0xc  Code  Wk  stm32l0xx_hal.o [1]
+HAL_IncTick             0x08002b11    0x10  Code  Wk  stm32l0xx_hal.o [1]
+HAL_Init                0x08002429    0x1a  Code  Gb  stm32l0xx_hal.o [1]
+HAL_InitTick            0x08001e91    0x28  Code  Wk  stm32l0xx_hal.o [1]
+HAL_MspInit             0x08002985    0x40  Code  Gb  stm32l0xx_hal_msp.o [1]
+HAL_NVIC_SetPriority    0x08001f9d     0x8  Code  Gb  stm32l0xx_hal_cortex.o [1]
+HAL_RCC_ClockConfig     0x08001c0d   0x15e  Code  Gb  stm32l0xx_hal_rcc.o [1]
+HAL_RCC_GetHCLKFreq     0x08001de9     0x6  Code  Gb  stm32l0xx_hal_rcc.o [1]
+HAL_RCC_GetSysClockFreq
+                        0x08001d7d    0x6c  Code  Gb  stm32l0xx_hal_rcc.o [1]
+HAL_RCC_OscConfig       0x0800182d   0x3ca  Code  Gb  stm32l0xx_hal_rcc.o [1]
+HAL_SYSTICK_CLKSourceConfig
+                        0x08001fcd    0x18  Code  Gb  stm32l0xx_hal_cortex.o [1]
+HAL_SYSTICK_Callback    0x08001ff9     0x2  Code  Wk  stm32l0xx_hal_cortex.o [1]
+HAL_SYSTICK_Config      0x08001fa5    0x28  Code  Gb  stm32l0xx_hal_cortex.o [1]
+HAL_SYSTICK_IRQHandler  0x08001fe5     0x8  Code  Gb  stm32l0xx_hal_cortex.o [1]
+HardFault_Handler       0x08002aff     0x2  Code  Gb  stm32l0xx_it.o [1]
+LCD_DrawChar            0x0800267b    0xac  Code  Gb  GUI_DRV.o [1]
+LCD_DrawEllipse         0x080028d1    0x9a  Code  Gb  GUI_DRV.o [1]
+LCD_DrawRect            0x08002857    0x5e  Code  Gb  GUI_DRV.o [1]
+LCD_DrawString          0x08002731    0x3c  Code  Gb  GUI_DRV.o [1]
+LCD_FillScr             0x080028b5    0x1c  Code  Gb  GUI_DRV.o [1]
+LCD_PutPixel            0x08002629    0x4c  Code  Gb  GUI_DRV.o [1]
+LCD_SetOrient           0x08002675     0x6  Code  Gb  GUI_DRV.o [1]
+LCD_drawLine            0x0800276d    0xea  Code  Gb  GUI_DRV.o [1]
+MX_GPIO_Init            0x08002117   0x10e  Code  Lc  main.o [1]
+NMI_Handler             0x08002afd     0x2  Code  Gb  stm32l0xx_it.o [1]
+NVIC_SetPriority        0x08001f69    0x34  Code  Lc  stm32l0xx_hal_cortex.o [1]
+PLLMulTable             0x08002a3c     0xc  Data  Gb  system_stm32l0xx.o [1]
+PendSV_Handler          0x08002b03     0x2  Code  Gb  stm32l0xx_it.o [1]
+RCC_SetFlashLatencyFromMSIRange
+                        0x08001e01    0x5e  Code  Lc  stm32l0xx_hal_rcc.o [1]
+Region$$Table$$Base     0x08002aa0           --   Gb  - Linker created -
+Region$$Table$$Limit    0x08002ab4           --   Gb  - Linker created -
+SVC_Handler             0x08002b01     0x2  Code  Gb  stm32l0xx_it.o [1]
+SysTick_Handler         0x08002b05     0xc  Code  Gb  stm32l0xx_it.o [1]
+SystemClock_Config      0x080020a5    0x72  Code  Gb  main.o [1]
+SystemCoreClock         0x20000004     0x4  Data  Gb  system_stm32l0xx.o [1]
+SystemInit              0x080029d5    0x40  Code  Gb  system_stm32l0xx.o [1]
+__aeabi_idiv0           0x08001ffd          Code  Gb  IntDivZer.o [4]
+__aeabi_uidiv           0x08001eb9          Code  Gb  I32DivModFast.o [4]
+__aeabi_uidivmod        0x08001eb9          Code  Gb  I32DivModFast.o [4]
+__cmain                 0x08002ab5          Code  Gb  cmain.o [4]
+__exit                  0x08002ae9    0x14  Code  Gb  exit.o [5]
+__iar_copy_init3        0x08002a49    0x30  Code  Gb  copy_init3.o [4]
+__iar_data_init3        0x08002a79    0x28  Code  Gb  data_init.o [4]
+__iar_program_start     0x08002b41          Code  Gb  cstartup_M.o [4]
+__low_level_init        0x08002acf     0x4  Code  Gb  low_level_init.o [3]
+__vector_table          0x08000000          Data  Gb  startup_stm32l071xx.o [1]
+_call_main              0x08002ac1          Code  Gb  cmain.o [4]
+_exit                   0x08002add          Code  Gb  cexit.o [4]
+_main                   0x08002acb          Code  Gb  cmain.o [4]
+delay                   0x08002605     0xc  Code  Gb  LCD_DRIVER.o [1]
+exit                    0x08002ad3     0x8  Code  Gb  exit.o [3]
+font                    0x20000000     0x4  Data  Gb  GUI_DRV.o [1]
+initLCD                 0x08002235   0x1aa  Code  Gb  main.o [1]
+lucidaConsole12ptBitmaps
+                        0x080000c0  0x13e0  Data  Gb  font.o [1]
+lucidaConsole12ptDescriptors
+                        0x080014a0   0x380  Data  Gb  font.o [1]
+lucidaConsole12ptFontInfo
+                        0x08001820     0xc  Data  Gb  font.o [1]
+main                    0x08002001    0x8a  Code  Gb  main.o [1]
+orient                  0x2000000c     0x1  Data  Lc  GUI_DRV.o [1]
+strlen                  0x080029c5    0x10  Code  Gb  strlen.o [4]
+uwTick                  0x20000008     0x4  Data  Gb  stm32l0xx_hal.o [1]
+writeLCDCommand         0x08002611     0xc  Code  Gb  LCD_DRIVER.o [1]
+writeLCDData            0x0800261d     0x6  Code  Gb  LCD_DRIVER.o [1]
+
+
+[1] = C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043\EWARM\DevKit-STM32-AX5043\Obj
+[2] = command line
+[3] = dl6M_tlf.a
+[4] = rt6M_tl.a
+[5] = shb_l.a
+
+  5 096 bytes of readonly  code memory
+  6 032 bytes of readonly  data memory
+  1 037 bytes of readwrite data memory
+
+Errors: none
+Warnings: none

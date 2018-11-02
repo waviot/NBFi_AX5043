@@ -1,0 +1,76 @@
+Configuration	DevKit-STM32-AX5043
+STM32CubeMX 	4.27.0
+Date	10/29/2018
+MCU	STM32L071CBTx
+
+
+
+PERIPHERALS	MODES	FUNCTIONS	PINS
+LPTIM1	Counts internal clock events	LPTIM1_VS_LPTIM_counterModeInternalClock	VP_LPTIM1_VS_LPTIM_counterModeInternalClock
+RCC	Crystal/Ceramic Resonator	RCC_OSC32_IN	PC14-OSC32_IN
+RCC	Crystal/Ceramic Resonator	RCC_OSC32_OUT	PC15-OSC32_OUT
+RTC	Activate RTC Clock Source	RTC_VS_RTC_Activate	VP_RTC_VS_RTC_Activate
+RTC	RTC Enabled	RTC_VS_RTC_Calendar	VP_RTC_VS_RTC_Calendar
+RTC	Internal Alarm A	RTC_VS_RTC_Alarm_A_Intern	VP_RTC_VS_RTC_Alarm_A_Intern
+SPI1	Full-Duplex Master	SPI1_MISO	PA6
+SPI1	Full-Duplex Master	SPI1_MOSI	PA7
+SPI1	Full-Duplex Master	SPI1_SCK	PA5
+SPI1	Hardware NSS Output Signal	SPI1_NSS	PA15
+SYS	Serial_Wire	SYS_SWCLK	PA14
+SYS	Serial_Wire	SYS_SWDIO	PA13
+SYS	SysTick	SYS_VS_Systick	VP_SYS_VS_Systick
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+2	PC13	GPIO_Input	SB2
+3	PC14-OSC32_IN	RCC_OSC32_IN	
+4	PC15-OSC32_OUT	RCC_OSC32_OUT	
+5	PH0-OSC_IN	GPIO_Output	POWERLED
+6	PH1-OSC_OUT	GPIO_Output	LCD_PWR
+10	PA0	GPIO_Output	BACKLIGHT
+12	PA2*	LPUART1_TX	
+13	PA3*	LPUART1_RX	
+14	PA4	GPIO_Input	SB1
+15	PA5	SPI1_SCK	AX_SPI_SCK
+16	PA6	SPI1_MISO	AX_SPI_MISO
+17	PA7	SPI1_MOSI	AX_SPI_MOSI
+18	PB0	GPIO_EXTI0	AX_IRQ
+19	PB1	GPIO_Output	AX_SPI_CS
+20	PB2	GPIO_Output	LCD_A0
+34	PA13	SYS_SWDIO	
+37	PA14	SYS_SWCLK	
+38	PA15	SPI1_NSS	
+39	PB3	GPIO_Output	LCD_MOSI
+40	PB4	GPIO_Output	LCD_CS
+41	PB5	GPIO_Output	LCD_SCK
+42	PB6	GPIO_Output	LCD_RESET
+43	PB7	GPIO_Input	SB3
+45	PB8	GPIO_Input	SB4
+
+
+
+SOFTWARE PROJECT
+
+Project Settings : 
+Project Name : DevKit-STM32-AX5043
+Project Folder : C:\Users\Sergey\Documents\IAR\DevKit-STM32-AX5043
+Toolchain / IDE : EWARM V7
+Firmware Package Name and Version : STM32Cube FW_L0 V1.10.0
+
+
+Code Generation Settings : 
+STM32Cube Firmware Library Package : Copy all used libraries into the project folder
+Generate peripheral initialization as a pair of '.c/.h' files per peripheral : No
+Backup previously generated files when re-generating : No
+Delete previously generated files when not re-generated : Yes
+Set all free pins as analog (to optimize the power consumption) : No
+
+
+Toolchains Settings : 
+Compiler Optimizations : 
+
+
+
+
+
