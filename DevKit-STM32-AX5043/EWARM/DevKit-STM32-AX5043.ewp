@@ -320,10 +320,10 @@
           <state>$PROJ_DIR$/../Drivers/STM32L0xx_HAL_Driver/Inc/Legacy</state>
           <state>$PROJ_DIR$/../Drivers/CMSIS/Device/ST/STM32L0xx/Include</state>
           <state>$PROJ_DIR$/../Drivers/CMSIS/Include</state>
-          <state>C:\Users\Sergey\Documents\IAR\NBFiLib\axradio</state>
-          <state>C:\Users\Sergey\Documents\IAR\NBFiLib\libmf</state>
-          <state>C:\Users\Sergey\Documents\IAR\NBFiLib\misc</state>
-          <state>C:\Users\Sergey\Documents\IAR\NBFiLib\nbfi</state>
+          <state>C:\Users\Sergey\Documents\IAR\NBFi_AX5043\NBFiLib\axradio</state>
+          <state>C:\Users\Sergey\Documents\IAR\NBFi_AX5043\NBFiLib\libmf</state>
+          <state>C:\Users\Sergey\Documents\IAR\NBFi_AX5043\NBFiLib\misc</state>
+          <state>C:\Users\Sergey\Documents\IAR\NBFi_AX5043\NBFiLib\nbfi</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
