@@ -5,7 +5,7 @@
 //#include <libmfcrc.h>
 //#include <libmfadc.h>
                                                                                 //#include "misc.h"
-#include "nbfi_misc.h"                                                          //added by me
+//#include "nbfi_misc.h"                                                          //added by me
 
                                                                                 //#include "nbfi.h"
 #include "rf.h"                                                                 //added by me
@@ -20,7 +20,9 @@
 #include "fonts.h"
 
 extern nbfi_state_t nbfi_state;                                                 //added by me
+extern uint16_t NBFi_Phy_To_Bitrate(nbfi_phy_channel_t ch);                     //added by me
 
+int16_t noise;                                                                  //added by me
 uint8_t *last_rx_pkt;
 uint8_t last_rx_pkt_len;
 
@@ -670,7 +672,7 @@ void InfoHandler()
 }
 
 
-extern int16_t noise;
+                                                                                //extern int16_t noise;
 void NBFiQuality()
 {
   LCD_DrawString(0,(uint16_t)-6,"../Info/NBFi quality", COLOR_FILL, ALIGN_LEFT);

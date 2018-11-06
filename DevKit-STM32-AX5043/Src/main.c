@@ -79,9 +79,9 @@ static void MX_NVIC_Init(void);
 /* Private function prototypes -----------------------------------------------*/
 void send_data(struct wtimer_desc *desc) {
 
-//  if(!NBFi_Packets_To_Send())
-//    NBFi_Send("Hello everybody!", sizeof("Hello everybody!"));
-//  ScheduleTask(desc, 0, RELATIVE, SECONDS(120));
+  if(!NBFi_Packets_To_Send())
+    NBFi_Send("Hello everybody!", sizeof("Hello everybody!"));
+  ScheduleTask(desc, 0, RELATIVE, SECONDS(120));
 }
 
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
@@ -91,7 +91,7 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
 
 void HAL_SYSTICK_Callback(void)
 {
-//  if(!nbfi_lock) wtimer_runcallbacks();
+  //if(!nbfi_lock) wtimer_runcallbacks();
 }
 
 /* USER CODE END PFP */
@@ -145,7 +145,7 @@ int main(void)
   
   ////////////////////// AX5043 /////////////////////////
   ax5043_init();
-  //ScheduleTask(&test_desc, send_data, RELATIVE, SECONDS(1));
+  ScheduleTask(&test_desc, send_data, RELATIVE, SECONDS(1));
   
   //////////////////////// GUI //////////////////////////
   LCD_Init();
@@ -163,9 +163,6 @@ int main(void)
     {
       tic_1sec = false;
       wtimer_runcallbacks();
-      //NBFi_ProcessTasks(&test_desc);
-      //ScheduleTask(&test_desc, send_data, RELATIVE, SECONDS(1));
-      //ScheduleTask(&nbfi_processTask_desc, NBFi_ProcessTasks, RELATIVE, MILLISECONDS(5));
       GUI_Update();
     }
         

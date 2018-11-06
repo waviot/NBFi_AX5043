@@ -8,7 +8,7 @@
 #include "rf.h"
 #include "nbfi_config.h"
 #include "stm32l0xx_hal_conf.h"
-//#include "adc.h"
+                                                                                //#include "adc.h"
 
 #define MODEM_ID  *((const uint32_t*)0x0801ff80)  
 #define KEY  ((const uint32_t*)0x0801ff84)            
@@ -308,11 +308,12 @@ void nbfi_write_flash_settings(nbfi_settings_t* settings)
 }
 
 
-//uint32_t nbfi_measure_valtage_or_temperature(uint8_t val)
-//{
-//	ADC_get();
-//	return val ? ADC_vcc / 10 : ADC_temp;
-//}
+uint32_t nbfi_measure_valtage_or_temperature(uint8_t val)
+{
+                                                                                //ADC_get();
+                                                                                //return val ? ADC_vcc / 10 : ADC_temp;
+  return 0;                                                                     //added by me
+}
 
 uint32_t nbfi_update_rtc()
 {
@@ -382,7 +383,7 @@ void ax5043_init(void)
   NBFI_reg_func(NBFI_READ_FLASH_SETTINGS, (void*)nbfi_read_flash_settings);
   NBFI_reg_func(NBFI_WRITE_FLASH_SETTINGS, (void*)nbfi_write_flash_settings);
   NBFI_reg_func(NBFI_READ_DEFAULT_SETTINGS, (void*)nbfi_read_default_settings);
-  //NBFI_reg_func(NBFI_MEASURE_VOLTAGE_OR_TEMPERATURE, (void*)nbfi_measure_valtage_or_temperature);
+  NBFI_reg_func(NBFI_MEASURE_VOLTAGE_OR_TEMPERATURE, (void*)nbfi_measure_valtage_or_temperature);
   
   //register callbacks when external RTC used
   //NBFI_reg_func(NBFI_UPDATE_RTC, (void*)nbfi_update_rtc);

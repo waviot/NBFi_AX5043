@@ -102,7 +102,7 @@ void ST7565_WriteBuffer (void)
     for (uint8_t c=0; c <LCDWIDTH; c++)
     {
       ST7565_WriteData (lcd_buffer[(LCDWIDTH*p)+c]);
-      //wtimer_runcallbacks();
+      wtimer_runcallbacks();
     }
   }
 }

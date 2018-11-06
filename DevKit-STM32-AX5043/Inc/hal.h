@@ -193,7 +193,7 @@
 #ifdef LOWFREQ_QUARZ
 #define SECONDS(x) ((uint32_t)(x) * 8192)
 #elif defined LOWFREQ_RC
-#define SECONDS(x) ((uint32_t)(x) * 640)
+                                                                                //#define SECONDS(x) ((uint32_t)(x) * 640)
 #endif // LOWFREQ_QUARZ
 #define MILLISECONDS(x) (SECONDS(x) / 1000)
 
@@ -205,7 +205,7 @@
 #define RemoveEvent(x)  wtimer0_remove(x)
 
 void ScheduleTask(struct wtimer_desc *desc, wtimer_desc_handler_t handler, uint8_t relative, uint32_t time);
-bool CheckTask(struct wtimer_desc *desc);
+//bool CheckTask(struct wtimer_desc *desc);
 void UART_Init();
 void UART_Deinit();
 
