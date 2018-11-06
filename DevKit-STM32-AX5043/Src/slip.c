@@ -1,20 +1,24 @@
-                                                                                //#include "stm32l0xx_hal.h"//#include <ax8052f143.h>
+//#include "stm32l0xx_hal.h"                                                      //added by me
+                                                                                //#include <ax8052f143.h>
                                                                                 //#include <libmftypes.h>
                                                                                 //#include <libmfradio.h>
                                                                                 //#include <libmfflash.h>
                                                                                 //#include <libmfwtimer.h>
                                                                                 //#include <libmfcrc.h>
-#include "nbfi_misc.h"                                                          //#include "misc.h"
+                                                                                //#include "misc.h"
+#include "nbfi_misc.h"                                                          //added by me
 #include "hal.h"
 #include "easyax5043.h"
-                                                                                //#include "nbfi.h"
+#include "nbfi.h"
 #include "nbfi_config.h"
-                                                                                //#include "application.h"
+#include "wtimer.h"                                                             //added by me
 #include "slip.h"
                                                                                 //#include <stdlib.h>
 #include "rf.h"
 #include "nbfi_phy.h"                                                           //added by me
 #include <string.h>                                                             //added by me
+
+#define memcpy_xdata memcpy                                                     //added by me
 
 typedef struct
 {
@@ -23,6 +27,13 @@ typedef struct
     uint8_t payload[270];
     uint16_t len;
 }slip_buf_t;
+
+extern _Bool nbfi_settings_changed;                                             //added by me
+extern nbfi_state_t nbfi_state;                                                 //added by me
+extern void NBFi_Force_process();                                               //added by me
+extern void NBFi_Config_Send_Current_Mode(struct wtimer_desc *desc);            //added by me
+extern struct wtimer_desc nbfi_send_mode_delay;                                 //added by me
+
 
 __no_init uint8_t message @ (0xFF);
 

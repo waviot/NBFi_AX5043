@@ -247,7 +247,7 @@
         <option>
           <name>CCAllowList</name>
           <version>1</version>
-          <state>11111110</state>
+          <state>00000000</state>
         </option>
         <option>
           <name>CCDebugInfo</name>
@@ -343,7 +343,7 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>3</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
@@ -352,7 +352,7 @@
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>3</state>
+          <state>0</state>
         </option>
         <option>
           <name>CompilerMisraRules98</name>
@@ -1179,12 +1179,6 @@
       <group>
         <name>misc</name>
         <file>
-          <name>$PROJ_DIR$\..\..\NBFiLib\misc\time.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\..\NBFiLib\misc\time.h</name>
-        </file>
-        <file>
           <name>$PROJ_DIR$\..\..\NBFiLib\misc\XTEA.c</name>
         </file>
         <file>
@@ -1243,6 +1237,9 @@
     <group>
       <name>User</name>
       <file>
+        <name>$PROJ_DIR$\..\Src\application.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\Src\fonts.c</name>
       </file>
       <file>
@@ -1271,6 +1268,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Src\stm32l0xx_it.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Src\time.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Src\vsprintf.c</name>

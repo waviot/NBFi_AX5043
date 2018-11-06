@@ -1363,12 +1363,6 @@
       <group>
         <name>misc</name>
         <file>
-          <name>$PROJ_DIR$\..\..\NBFiLib\misc\time.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$\..\..\NBFiLib\misc\time.h</name>
-        </file>
-        <file>
           <name>$PROJ_DIR$\..\..\NBFiLib\misc\XTEA.c</name>
         </file>
         <file>
@@ -1427,6 +1421,9 @@
     <group>
       <name>User</name>
       <file>
+        <name>$PROJ_DIR$\..\Src\application.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\Src\fonts.c</name>
       </file>
       <file>
@@ -1455,6 +1452,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Src\stm32l0xx_it.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Src\time.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Src\vsprintf.c</name>

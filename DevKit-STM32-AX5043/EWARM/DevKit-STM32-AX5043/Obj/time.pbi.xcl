@@ -1,4 +1,4 @@
-"C:\Users\Sergey\Documents\IAR\NBFi_AX5043\NBFiLib\misc\time.c"
+"C:\Users\Sergey\Documents\IAR\NBFi_AX5043\DevKit-STM32-AX5043\Src\time.c"
 -std=c99
 -ferror-limit=100
 -include

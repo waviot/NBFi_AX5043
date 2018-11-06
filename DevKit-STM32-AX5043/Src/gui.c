@@ -1,15 +1,16 @@
-#include "stm32l0xx_hal.h"
-//#include <libmfradio.h>
+#include "stm32l0xx_hal.h"                                                      //added by me
+                                                                                //#include <libmfradio.h>
 //#include <libmfflash.h>
 #include <libmfwtimer.h>
 //#include <libmfcrc.h>
 //#include <libmfadc.h>
-#include "nbfi_misc.h"
+                                                                                //#include "misc.h"
+#include "nbfi_misc.h"                                                          //added by me
 
                                                                                 //#include "nbfi.h"
-#include "rf.h"
+#include "rf.h"                                                                 //added by me
 #include "nbfi_config.h"
-//#include "application.h"
+                                                                                //#include "application.h"
 #include "slip.h"
 #include "hal.h"
 #include "time.h"
@@ -17,6 +18,8 @@
 #include "gui.h"
 #include "glcd.h"
 #include "fonts.h"
+
+extern nbfi_state_t nbfi_state;                                                 //added by me
 
 uint8_t *last_rx_pkt;
 uint8_t last_rx_pkt_len;
