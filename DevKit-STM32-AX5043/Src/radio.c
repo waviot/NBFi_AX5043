@@ -267,17 +267,45 @@ uint8_t wtimer_check_cc_irq(uint8_t chan)
 void nbfi_before_tx(NBFi_ax5043_pins_s * pins)
 {
   pins->sysclk = 1; // TX Led ON
+  
+  if(nbfi.tx_antenna == PCB)                                                    //added by me {
+  {                                                                             
+    pins->data = 1;
+    pins->dclk = 0;
+  }
+  else
+  {
+    pins->data = 0;
+    pins->dclk = 1;
+  }
+  pins->cfga = PA_DIFFERENTIAL;
+//  if(nbfi.tx_phy_channel == UL_PSK_FASTDL) pins->cfga = PA_DIFFERENTIAL;
+//  else pins->cfga = PA_SINGLE_ENDED;                                            //added by me }
 }
 
 void nbfi_before_rx(NBFi_ax5043_pins_s * pins)
 {
   pins->sysclk = 0; // TX Led OFF
   
+  if(nbfi.rx_antenna == PCB)                                                    //added by me {
+  {
+    pins->data = 0;
+    pins->dclk = 1;
+  }
+  else
+  {
+    pins->data = 1;
+    pins->dclk = 0;    
+  }
+  pins->cfga = PA_DIFFERENTIAL;                                                 //added by me }
 }
 
 void nbfi_before_off(NBFi_ax5043_pins_s * pins)
 {
   pins->sysclk = 0; // TX Led OFF
+  pins->data = 0;                                                               //added by me {
+  pins->dclk = 0;
+  pins->antsel = 0;                                                             //added by me }
 }
 
 

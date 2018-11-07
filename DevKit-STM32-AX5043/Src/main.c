@@ -49,10 +49,13 @@
 #include "radio.h"
 #include "nbfi.h"
 #include "time.h"
+#include "slip.h"
     
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc;
+
 LPTIM_HandleTypeDef hlptim1;
 
 RTC_HandleTypeDef hrtc;
@@ -73,6 +76,7 @@ static void MX_GPIO_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_LPTIM1_Init(void);
 static void MX_RTC_Init(void);
+static void MX_ADC_Init(void);
 static void MX_NVIC_Init(void);
 
 /* USER CODE BEGIN PFP */
@@ -132,6 +136,7 @@ int main(void)
   MX_SPI1_Init();
   MX_LPTIM1_Init();
   MX_RTC_Init();
+  MX_ADC_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
@@ -152,6 +157,7 @@ int main(void)
   Backlight(true);
   GUI_Init();
   GUI_Update();
+  RTC_Init();
 
   
   while (1)
@@ -167,11 +173,12 @@ int main(void)
     }
         
     NBFi_ProcessRxPackets(1);
-//    if (axradio_cansleep()&& NBFi_can_sleep())
-//    {
-//      HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
-//    }
+    if (axradio_cansleep()&& NBFi_can_sleep())
+    {
+      HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+    }
   }
+  
   /* USER CODE END 3 */
 
 }
@@ -259,6 +266,47 @@ static void MX_NVIC_Init(void)
   /* LPTIM1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(LPTIM1_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(LPTIM1_IRQn);
+}
+
+/* ADC init function */
+static void MX_ADC_Init(void)
+{
+
+  ADC_ChannelConfTypeDef sConfig;
+
+    /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
+    */
+  hadc.Instance = ADC1;
+  hadc.Init.OversamplingMode = DISABLE;
+  hadc.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+  hadc.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc.Init.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  hadc.Init.ScanConvMode = ADC_SCAN_DIRECTION_FORWARD;
+  hadc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc.Init.ContinuousConvMode = DISABLE;
+  hadc.Init.DiscontinuousConvMode = DISABLE;
+  hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc.Init.DMAContinuousRequests = DISABLE;
+  hadc.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+  hadc.Init.LowPowerAutoWait = DISABLE;
+  hadc.Init.LowPowerFrequencyMode = DISABLE;
+  hadc.Init.LowPowerAutoPowerOff = DISABLE;
+  if (HAL_ADC_Init(&hadc) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure for the selected ADC regular channel to be converted. 
+    */
+  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Rank = ADC_RANK_CHANNEL_NUMBER;
+  if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
 }
 
 /* LPTIM1 init function */

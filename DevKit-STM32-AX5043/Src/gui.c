@@ -1,4 +1,4 @@
-#include "stm32l0xx_hal.h"                                                      //added by me
+//#include "stm32l0xx_hal.h"                                                      //added by me
                                                                                 //#include <libmfradio.h>
 //#include <libmfflash.h>
 #include <libmfwtimer.h>
@@ -191,6 +191,7 @@ void NBFiTxHandler()
   //static nbfi_packet_t __xdata* pkt;
   
   //static uint8_t __xdata dl_result = 0;
+  uint8_t packet[8] = {0,0,0,0,0,0,0,0};                                        //added by me
   
   static uint8_t test_pkt[8] = {0,0xDE,0xAD,0xBE,0xEF,0x12,0x34,0x56};
   static uint8_t test_pkt_long[] = "Do you like this weather? I saw a politician with his hands in his own pockets.\n";
@@ -248,6 +249,12 @@ void NBFiTxHandler()
     state_n = 0;
     current_handler = &TestsHandler;
   }
+  
+  if(GetButton4())                                                              //added by me {
+  {
+    packet[2] = nbfi.tx_pwr;
+    NBFi_Send(packet, 8);
+  }                                                                             //added by me }
 }
 
 void NBFiRxHandler()
@@ -733,13 +740,13 @@ void NBFiStats()
   }
 }
 
-extern RTC_HandleTypeDef hrtc;                                                  //added by me
+//extern RTC_HandleTypeDef hrtc;                                                  //added by me
 extern uint32_t buttons_v;
 extern uint32_t VDD;
 void DevInfoHandler()
 {
-  RTC_TimeTypeDef time;                                                         //added by me
-  RTC_DateTypeDef date;                                                         //added by me
+  //RTC_TimeTypeDef time;                                                         //added by me
+  //RTC_DateTypeDef date;                                                         //added by me
   
   LCD_DrawString(0,(uint16_t)-6,"../Info/Device info", COLOR_FILL, ALIGN_LEFT);
   
@@ -749,13 +756,14 @@ void DevInfoHandler()
   my_sprintf(textbuf, "%02X%02X%02X", nbfi.full_ID[1],nbfi.full_ID[2],nbfi.full_ID[3]);
   LCD_DrawString(127,5,textbuf, COLOR_FILL, ALIGN_RIGHT);
   
-                                                                                //time_t t = RTC_Time();
-                                                                                //struct tm *TM = localtime(&t);
-  HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);                                //added by me
-  HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);                                //added by me
+  time_t t = RTC_Time();
+  struct tm *TM = localtime(&t);
+  //HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);                                //added by me
+  //HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);                                //added by me
   
   LCD_DrawString(10,15,"Time:", COLOR_FILL, ALIGN_LEFT);
-  my_sprintf(textbuf, "%02d:%02d:%02d", time.Hours, time.Minutes, time.Seconds);//my_sprintf(textbuf, "%02d:%02d:%02d", TM->tm_hour, TM->tm_min, TM->tm_sec);
+  my_sprintf(textbuf, "%02d:%02d:%02d", TM->tm_hour, TM->tm_min, TM->tm_sec);
+  //my_sprintf(textbuf, "%02d:%02d:%02d", time.Hours, time.Minutes, time.Seconds);//added by me
   LCD_DrawString(127,15,textbuf, COLOR_FILL, ALIGN_RIGHT);
 
   
