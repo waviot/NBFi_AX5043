@@ -41,16 +41,16 @@
 #include "stm32l0xx_hal.h"
 
 /* USER CODE BEGIN Includes */
-#include "glcd.h"
-#include "gui.h"
-#include "waviotdvk.h"
-#include "string.h"
+
 #include "wtimer.h"
 #include "radio.h"
 #include "nbfi.h"
+#include "glcd.h"
+#include "gui.h"
+#include "waviotdvk.h"
 #include "time.h"
-#include "slip.h"
-    
+#include "adc.h"
+
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -58,49 +58,45 @@ ADC_HandleTypeDef hadc;
 
 LPTIM_HandleTypeDef hlptim1;
 
-RTC_HandleTypeDef hrtc;
-
 SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-struct wtimer_desc test_desc;
+
+struct wtimer_desc everysecond_desc;
 extern uint8_t nbfi_lock;
-bool tic_1sec = 0;
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_SPI1_Init(void);
 static void MX_LPTIM1_Init(void);
-static void MX_RTC_Init(void);
 static void MX_ADC_Init(void);
+static void MX_SPI1_Init(void);
 static void MX_NVIC_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-void send_data(struct wtimer_desc *desc) {
 
-  if(!NBFi_Packets_To_Send())
-    NBFi_Send("Hello everybody!", sizeof("Hello everybody!"));
-  ScheduleTask(desc, 0, RELATIVE, SECONDS(120));
-}
-
-void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
-{
-  tic_1sec = true;
-}
-
-void HAL_SYSTICK_Callback(void)
-{
-  //if(!nbfi_lock) wtimer_runcallbacks();
-}
+void EverySecond(struct wtimer_desc *desc);
 
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+
+void EverySecond(struct wtimer_desc *desc)
+{
+  ADC_get();
+    
+  GUI_Update();
+  ScheduleTask(desc, 0, RELATIVE, MILLISECONDS(1000));
+}
+
+void HAL_SYSTICK_Callback(void)
+{
+  if(!nbfi_lock) wtimer_runcallbacks();
+}
 
 /* USER CODE END 0 */
 
@@ -133,52 +129,48 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_SPI1_Init();
   MX_LPTIM1_Init();
-  MX_RTC_Init();
   MX_ADC_Init();
+  MX_SPI1_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
-   
+  
+  HAL_GPIO_WritePin(GPIOH, POWERLED_Pin|LCD_PWR_Pin, GPIO_PIN_SET);     //POWERLED_ON
+  
+  ax5043_init();        //AX5043 Init
+  
+  /* GUI Init */
+  LCD_Init();
+  Backlight(true);
+  GUI_Init();
+  RTC_Init();
+  ScheduleTask(&everysecond_desc, &EverySecond, RELATIVE, SECONDS(1));
+  
+  ADC_init();           //ADC Init
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  
-  
-  ////////////////////// AX5043 /////////////////////////
-  ax5043_init();
-  ScheduleTask(&test_desc, send_data, RELATIVE, SECONDS(1));
-  
-  //////////////////////// GUI //////////////////////////
-  LCD_Init();
-  Backlight(true);
-  GUI_Init();
-  GUI_Update();
-  RTC_Init();
-
-  
   while (1)
   {
-  /* USER CODE END WHILE */
-
-  /* USER CODE BEGIN 3 */
-    if(GetButtonStateChange() || tic_1sec)
+    if(GetButtonStateChange())
     {
-      tic_1sec = false;
-      wtimer_runcallbacks();
       GUI_Update();
     }
-        
     NBFi_ProcessRxPackets(1);
-    if (axradio_cansleep()&& NBFi_can_sleep())
+    if (axradio_cansleep()&& NBFi_can_sleep()) 
     {
       HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
     }
+    
+  /* USER CODE END WHILE */
+
+  /* USER CODE BEGIN 3 */
+
   }
-  
   /* USER CODE END 3 */
 
 }
@@ -233,8 +225,7 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_LPTIM1;
-  PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_LPTIM1;
   PeriphClkInit.LptimClockSelection = RCC_LPTIM1CLKSOURCE_LSE;
 
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
@@ -264,7 +255,7 @@ static void MX_NVIC_Init(void)
   HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
   /* LPTIM1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(LPTIM1_IRQn, 1, 0);
+  HAL_NVIC_SetPriority(LPTIM1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(LPTIM1_IRQn);
 }
 
@@ -307,6 +298,14 @@ static void MX_ADC_Init(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
+    /**Configure for the selected ADC regular channel to be converted. 
+    */
+  sConfig.Channel = ADC_CHANNEL_VREFINT;
+  if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
 }
 
 /* LPTIM1 init function */
@@ -321,79 +320,6 @@ static void MX_LPTIM1_Init(void)
   hlptim1.Init.UpdateMode = LPTIM_UPDATE_IMMEDIATE;
   hlptim1.Init.CounterSource = LPTIM_COUNTERSOURCE_INTERNAL;
   if (HAL_LPTIM_Init(&hlptim1) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-}
-
-/* RTC init function */
-static void MX_RTC_Init(void)
-{
-
-  /* USER CODE BEGIN RTC_Init 0 */
-
-  /* USER CODE END RTC_Init 0 */
-
-  RTC_TimeTypeDef sTime;
-  RTC_DateTypeDef sDate;
-  RTC_AlarmTypeDef sAlarm;
-
-  /* USER CODE BEGIN RTC_Init 1 */
-
-  /* USER CODE END RTC_Init 1 */
-
-    /**Initialize RTC Only 
-    */
-  hrtc.Instance = RTC;
-  hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
-  hrtc.Init.AsynchPrediv = 127;
-  hrtc.Init.SynchPrediv = 255;
-  hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
-  hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
-  hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
-  hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
-  if (HAL_RTC_Init(&hrtc) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-    /**Initialize RTC and set the Time and Date 
-    */
-  sTime.Hours = 0;
-  sTime.Minutes = 0;
-  sTime.Seconds = 0;
-  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
-  sDate.Month = RTC_MONTH_JANUARY;
-  sDate.Date = 1;
-  sDate.Year = 0;
-
-  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-    /**Enable the Alarm A 
-    */
-  sAlarm.AlarmTime.Hours = 0;
-  sAlarm.AlarmTime.Minutes = 0;
-  sAlarm.AlarmTime.Seconds = 0;
-  sAlarm.AlarmTime.SubSeconds = 0;
-  sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  sAlarm.AlarmMask = RTC_ALARMMASK_ALL;
-  sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
-  sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
-  sAlarm.AlarmDateWeekDay = 1;
-  sAlarm.Alarm = RTC_ALARM_A;
-  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BIN) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }

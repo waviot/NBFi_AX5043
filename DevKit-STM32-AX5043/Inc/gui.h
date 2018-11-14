@@ -1,7 +1,6 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include "stm32l0xx_hal.h"
 #include "stdlib.h"
 
 #define TABLE_SIZE(x) (sizeof(x)/sizeof(x[0]))

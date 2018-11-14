@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "wtimer.h"
 #include "stlcd.h"
-#include "spi.h"
+//#include "spi.h"
 #include "fonts.h"
 
 #define LCD_INIT_INTERFACE() {DIRA |= 0x02; DIRC |= 0x01; DIRB |= 0x30;}
@@ -19,15 +19,13 @@ uint8_t lcd_buffer[1024];
 static void ST7565_InterfaceInit()
 {
   HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);                //LCD_CS = 1;
-  
-  SPI_Init();
 }
 
 static void ST7565_WriteCommand (uint8_t c)
 {
   HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);              //LCD_CS = 0;
   HAL_GPIO_WritePin(LCD_A0_GPIO_Port, LCD_A0_Pin, GPIO_PIN_RESET);              //LCD_A0 = 0;
-  SPI_Transfer(c);
+  Soft_SPI_Transfer(c);
   HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);                //LCD_CS = 1;
 }
 
@@ -35,7 +33,7 @@ static void ST7565_WriteData (uint8_t c)
 {
   HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);              //LCD_CS = 0;
   HAL_GPIO_WritePin(LCD_A0_GPIO_Port, LCD_A0_Pin, GPIO_PIN_SET);                //LCD_A0 = 1;
-  SPI_Transfer(c);
+  Soft_SPI_Transfer(c);
   HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);                //LCD_CS = 1;
 }
 
@@ -105,4 +103,29 @@ void ST7565_WriteBuffer (void)
       wtimer_runcallbacks();
     }
   }
+}
+
+inline uint8_t Soft_SPI_Transfer(uint8_t c)
+{
+  //shiftOut(sid, sclk, MSBFIRST, c);
+  HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);              //LCD_CS = 1;
+  HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);            //LCD_CS = 0;
+  HAL_GPIO_WritePin(LCD_SCK_GPIO_Port, LCD_SCK_Pin, GPIO_PIN_RESET);          //LCD_SCK = 0
+  
+  for(uint8_t spi_bit_clk=8; spi_bit_clk>0; spi_bit_clk--)
+  {
+    if(c & (1<<(spi_bit_clk-1)))
+    {
+      HAL_GPIO_WritePin(LCD_MOSI_GPIO_Port, LCD_MOSI_Pin, GPIO_PIN_SET);      //LCD_MOSI = 1
+    }
+    else
+    {
+      HAL_GPIO_WritePin(LCD_MOSI_GPIO_Port, LCD_MOSI_Pin, GPIO_PIN_RESET);    //LCD_MOSI = 0
+    }
+    
+    HAL_GPIO_WritePin(LCD_SCK_GPIO_Port, LCD_SCK_Pin, GPIO_PIN_SET);          //LCD_SCK = 1
+    HAL_GPIO_WritePin(LCD_SCK_GPIO_Port, LCD_SCK_Pin, GPIO_PIN_RESET);        //LCD_SCK = 0
+  }    
+  HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);              //LCD_CS = 1;
+  return 0;
 }

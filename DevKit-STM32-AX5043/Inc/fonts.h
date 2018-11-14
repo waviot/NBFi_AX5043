@@ -16,7 +16,6 @@
 #ifndef __BITMAP_DB_H_
 #define __BITMAP_DB_H_
 
-#include "stm32l0xx_hal.h"
 #include <stdint.h>
 
 // ==========================================================================

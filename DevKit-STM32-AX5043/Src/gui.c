@@ -1,28 +1,18 @@
-//#include "stm32l0xx_hal.h"                                                      //added by me
-                                                                                //#include <libmfradio.h>
-//#include <libmfflash.h>
 #include <libmfwtimer.h>
-//#include <libmfcrc.h>
-//#include <libmfadc.h>
-                                                                                //#include "misc.h"
-//#include "nbfi_misc.h"                                                          //added by me
-
-                                                                                //#include "nbfi.h"
-#include "rf.h"                                                                 //added by me
+#include "rf.h"
 #include "nbfi_config.h"
-                                                                                //#include "application.h"
-#include "slip.h"
-#include "hal.h"
 #include "time.h"
 #include "waviotdvk.h"
 #include "gui.h"
 #include "glcd.h"
 #include "fonts.h"
 
-extern nbfi_state_t nbfi_state;                                                 //added by me
-extern uint16_t NBFi_Phy_To_Bitrate(nbfi_phy_channel_t ch);                     //added by me
+extern nbfi_state_t nbfi_state;
+extern uint16_t NBFi_Phy_To_Bitrate(nbfi_phy_channel_t ch);
+extern int32_t ADC_VDDA;
+extern int32_t ADC_temp;
 
-int16_t noise;                                                                  //added by me
+int16_t noise;
 uint8_t *last_rx_pkt;
 uint8_t last_rx_pkt_len;
 
@@ -31,6 +21,7 @@ void (*current_handler)(void);
 
 char textbuf[30]; // for formatted strings
 
+extern int my_sprintf(char *buf, char *fmt, ...);
 void GUI_DrawButtonR(const char *label, uint8_t state);
 void GUI_DrawButtonL(const char *label, uint8_t state);
 
@@ -191,7 +182,6 @@ void NBFiTxHandler()
   //static nbfi_packet_t __xdata* pkt;
   
   //static uint8_t __xdata dl_result = 0;
-  uint8_t packet[8] = {0,0,0,0,0,0,0,0};                                        //added by me
   
   static uint8_t test_pkt[8] = {0,0xDE,0xAD,0xBE,0xEF,0x12,0x34,0x56};
   static uint8_t test_pkt_long[] = "Do you like this weather? I saw a politician with his hands in his own pockets.\n";
@@ -250,11 +240,10 @@ void NBFiTxHandler()
     current_handler = &TestsHandler;
   }
   
-  if(GetButton4())                                                              //added by me {
+  if(GetButton4())
   {
-    packet[2] = nbfi.tx_pwr;
-    NBFi_Send(packet, 8);
-  }                                                                             //added by me }
+
+  }
 }
 
 void NBFiRxHandler()
@@ -502,7 +491,7 @@ void SettingsHandler()
       break;
     case 3:
       LCD_DrawString(10,(i*9)+5, "UART Mode", COLOR_FILL, ALIGN_LEFT);
-      my_sprintf(textbuf, "%s", uart_mode?"TEXT":"SLIP");
+                                                                                //my_sprintf(textbuf, "%s", uart_mode?"TEXT":"SLIP");
       LCD_DrawString(127,(i*9)+5, textbuf, COLOR_FILL, ALIGN_RIGHT);
       break;
     }
@@ -538,7 +527,7 @@ void SettingsHandler()
         nbfi.rx_antenna ^= 1;
         break;
       case 3:
-        uart_mode ^= 1;
+                                                                                //uart_mode ^= 1;
         break;
       }
     }
@@ -574,7 +563,7 @@ void SettingsHandler()
         nbfi.rx_antenna ^= 1;
         break;
       case 3:
-        uart_mode ^= 1;
+                                                                                //uart_mode ^= 1;
         break;
         
       }
@@ -678,8 +667,6 @@ void InfoHandler()
   }
 }
 
-
-                                                                                //extern int16_t noise;
 void NBFiQuality()
 {
   LCD_DrawString(0,(uint16_t)-6,"../Info/NBFi quality", COLOR_FILL, ALIGN_LEFT);
@@ -740,14 +727,8 @@ void NBFiStats()
   }
 }
 
-//extern RTC_HandleTypeDef hrtc;                                                  //added by me
-extern uint32_t buttons_v;
-extern uint32_t VDD;
 void DevInfoHandler()
 {
-  //RTC_TimeTypeDef time;                                                         //added by me
-  //RTC_DateTypeDef date;                                                         //added by me
-  
   LCD_DrawString(0,(uint16_t)-6,"../Info/Device info", COLOR_FILL, ALIGN_LEFT);
   
   // Device full ID
@@ -758,12 +739,9 @@ void DevInfoHandler()
   
   time_t t = RTC_Time();
   struct tm *TM = localtime(&t);
-  //HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);                                //added by me
-  //HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);                                //added by me
   
   LCD_DrawString(10,15,"Time:", COLOR_FILL, ALIGN_LEFT);
   my_sprintf(textbuf, "%02d:%02d:%02d", TM->tm_hour, TM->tm_min, TM->tm_sec);
-  //my_sprintf(textbuf, "%02d:%02d:%02d", time.Hours, time.Minutes, time.Seconds);//added by me
   LCD_DrawString(127,15,textbuf, COLOR_FILL, ALIGN_RIGHT);
 
   
@@ -772,11 +750,11 @@ void DevInfoHandler()
   //    LCD_DrawString(127,23,textbuf, COLOR_FILL, ALIGN_RIGHT);
   //
   LCD_DrawString(10,25,"VCC:", COLOR_FILL, ALIGN_LEFT);
-                                                                                //my_sprintf(textbuf, "%umV", ((VDD*10000)>>16) - 4500);
+  my_sprintf(textbuf, "%umV", ADC_VDDA);
   LCD_DrawString(127,25,textbuf, COLOR_FILL, ALIGN_RIGHT);
   //
   LCD_DrawString(10,35,"TEMP:", COLOR_FILL, ALIGN_LEFT);
-                                                                                //my_sprintf(textbuf, "%d'C", adc_measure_temperature() >> 8);
+  my_sprintf(textbuf, "%d'C", ADC_temp);
   LCD_DrawString(127,35,textbuf, COLOR_FILL, ALIGN_RIGHT);
   
   if(GetButton2())

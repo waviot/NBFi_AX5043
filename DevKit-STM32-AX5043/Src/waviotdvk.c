@@ -1,6 +1,8 @@
 #include "waviotdvk.h"
 #include "stdbool.h"
 
+#define PRESS_SB 5
+
 static uint8_t CntPressSB1 = 0;
 static uint8_t CntPressSB2 = 0;
 static uint8_t CntPressSB3 = 0;
@@ -62,7 +64,7 @@ bool GetButtonStateChange()
     CntPressSB1++;		                                        //Увеличиваем счётчик циклов задержки нажатия кнопки
     HAL_Delay(10);						        //Задержка 10 мс
     
-    if(CntPressSB1>5)	                                                //Если больше 5 циклов
+    if(CntPressSB1>PRESS_SB)                                            //Если больше 5 циклов
     {
       button_events |= SW1;                                             //устанавливаем флаг нажатия кнопки
     }
@@ -78,7 +80,7 @@ bool GetButtonStateChange()
     CntPressSB2++;		                                        //Увеличиваем счётчик циклов задержки нажатия кнопки
     HAL_Delay(10);						        //Задержка 10 мс
     
-    if(CntPressSB2>5)	                                                //Если больше 5 циклов
+    if(CntPressSB2>PRESS_SB)                                            //Если больше 5 циклов
     {
       button_events |= SW2;                                             //устанавливаем флаг нажатия кнопки
     }
@@ -94,7 +96,7 @@ bool GetButtonStateChange()
     CntPressSB3++;		                                        //Увеличиваем счётчик циклов задержки нажатия кнопки
     HAL_Delay(10);						        //Задержка 10 мс
     
-    if(CntPressSB3>5)	                                                //Если больше 5 циклов
+    if(CntPressSB3>PRESS_SB)	                                        //Если больше 5 циклов
     {
       button_events |= SW3;                                             //устанавливаем флаг нажатия кнопки
     }
@@ -110,7 +112,7 @@ bool GetButtonStateChange()
     CntPressSB4++;		                                        //Увеличиваем счётчик циклов задержки нажатия кнопки
     HAL_Delay(10);						        //Задержка 10 мс
     
-    if(CntPressSB4>5)	                                                //Если больше 5 циклов
+    if(CntPressSB4>PRESS_SB)	                                        //Если больше 5 циклов
     {
       button_events |= SW4;                                             //устанавливаем флаг нажатия кнопки
     }

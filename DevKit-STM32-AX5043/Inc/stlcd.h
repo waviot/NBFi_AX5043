@@ -1,6 +1,10 @@
 #ifndef STLCD_H
 #define STLCD_H
 
+#include "stm32l0xx_hal.h"
+#include <stdint.h>
+
+
 #define LCDWIDTH 128
 #define LCDHEIGHT 64
 
@@ -43,8 +47,6 @@
 #define CMD_NO_OP  0xE3
 #define CMD_TEST  0xF0
 
-#include "stm32l0xx_hal.h"
-#include <stdint.h>
 
 extern uint8_t lcd_buffer[1024];
 
@@ -53,5 +55,6 @@ void ST7565_WriteCommand(uint8_t c);
 void ST7565_WriteData(uint8_t c);
 void ST7565_SetBrightness(uint8_t val);
 void ST7565_WriteBuffer(void);
+uint8_t Soft_SPI_Transfer(uint8_t c);
 
 #endif

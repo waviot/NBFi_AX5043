@@ -34,7 +34,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include "stm32l0xx_hal.h"
-//#include <libmftypes.h>
+
 
 #define ZEROPAD 1               // Pad with zero
 #define SIGN    2               // Unsigned/signed long
@@ -56,159 +56,159 @@ const char upper_digits[] = "0123456789ABCDEF";
 //  return sc - s;
 //}
 
-                                                                                //static int skip_atoi(char **s)
-                                                                                //{
-                                                                                //    int i = 0;
-                                                                                //    while (is_digit(**s)) i = i*10 + *((*s)++) - '0';
-                                                                                //    return i;
-                                                                                //}
+//static int skip_atoi(char **s)
+//{
+//    int i = 0;
+//    while (is_digit(**s)) i = i*10 + *((*s)++) - '0';
+//    return i;
+//}
 
 char *number(char *str, int32_t num, int16_t base, int size, int precision, int type)
 {
-    char c, sign, tmp[8];
-    int16_t i=0;
-
-    //if (type & LARGE)  dig = upper_digits;
-    if (type & LEFT) type &= ~ZEROPAD;
-    if (base < 2 || base > 16) return 0;
-
-    c = (type & ZEROPAD) ? '0' : ' ';
-    sign = 0;
-    if (type & SIGN)
+  char c, sign, tmp[8];
+  int16_t i=0;
+  
+  //if (type & LARGE)  dig = upper_digits;
+  if (type & LEFT) type &= ~ZEROPAD;
+  if (base < 2 || base > 16) return 0;
+  
+  c = (type & ZEROPAD) ? '0' : ' ';
+  sign = 0;
+  if (type & SIGN)
+  {
+    if (num < 0)
     {
-        if (num < 0)
-        {
-            sign = '-';
-            num = -num;
-            size--;
-        }
-        else if (type & PLUS)
-        {
-            sign = '+';
-            size--;
-        }
-        else if (type & SPACE)
-        {
-            sign = ' ';
-            size--;
-        }
+      sign = '-';
+      num = -num;
+      size--;
     }
-
-    if (type & SPECIAL)
+    else if (type & PLUS)
     {
-        if (base == 16)
-        {
-            size -= 2;
-        }
-        else if (base == 8)
-        {
-            size--;
-        }
+      sign = '+';
+      size--;
     }
-
-    i = 0;
-
-    if (num == 0)
+    else if (type & SPACE)
     {
-        tmp[i++] = '0';
+      sign = ' ';
+      size--;
     }
-    else
+  }
+  
+  if (type & SPECIAL)
+  {
+    if (base == 16)
     {
-        while (num != 0)
-        {
-            tmp[i++] = upper_digits[num % base];
-            num /= base;
-        }
+      size -= 2;
     }
-
-    if (i > precision) precision = i;
-    size -= precision;
-    if (!(type & (ZEROPAD | LEFT))) while (size-- > 0) *str++ = ' ';
-    if (sign) *str++ = sign;
-
-    if (type & SPECIAL)
+    else if (base == 8)
     {
-        if (base == 8)
-        {
-            *str++ = '0';
-        }
-        else if (base == 16)
-        {
-            *str++ = '0';
-            *str++ = 'x';
-        }
+      size--;
     }
-
-    if (!(type & LEFT)) while (size-- > 0) *str++ = c;
-    while (i < precision--) *str++ = '0';
-    while (i-- > 0) *str++ = tmp[i];
-    while (size-- > 0) *str++ = ' ';
-
-    return str;
+  }
+  
+  i = 0;
+  
+  if (num == 0)
+  {
+    tmp[i++] = '0';
+  }
+  else
+  {
+    while (num != 0)
+    {
+      tmp[i++] = upper_digits[num % base];
+      num /= base;
+    }
+  }
+  
+  if (i > precision) precision = i;
+  size -= precision;
+  if (!(type & (ZEROPAD | LEFT))) while (size-- > 0) *str++ = ' ';
+  if (sign) *str++ = sign;
+  
+  if (type & SPECIAL)
+  {
+    if (base == 8)
+    {
+      *str++ = '0';
+    }
+    else if (base == 16)
+    {
+      *str++ = '0';
+      *str++ = 'x';
+    }
+  }
+  
+  if (!(type & LEFT)) while (size-- > 0) *str++ = c;
+  while (i < precision--) *str++ = '0';
+  while (i-- > 0) *str++ = tmp[i];
+  while (size-- > 0) *str++ = ' ';
+  
+  return str;
 }
 
-                                                                                //static char *eaddr(char *str, unsigned char *addr, int size, int precision, int type)
-                                                                                //{
-                                                                                //    char tmp[24];
-                                                                                //    const char *dig = upper_digits;
-                                                                                //    int i, len;
-                                                                                //
-                                                                                //    if (type & LARGE)  dig = upper_digits;
-                                                                                //    len = 0;
-                                                                                //    for (i = 0; i < 6; i++)
-                                                                                //    {
-                                                                                //        if (i != 0) tmp[len++] = ':';
-                                                                                //        tmp[len++] = dig[addr[i] >> 4];
-                                                                                //        tmp[len++] = dig[addr[i] & 0x0F];
-                                                                                //    }
-                                                                                //
-                                                                                //    if (!(type & LEFT)) while (len < size--) *str++ = ' ';
-                                                                                //    for (i = 0; i < len; ++i) *str++ = tmp[i];
-                                                                                //    while (len < size--) *str++ = ' ';
-                                                                                //
-                                                                                //    return str;
-                                                                                //}
+//static char *eaddr(char *str, unsigned char *addr, int size, int precision, int type)
+//{
+//    char tmp[24];
+//    const char *dig = upper_digits;
+//    int i, len;
+//
+//    if (type & LARGE)  dig = upper_digits;
+//    len = 0;
+//    for (i = 0; i < 6; i++)
+//    {
+//        if (i != 0) tmp[len++] = ':';
+//        tmp[len++] = dig[addr[i] >> 4];
+//        tmp[len++] = dig[addr[i] & 0x0F];
+//    }
+//
+//    if (!(type & LEFT)) while (len < size--) *str++ = ' ';
+//    for (i = 0; i < len; ++i) *str++ = tmp[i];
+//    while (len < size--) *str++ = ' ';
+//
+//    return str;
+//}
 
-                                                                                //static char *iaddr(char *str, unsigned char *addr, int size, int precision, int type)
-                                                                                //{
-                                                                                //    char tmp[24];
-                                                                                //    int i, n, len;
-                                                                                //
-                                                                                //    len = 0;
-                                                                                //    for (i = 0; i < 4; i++)
-                                                                                //    {
-                                                                                //        if (i != 0) tmp[len++] = '.';
-                                                                                //        n = addr[i];
-                                                                                //
-                                                                                //        if (n == 0)
-                                                                                //        {
-                                                                                //            tmp[len++] = upper_digits[0];
-                                                                                //        }
-                                                                                //        else
-                                                                                //        {
-                                                                                //            if (n >= 100)
-                                                                                //            {
-                                                                                //                tmp[len++] = upper_digits[n / 100];
-                                                                                //                n = n % 100;
-                                                                                //                tmp[len++] = upper_digits[n / 10];
-                                                                                //                n = n % 10;
-                                                                                //            }
-                                                                                //            else if (n >= 10)
-                                                                                //            {
-                                                                                //                tmp[len++] = upper_digits[n / 10];
-                                                                                //                n = n % 10;
-                                                                                //            }
-                                                                                //
-                                                                                //            tmp[len++] = upper_digits[n];
-                                                                                //        }
-                                                                                //    }
-                                                                                //
-                                                                                //    if (!(type & LEFT)) while (len < size--) *str++ = ' ';
-                                                                                //    for (i = 0; i < len; ++i) *str++ = tmp[i];
-                                                                                //    while (len < size--) *str++ = ' ';
-                                                                                //
-                                                                                //    return str;
-                                                                                //}
+//static char *iaddr(char *str, unsigned char *addr, int size, int precision, int type)
+//{
+//    char tmp[24];
+//    int i, n, len;
+//
+//    len = 0;
+//    for (i = 0; i < 4; i++)
+//    {
+//        if (i != 0) tmp[len++] = '.';
+//        n = addr[i];
+//
+//        if (n == 0)
+//        {
+//            tmp[len++] = upper_digits[0];
+//        }
+//        else
+//        {
+//            if (n >= 100)
+//            {
+//                tmp[len++] = upper_digits[n / 100];
+//                n = n % 100;
+//                tmp[len++] = upper_digits[n / 10];
+//                n = n % 10;
+//            }
+//            else if (n >= 10)
+//            {
+//                tmp[len++] = upper_digits[n / 10];
+//                n = n % 10;
+//            }
+//
+//            tmp[len++] = upper_digits[n];
+//        }
+//    }
+//
+//    if (!(type & LEFT)) while (len < size--) *str++ = ' ';
+//    for (i = 0; i < len; ++i) *str++ = tmp[i];
+//    while (len < size--) *str++ = ' ';
+//
+//    return str;
+//}
 
 //int vsnprintf(char *buf, int buf_len, char *fmt, va_list args)
 //{
@@ -421,24 +421,24 @@ char *number(char *str, int32_t num, int16_t base, int size, int precision, int 
 
 int my_sprintf(char *buf, char *fmt, ...)
 {
-    va_list args;
-    int n;
-
-    va_start(args, fmt);
-    n = vsnprintf(buf, 255, fmt, args);
-    va_end(args);
-
-    return n;
+  va_list args;
+  int n;
+  
+  va_start(args, fmt);
+  n = vsnprintf(buf, 255, fmt, args);
+  va_end(args);
+  
+  return n;
 }
 
 int my_snprintf(char *buf, char buf_len, char *fmt, ...)
 {
-    va_list args;
-    int n;
-
-    va_start(args, fmt);
-    n = vsnprintf(buf, buf_len, fmt, args);
-    va_end(args);
-
-    return n;
+  va_list args;
+  int n;
+  
+  va_start(args, fmt);
+  n = vsnprintf(buf, buf_len, fmt, args);
+  va_end(args);
+  
+  return n;
 }
