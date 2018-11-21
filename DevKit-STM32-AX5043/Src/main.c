@@ -49,7 +49,10 @@
 #include "gui.h"
 #include "waviotdvk.h"
 #include "time.h"
+#include "nbfi_misc.h"
 #include "adc.h"
+
+#define IDLE_TIME       60      //время бездействия в (сек)
 
 /* USER CODE END Includes */
 
@@ -65,6 +68,10 @@ SPI_HandleTypeDef hspi1;
 
 struct wtimer_desc everysecond_desc;
 extern uint8_t nbfi_lock;
+static uint8_t cnt_button_not_pressed_sec = IDLE_TIME;                          //декрементируется 1 раз в секунду, если кнопки не нажаты
+bool status_sleep = 0;                                                          //static bool status_sleep = false;
+bool gui_update_ok = 0;
+static uint8_t button_state;
 
 /* USER CODE END PV */
 
@@ -74,7 +81,6 @@ static void MX_GPIO_Init(void);
 static void MX_LPTIM1_Init(void);
 static void MX_ADC_Init(void);
 static void MX_SPI1_Init(void);
-static void MX_NVIC_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -87,10 +93,33 @@ void EverySecond(struct wtimer_desc *desc);
 
 void EverySecond(struct wtimer_desc *desc)
 {
-  ADC_get();
+  if(!status_sleep)
+  {  
+    cnt_button_not_pressed_sec--;
+    ADC_get();
+    gui_update_ok = true;                                                       //GUI_Update();
     
-  GUI_Update();
-  ScheduleTask(desc, 0, RELATIVE, MILLISECONDS(1000));
+    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);       //POWERLED_ON
+    delay_ms(2);
+    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_RESET);     //POWERLED_OFF
+    
+    ScheduleTask(desc, 0, RELATIVE, MILLISECONDS(500));
+  }
+  else
+  {
+    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);       //POWERLED_ON
+    delay_ms(2);
+    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_RESET);     //POWERLED_OFF
+//    
+//    if(cnt_button_not_pressed_sec>IDLE_TIME)
+//    {
+//        Backlight(true);
+//        Backlight(false);
+//    }
+    
+    ScheduleTask(desc, 0, RELATIVE, MILLISECONDS(5000));
+  }
+  //HAL_GPIO_TogglePin(GPIOH, POWERLED_Pin);
 }
 
 void HAL_SYSTICK_Callback(void)
@@ -132,12 +161,9 @@ int main(void)
   MX_LPTIM1_Init();
   MX_ADC_Init();
   MX_SPI1_Init();
-
-  /* Initialize interrupts */
-  MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
   
-  HAL_GPIO_WritePin(GPIOH, POWERLED_Pin|LCD_PWR_Pin, GPIO_PIN_SET);     //POWERLED_ON
+  //HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);     //POWERLED_ON
   
   ax5043_init();        //AX5043 Init
   
@@ -145,6 +171,7 @@ int main(void)
   LCD_Init();
   Backlight(true);
   GUI_Init();
+  Buttons_Process_Start();
   RTC_Init();
   ScheduleTask(&everysecond_desc, &EverySecond, RELATIVE, SECONDS(1));
   
@@ -156,14 +183,76 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    if(GetButtonStateChange())
+    if(gui_update_ok)
     {
       GUI_Update();
+      gui_update_ok = false;
     }
+    
+    button_state = GetButtonState();                                            //текущее состояние кнопок
+    if(button_state & (SB1_INT|SB2_INT|SB3_INT|SB4_INT))                        //если прерывание по кнопке
+    {
+      ResetButtonFlags(SB1_INT|SB2_INT|SB3_INT|SB4_INT);                        //сброс флагов прерывания
+      cnt_button_not_pressed_sec = IDLE_TIME;                                   //обновление счётчика 
+      NBFi_Go_To_Sleep(false);                                                  //выход из слипа
+      status_sleep = false;
+      HAL_GPIO_WritePin(LCD_PWR_GPIO_Port, LCD_PWR_Pin, GPIO_PIN_SET);          //LCD_POWER = 1;
+      Backlight(true);                                                          //включение подсветки
+      if(button_state & (SB1_PRESS|SB2_PRESS|SB3_PRESS|SB4_PRESS))              //если зафиксировано нажатие кнопки                    
+      {
+        //gui_update_ok = true;
+      }
+    }
+    
+    if(cnt_button_not_pressed_sec == 0)
+    {
+      //cnt_button_not_pressed_sec = IDLE_TIME;
+      NBFi_Go_To_Sleep(true);
+    }
+
     NBFi_ProcessRxPackets(1);
     if (axradio_cansleep()&& NBFi_can_sleep()) 
     {
+      /*Configure GPIO pin Output Level */
+      /////////////////////////////////////////////////////////////////////////////////////     DEINIT GPIO
+//      HAL_GPIO_WritePin(GPIOH, POWERLED_Pin|LCD_PWR_Pin, GPIO_PIN_RESET);
+//
+//      /*Configure GPIO pin Output Level */
+//      HAL_GPIO_WritePin(BACKLIGHT_GPIO_Port, BACKLIGHT_Pin, GPIO_PIN_SET);
+//
+//      /*Configure GPIO pin Output Level */
+//      HAL_GPIO_WritePin(GPIOB, AX_SPI_CS_Pin|LCD_A0_Pin|LCD_MOSI_Pin|LCD_SCK_Pin 
+//                              |LCD_RESET_Pin, GPIO_PIN_SET);
+//
+//      /*Configure GPIO pin Output Level */
+//      HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
+//      
+//      HAL_SPI_DeInit(&hspi1);
+      ///////////////////////////////////////////////////////////////////////////////////
+      Backlight(false);                                                         //выключение подсветки
+      HAL_GPIO_WritePin(LCD_PWR_GPIO_Port, LCD_PWR_Pin, GPIO_PIN_RESET);        //LCD_POWER = 0;
+      
+      status_sleep = true;
       HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+      SystemClock_Config();
+      wtimer_runcallbacks();
+      /*Configure GPIO pin Output Level */
+      /////////////////////////////////////////////////////////////////////////////////////     INIT GPIO
+//      HAL_GPIO_WritePin(GPIOH, POWERLED_Pin|LCD_PWR_Pin, GPIO_PIN_SET);
+//
+//      /*Configure GPIO pin Output Level */
+//      HAL_GPIO_WritePin(BACKLIGHT_GPIO_Port, BACKLIGHT_Pin, GPIO_PIN_RESET);
+//
+//      /*Configure GPIO pin Output Level */
+//      HAL_GPIO_WritePin(GPIOB, AX_SPI_CS_Pin|LCD_A0_Pin|LCD_MOSI_Pin|LCD_SCK_Pin 
+//                              |LCD_RESET_Pin, GPIO_PIN_RESET);
+//
+//      /*Configure GPIO pin Output Level */
+//      HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
+//      
+//      HAL_SPI_Init(&hspi1);
+      ///////////////////////////////////////////////////////////////////////////////////
+      Buttons_Process_Start();
     }
     
   /* USER CODE END WHILE */
@@ -243,20 +332,6 @@ void SystemClock_Config(void)
 
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 1, 0);
-}
-
-/**
-  * @brief NVIC Configuration.
-  * @retval None
-  */
-static void MX_NVIC_Init(void)
-{
-  /* EXTI0_1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
-  /* LPTIM1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(LPTIM1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(LPTIM1_IRQn);
 }
 
 /* ADC init function */
@@ -385,7 +460,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : SB2_Pin */
   GPIO_InitStruct.Pin = SB2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(SB2_GPIO_Port, &GPIO_InitStruct);
 
@@ -413,7 +488,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : SB1_Pin */
   GPIO_InitStruct.Pin = SB1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(SB1_GPIO_Port, &GPIO_InitStruct);
 
@@ -434,9 +509,16 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : SB3_Pin SB4_Pin */
   GPIO_InitStruct.Pin = SB3_Pin|SB4_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI4_15_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 
 }
 

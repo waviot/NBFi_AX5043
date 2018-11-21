@@ -53,6 +53,7 @@
 
 #define SB2_Pin GPIO_PIN_13
 #define SB2_GPIO_Port GPIOC
+#define SB2_EXTI_IRQn EXTI4_15_IRQn
 #define POWERLED_Pin GPIO_PIN_0
 #define POWERLED_GPIO_Port GPIOH
 #define LCD_PWR_Pin GPIO_PIN_1
@@ -61,6 +62,7 @@
 #define BACKLIGHT_GPIO_Port GPIOA
 #define SB1_Pin GPIO_PIN_4
 #define SB1_GPIO_Port GPIOA
+#define SB1_EXTI_IRQn EXTI4_15_IRQn
 #define AX_SPI_SCK_Pin GPIO_PIN_5
 #define AX_SPI_SCK_GPIO_Port GPIOA
 #define AX_SPI_MISO_Pin GPIO_PIN_6
@@ -84,8 +86,10 @@
 #define LCD_RESET_GPIO_Port GPIOB
 #define SB3_Pin GPIO_PIN_7
 #define SB3_GPIO_Port GPIOB
+#define SB3_EXTI_IRQn EXTI4_15_IRQn
 #define SB4_Pin GPIO_PIN_8
 #define SB4_GPIO_Port GPIOB
+#define SB4_EXTI_IRQn EXTI4_15_IRQn
 
 /* ########################## Assert Selection ############################## */
 /**

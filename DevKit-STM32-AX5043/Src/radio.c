@@ -4,6 +4,8 @@
 #include "string.h"
 #include "rf.h"
 #include "nbfi_config.h"
+#include "waviotdvk.h"                                                          //added
+#include "nbfi_misc.h"                                                          //added
 
 #define MODEM_ID  *((const uint32_t*)0x0801ff80)  
 #define KEY  ((const uint32_t*)0x0801ff84)            
@@ -74,6 +76,7 @@ const nbfi_settings_t nbfi_set_default =
 
 extern SPI_HandleTypeDef hspi1;
 extern LPTIM_HandleTypeDef hlptim1;
+extern uint8_t button_event_flags;                                              //added
 
 void HAL_LPTIM_CompareMatchCallback(LPTIM_HandleTypeDef *hlptim)
 {
@@ -82,7 +85,48 @@ void HAL_LPTIM_CompareMatchCallback(LPTIM_HandleTypeDef *hlptim)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  axradio_isr();
+  if(GPIO_Pin == GPIO_PIN_0)
+  {
+    axradio_isr();
+  }
+  else
+  {
+    if(GPIO_Pin == SB1_Pin)
+    {
+      SetButtonFlags(SB1_INT);                                                  //установка флага нажатия кнопки
+    }
+    else
+    {
+//      button_event_flags &= ~SB1_INT;                                           //сброс флага нажатия кнопки
+    }
+    
+    if(GPIO_Pin == SB2_Pin)
+    {
+      SetButtonFlags(SB2_INT);                                                  //установка флага нажатия кнопки
+    }
+    else
+    {
+//      button_event_flags &= ~SB2_INT;                                           //сброс флага нажатия кнопки
+    }    
+    
+    if(GPIO_Pin == SB3_Pin)
+    {
+      SetButtonFlags(SB3_INT);                                                  //установка флага нажатия кнопки
+    }
+    else
+    {
+//      button_event_flags &= ~SB3_INT;                                           //сброс флага нажатия кнопки
+    }    
+    
+    if(GPIO_Pin == SB4_Pin)
+    {
+      SetButtonFlags(SB4_INT);                                                  //установка флага нажатия кнопки
+    }
+    else
+    {
+//      button_event_flags &= ~SB4_INT;                                           //сброс флага нажатия кнопки
+    }
+  }
 }
 
 void ax5043_enable_global_irq(void)
