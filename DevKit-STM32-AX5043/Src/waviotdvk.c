@@ -56,7 +56,7 @@ void CheckButtons(struct wtimer_desc *desc)
 
 void Buttons_Process_Start()
 {
-  ScheduleTask(&buttons_desc, &CheckButtons, RELATIVE, MILLISECONDS(200));
+  ScheduleTask(&buttons_desc, &CheckButtons, RELATIVE, MILLISECONDS(100));
 }
 
 bool GetButton1()

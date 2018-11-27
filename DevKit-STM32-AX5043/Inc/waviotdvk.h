@@ -14,6 +14,11 @@
 #define SB3_PRESS       (64)
 #define SB4_PRESS       (128)
 
+#define IDLE_TIME       20                                                      //время бездействия в (сек)
+#define BUT_RESP_TIME   250                                                     //время отклика кнопок в (мс)
+
+//#define DEBUG_NO_SLEEP
+
 
 //typedef struct
 //{

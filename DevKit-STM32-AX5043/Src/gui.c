@@ -15,6 +15,7 @@ extern int32_t ADC_temp;
 int16_t noise;
 uint8_t *last_rx_pkt;
 uint8_t last_rx_pkt_len;
+uint8_t cnt_nbfi_mode = 0;                                                      //added
 
 struct wtimer_desc gui_handler;
 void (*current_handler)(void);
@@ -490,8 +491,11 @@ void SettingsHandler()
       LCD_DrawString(127,(i*9)+5, textbuf, COLOR_FILL, ALIGN_RIGHT);
       break;
     case 3:
-      LCD_DrawString(10,(i*9)+5, "UART Mode", COLOR_FILL, ALIGN_LEFT);
-                                                                                //my_sprintf(textbuf, "%s", uart_mode?"TEXT":"SLIP");
+      LCD_DrawString(10,(i*9)+5, "NBFi Mode", COLOR_FILL, ALIGN_LEFT);          //LCD_DrawString(10,(i*9)+5, "UART Mode", COLOR_FILL, ALIGN_LEFT);
+      if(nbfi.mode == DRX)                                                      //added
+        my_sprintf(textbuf, "%s", "DRX");                                       //added
+      else                                                                      //added
+        my_sprintf(textbuf, "%s", nbfi.mode?"CRX":"NRX");                       //my_sprintf(textbuf, "%s", uart_mode?"TEXT":"SLIP");
       LCD_DrawString(127,(i*9)+5, textbuf, COLOR_FILL, ALIGN_RIGHT);
       break;
     }
@@ -527,7 +531,9 @@ void SettingsHandler()
         nbfi.rx_antenna ^= 1;
         break;
       case 3:
-                                                                                //uart_mode ^= 1;
+        nbfi.mode++;                                                            //added
+        nbfi.mode %= 3;                                                         //added
+        cnt_nbfi_mode = nbfi.mode;                                              //uart_mode ^= 1;
         break;
       }
     }
@@ -557,13 +563,14 @@ void SettingsHandler()
         break;
       case 1:
         nbfi.tx_antenna ^= 1;
-        
         break;
       case 2:
         nbfi.rx_antenna ^= 1;
         break;
       case 3:
-                                                                                //uart_mode ^= 1;
+        nbfi.mode++;                                                            //added
+        nbfi.mode %= 3;                                                         //added
+        cnt_nbfi_mode = nbfi.mode;                                              //uart_mode ^= 1;
         break;
         
       }

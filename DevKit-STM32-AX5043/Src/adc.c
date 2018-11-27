@@ -1,5 +1,6 @@
-#include "adc.h"
 #include "main.h"
+#include "adc.h"
+#include "stm32l0xx_ll_adc.h"
 
 
 #define V_30C           520             //Напряжение (в мВ) на датчике при температуре 30 °C.
@@ -49,7 +50,12 @@ void ADC_init(void)
 void ADC_deinit(void)
 {
   HAL_ADC_DeInit(&AdcHandle);
+  sConfig.Rank = ADC_RANK_NONE;
+  HAL_ADC_ConfigChannel(&AdcHandle, &sConfig);
   ADC->CCR = 0;
+  HAL_ADCEx_DisableVREFINT();
+  HAL_ADCEx_DisableVREFINTTempSensor();
+  __HAL_RCC_ADC1_CLK_DISABLE();
 }
 
 int8_t ADC_get(void)
@@ -63,7 +69,8 @@ int8_t ADC_get(void)
     return -1;
   AdcHandle.Instance->ISR = 0xFFFF;
                                                                                 
-  ADC_VDDA = (AdcHandle.Instance->DR)*VDDA/4096;                //Напряжение в мВ на VREFINT STM32.
+  //ADC_VDDA = (AdcHandle.Instance->DR)*VDDA/4096;                //Напряжение в мВ на VREFINT STM32.
+  ADC_VDDA = __LL_ADC_CALC_VREFANALOG_VOLTAGE(AdcHandle.Instance->DR, LL_ADC_RESOLUTION_12B);
   
   timeout = ADC_TIMEOUT;
   AdcHandle.Instance->CR |= ADC_CR_ADSTART;
@@ -71,8 +78,9 @@ int8_t ADC_get(void)
   if (!timeout)
     return -1;
   AdcHandle.Instance->ISR = 0xFFFF;	
-  ADC_temp = (AdcHandle.Instance->DR)*VDDA/4096;                //Напряжение в мВ на датчике.
-  ADC_temp = (int32_t)((ADC_temp-V_30C)/V_Slope + 30);          //Температура в градусах.
+  //ADC_temp = (AdcHandle.Instance->DR)*VDDA/4096;                //Напряжение в мВ на датчике.
+  //ADC_temp = (int32_t)((ADC_temp-V_30C)/V_Slope + 30);          //Температура в градусах.
+  ADC_temp = __LL_ADC_CALC_TEMPERATURE(ADC_VDDA, AdcHandle.Instance->DR, LL_ADC_RESOLUTION_12B);
   
   return 0;
 }

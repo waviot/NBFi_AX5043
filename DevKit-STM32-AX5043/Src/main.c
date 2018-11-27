@@ -45,14 +45,13 @@
 #include "wtimer.h"
 #include "radio.h"
 #include "nbfi.h"
+#include "nbfi_config.h"
 #include "glcd.h"
 #include "gui.h"
 #include "waviotdvk.h"
 #include "time.h"
 #include "nbfi_misc.h"
 #include "adc.h"
-
-#define IDLE_TIME       60      //время бездействия в (сек)
 
 /* USER CODE END Includes */
 
@@ -67,10 +66,11 @@ SPI_HandleTypeDef hspi1;
 /* Private variables ---------------------------------------------------------*/
 
 struct wtimer_desc everysecond_desc;
+struct wtimer_desc gui_update_desc;
 extern uint8_t nbfi_lock;
 static uint8_t cnt_button_not_pressed_sec = IDLE_TIME;                          //декрементируется 1 раз в секунду, если кнопки не нажаты
 bool status_sleep = 0;                                                          //static bool status_sleep = false;
-bool gui_update_ok = 0;
+bool gui_update_state = 0;
 static uint8_t button_state;
 
 /* USER CODE END PV */
@@ -86,40 +86,47 @@ static void MX_SPI1_Init(void);
 /* Private function prototypes -----------------------------------------------*/
 
 void EverySecond(struct wtimer_desc *desc);
+void GUI_UpdateHandler(struct wtimer_desc *desc);
 
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
 
+void GUI_UpdateHandler(struct wtimer_desc *desc)
+{
+  GUI_Update();                                                                 //обновись дисплей
+  if(gui_update_state)                                                          //если статус обновления дисплея                                                       
+  {
+    ScheduleTask(desc, 0, RELATIVE, MILLISECONDS(BUT_RESP_TIME));               //вернуться через 250 мс
+    gui_update_state = false;                                                   //сброс флага
+  }
+  else
+  {
+    ScheduleTask(desc, 0, RELATIVE, MILLISECONDS(1000));                        //вернуться через 1с
+  }
+}
+
 void EverySecond(struct wtimer_desc *desc)
 {
   if(!status_sleep)
   {  
-    cnt_button_not_pressed_sec--;
+    cnt_button_not_pressed_sec--;                                               //декремент таймера бездействия
     ADC_get();
-    gui_update_ok = true;                                                       //GUI_Update();
     
-    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);       //POWERLED_ON
+    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);                       //POWERLED_ON
     delay_ms(2);
-    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_RESET);     //POWERLED_OFF
+    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_RESET);                     //POWERLED_OFF
     
-    ScheduleTask(desc, 0, RELATIVE, MILLISECONDS(500));
+    ScheduleTask(desc, 0, RELATIVE, SECONDS(1));
   }
   else
   {
-    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);       //POWERLED_ON
+    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);                       //POWERLED_ON
     delay_ms(2);
-    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_RESET);     //POWERLED_OFF
-//    
-//    if(cnt_button_not_pressed_sec>IDLE_TIME)
-//    {
-//        Backlight(true);
-//        Backlight(false);
-//    }
+    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_RESET);                     //POWERLED_OFF
     
-    ScheduleTask(desc, 0, RELATIVE, MILLISECONDS(5000));
+    ScheduleTask(desc, 0, RELATIVE, SECONDS(5));
   }
-  //HAL_GPIO_TogglePin(GPIOH, POWERLED_Pin);
 }
 
 void HAL_SYSTICK_Callback(void)
@@ -159,13 +166,13 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_LPTIM1_Init();
-  MX_ADC_Init();
+  //MX_ADC_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   
-  //HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);     //POWERLED_ON
+  //HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);                       //POWERLED_ON
   
-  ax5043_init();        //AX5043 Init
+  ax5043_init();
   
   /* GUI Init */
   LCD_Init();
@@ -174,86 +181,71 @@ int main(void)
   Buttons_Process_Start();
   RTC_Init();
   ScheduleTask(&everysecond_desc, &EverySecond, RELATIVE, SECONDS(1));
+  ScheduleTask(&gui_update_desc, &GUI_UpdateHandler, RELATIVE, MILLISECONDS(BUT_RESP_TIME));
   
-  ADC_init();           //ADC Init
+  ADC_init();                                                                   //ADC Init
   
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {
-    if(gui_update_ok)
-    {
-      GUI_Update();
-      gui_update_ok = false;
-    }
-    
+  { 
     button_state = GetButtonState();                                            //текущее состояние кнопок
+    
     if(button_state & (SB1_INT|SB2_INT|SB3_INT|SB4_INT))                        //если прерывание по кнопке
     {
       ResetButtonFlags(SB1_INT|SB2_INT|SB3_INT|SB4_INT);                        //сброс флагов прерывания
-      cnt_button_not_pressed_sec = IDLE_TIME;                                   //обновление счётчика 
-      NBFi_Go_To_Sleep(false);                                                  //выход из слипа
-      status_sleep = false;
-      HAL_GPIO_WritePin(LCD_PWR_GPIO_Port, LCD_PWR_Pin, GPIO_PIN_SET);          //LCD_POWER = 1;
-      Backlight(true);                                                          //включение подсветки
-      if(button_state & (SB1_PRESS|SB2_PRESS|SB3_PRESS|SB4_PRESS))              //если зафиксировано нажатие кнопки                    
+      cnt_button_not_pressed_sec = IDLE_TIME;                                   //сброс таймера бездействия
+      if(status_sleep)
       {
-        //gui_update_ok = true;
+        status_sleep = false;
+        MX_GPIO_Init();
+        ADC_init();
+        LCD_Init();
+        Backlight(true);                                                        //включение подсветки
+        HAL_SPI_Init(&hspi1);
       }
     }
     
+    if(button_state & (SB1_PRESS|SB2_PRESS|SB3_PRESS|SB4_PRESS))                //если зафиксировано нажатие кнопки
+    {
+      if(!gui_update_state)                                                     //если дисплей не обновляется
+      {                                                        
+        ScheduleTask(&gui_update_desc, &GUI_UpdateHandler, RELATIVE, MILLISECONDS(BUT_RESP_TIME));  //поставить задачу
+        gui_update_state = true;                                                //флаг обновления дисплея
+      }
+    }
+    
+    NBFi_ProcessRxPackets(1);
+    
+    #ifdef DEBUG_NO_SLEEP
+    #warning DEBUG_NO_SLEEP
+    #else   
     if(cnt_button_not_pressed_sec == 0)
     {
-      //cnt_button_not_pressed_sec = IDLE_TIME;
-      NBFi_Go_To_Sleep(true);
+      if (axradio_cansleep()&& NBFi_can_sleep()) 
+      {
+        /////////////////////////////////////////////////////////////////////////////////////     DEINIT GPIO
+        ADC_deinit();
+        HAL_SPI_DeInit(&hspi1);
+        HAL_GPIO_DeInit(GPIOH, POWERLED_Pin|LCD_PWR_Pin);
+        HAL_GPIO_DeInit(BACKLIGHT_GPIO_Port, BACKLIGHT_Pin);
+        HAL_GPIO_DeInit(GPIOB, AX_SPI_CS_Pin|LCD_A0_Pin|LCD_MOSI_Pin|LCD_SCK_Pin|LCD_RESET_Pin);
+        HAL_GPIO_DeInit(LCD_CS_GPIO_Port, LCD_CS_Pin);        
+        ///////////////////////////////////////////////////////////////////////////////////
+//        Backlight(false);                                                       //выключение подсветки
+//        HAL_GPIO_WritePin(LCD_RESET_GPIO_Port, LCD_RESET_Pin, GPIO_PIN_RESET);  //LCD_RESET = 0;
+//        HAL_GPIO_WritePin(LCD_PWR_GPIO_Port, LCD_PWR_Pin, GPIO_PIN_RESET);      //LCD_POWER = 0;
+        
+        status_sleep = true;
+        HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+        SystemClock_Config();
+        Buttons_Process_Start();
+        wtimer_runcallbacks();
+      }
     }
-
-    NBFi_ProcessRxPackets(1);
-    if (axradio_cansleep()&& NBFi_can_sleep()) 
-    {
-      /*Configure GPIO pin Output Level */
-      /////////////////////////////////////////////////////////////////////////////////////     DEINIT GPIO
-//      HAL_GPIO_WritePin(GPIOH, POWERLED_Pin|LCD_PWR_Pin, GPIO_PIN_RESET);
-//
-//      /*Configure GPIO pin Output Level */
-//      HAL_GPIO_WritePin(BACKLIGHT_GPIO_Port, BACKLIGHT_Pin, GPIO_PIN_SET);
-//
-//      /*Configure GPIO pin Output Level */
-//      HAL_GPIO_WritePin(GPIOB, AX_SPI_CS_Pin|LCD_A0_Pin|LCD_MOSI_Pin|LCD_SCK_Pin 
-//                              |LCD_RESET_Pin, GPIO_PIN_SET);
-//
-//      /*Configure GPIO pin Output Level */
-//      HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
-//      
-//      HAL_SPI_DeInit(&hspi1);
-      ///////////////////////////////////////////////////////////////////////////////////
-      Backlight(false);                                                         //выключение подсветки
-      HAL_GPIO_WritePin(LCD_PWR_GPIO_Port, LCD_PWR_Pin, GPIO_PIN_RESET);        //LCD_POWER = 0;
-      
-      status_sleep = true;
-      HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
-      SystemClock_Config();
-      wtimer_runcallbacks();
-      /*Configure GPIO pin Output Level */
-      /////////////////////////////////////////////////////////////////////////////////////     INIT GPIO
-//      HAL_GPIO_WritePin(GPIOH, POWERLED_Pin|LCD_PWR_Pin, GPIO_PIN_SET);
-//
-//      /*Configure GPIO pin Output Level */
-//      HAL_GPIO_WritePin(BACKLIGHT_GPIO_Port, BACKLIGHT_Pin, GPIO_PIN_RESET);
-//
-//      /*Configure GPIO pin Output Level */
-//      HAL_GPIO_WritePin(GPIOB, AX_SPI_CS_Pin|LCD_A0_Pin|LCD_MOSI_Pin|LCD_SCK_Pin 
-//                              |LCD_RESET_Pin, GPIO_PIN_RESET);
-//
-//      /*Configure GPIO pin Output Level */
-//      HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
-//      
-//      HAL_SPI_Init(&hspi1);
-      ///////////////////////////////////////////////////////////////////////////////////
-      Buttons_Process_Start();
-    }
+    #endif
     
   /* USER CODE END WHILE */
 
