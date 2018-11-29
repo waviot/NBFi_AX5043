@@ -6,16 +6,15 @@
 #include "gui.h"
 #include "glcd.h"
 #include "fonts.h"
+#include "adc.h"
+#include "main.h"
 
 extern nbfi_state_t nbfi_state;
 extern uint16_t NBFi_Phy_To_Bitrate(nbfi_phy_channel_t ch);
-extern int32_t ADC_VDDA;
-extern int32_t ADC_temp;
-
+extern uint32_t nbfi_measure_valtage_or_temperature(uint8_t val);               //added
 int16_t noise;
 uint8_t *last_rx_pkt;
 uint8_t last_rx_pkt_len;
-uint8_t cnt_nbfi_mode = 0;                                                      //added
 
 struct wtimer_desc gui_handler;
 void (*current_handler)(void);
@@ -39,8 +38,8 @@ void NBFiStats();
 void SettingsHandler();
 
 //Text labels
-const char label_next[] =    "Next";
 const char label_enter[] =   "Enter";
+const char label_back[] =    "Back";
 const char label_start[] =   "Start";
 const char label_stop[] =    "Stop";
 const char label_cancel[] =  "Cancel";
@@ -75,23 +74,35 @@ void MainHandler()
   // Button processing
   if(GetButton1())
   {
-    GUI_DrawButtonL(label_next, 1);
-    state++;
-    state = state % TABLE_SIZE(main_table);
-  }
-  else
-  {
-    GUI_DrawButtonL(label_next, 0);
-  }
-  
-  if(GetButton2())
-  {
-    GUI_DrawButtonR(label_enter, 1);
+    GUI_DrawButtonL(label_enter, 1);
     current_handler = main_table[state].handler;
   }
   else
   {
-    GUI_DrawButtonR(label_enter, 0);
+    GUI_DrawButtonL(label_enter, 0);
+  }
+  
+//  if(GetButton2())
+//  {
+//    GUI_DrawButtonR(label_back, 1);
+//    
+//  }
+//  else
+//  {
+//    GUI_DrawButtonR(label_back, 0);
+//  }
+  
+  if(GetButton3())
+  {
+    state--;
+    if(state > TABLE_SIZE(main_table))
+      state = TABLE_SIZE(main_table)-1;
+  }
+  
+  if(GetButton4())
+  {
+    state++;
+    state = state % TABLE_SIZE(main_table);
   }
 }
 
@@ -124,29 +135,36 @@ void TestsHandler()
   // Button processing
   if(GetButton1())
   {
-    GUI_DrawButtonL(label_next, 1);
-    state_h++;
-    state_h = state_h % TABLE_SIZE(packet_tests_table);
-  }
-  else
-  {
-    GUI_DrawButtonL(label_next, 0);
-  }
-  
-  if(GetButton2())
-  {
-    GUI_DrawButtonR(label_enter, 1);
+    GUI_DrawButtonL(label_enter, 1);
     current_handler = packet_tests_table[state_h].handler;
   }
   else
   {
-    GUI_DrawButtonR(label_enter, 0);
+    GUI_DrawButtonL(label_enter, 0);
+  }
+  
+  if(GetButton2())
+  {
+    GUI_DrawButtonR(label_back, 1);
+    state_h = 0;
+    current_handler = &MainHandler;
+  }
+  else
+  {
+    GUI_DrawButtonR(label_back, 0);
   }
   
   if(GetButton3())
   {
-    state_h = 0;
-    current_handler = &MainHandler;
+    state_h--;
+    if(state_h > TABLE_SIZE(packet_tests_table))
+      state_h = TABLE_SIZE(packet_tests_table)-1;
+  }
+  
+  if(GetButton4())
+  {
+    state_h++;
+    state_h = state_h % TABLE_SIZE(packet_tests_table);
   }
 }
 
@@ -181,7 +199,6 @@ void NBFiTxHandler()
 {
   static uint8_t state_n = 0;
   //static nbfi_packet_t __xdata* pkt;
-  
   //static uint8_t __xdata dl_result = 0;
   
   static uint8_t test_pkt[8] = {0,0xDE,0xAD,0xBE,0xEF,0x12,0x34,0x56};
@@ -189,7 +206,6 @@ void NBFiTxHandler()
   
   // Caption
   LCD_DrawString(0,(uint16_t)-6,"../Tests/NBFi TX", COLOR_FILL, ALIGN_LEFT);
-  
   
   // Entry list
   for(int i=0; i<TABLE_SIZE(nbfi_tx_table); i++)
@@ -203,18 +219,7 @@ void NBFiTxHandler()
   // Button processing
   if(GetButton1())
   {
-    GUI_DrawButtonL(label_next, 1);
-    state_n++;
-    state_n = state_n % TABLE_SIZE(nbfi_tx_table);
-  }
-  else
-  {
-    GUI_DrawButtonL(label_next, 0);
-  }
-  
-  if(GetButton2())
-  {
-    GUI_DrawButtonR(label_enter, 1);
+    GUI_DrawButtonL(label_enter, 1);
     switch(state_n)
     {
     case 0:
@@ -228,7 +233,18 @@ void NBFiTxHandler()
   }
   else
   {
-    GUI_DrawButtonR(label_enter, 0);
+    GUI_DrawButtonL(label_enter, 0);
+  }
+  
+  if(GetButton2())
+  {
+    GUI_DrawButtonR(label_back, 1);
+    state_n = 0;
+    current_handler = &TestsHandler;
+  }
+  else
+  {
+    GUI_DrawButtonR(label_back, 0);
   }
   
   LCD_DrawString(10,36,"UL enqueued:", COLOR_FILL, ALIGN_LEFT);
@@ -237,13 +253,15 @@ void NBFiTxHandler()
   
   if(GetButton3())
   {
-    state_n = 0;
-    current_handler = &TestsHandler;
+    state_n--;
+    if(state_n > TABLE_SIZE(nbfi_tx_table))
+      state_n = TABLE_SIZE(nbfi_tx_table)-1;
   }
   
   if(GetButton4())
   {
-
+    state_n++;
+    state_n = state_n % TABLE_SIZE(nbfi_tx_table);
   }
 }
 
@@ -294,7 +312,7 @@ void NBFiRxHandler()
   my_sprintf(textbuf, "%i", NBFi_Phy_To_Bitrate(nbfi.rx_phy_channel));
   LCD_DrawString(127,45, textbuf, COLOR_FILL, ALIGN_RIGHT);*/
   
-  if(GetButton3())
+  if(GetButton2())
   {
     current_handler = &TestsHandler;
   }
@@ -340,7 +358,7 @@ void NBFiRxHandler()
         GUI_DrawButtonR(label_cancel, 0);
     }
 
-    if(GetButton3())
+    if(GetButton2())
     {
         current_handler = &TestsHandler;
     }
@@ -368,31 +386,41 @@ void RSSiHandler()
   LCD_DrawString(0,(uint16_t)-6,"../Tests/RSSi", COLOR_FILL, ALIGN_LEFT);
   
   // Button processing
-  if(GetButton1())
+  if(state)
   {
-    GUI_DrawButtonL(label_start, 1);
-    RF_Init(DL_PSK_200, PCB, 0, 446000000);
-    state = 1;
+    if(GetButton2())
+    {
+      GUI_DrawButtonR(label_stop, 1);
+      RF_Deinit();
+      state = 0;
+    }
+    else
+    {
+      GUI_DrawButtonR(label_stop, 0);
+    }
   }
   else
   {
-    GUI_DrawButtonL(label_start, 0);
-  }
-  
-  if(GetButton2())
-  {
-    GUI_DrawButtonR(label_cancel, 1);
-    RF_Deinit();
-    state = 0;
-  }
-  else
-  {
-    GUI_DrawButtonR(label_cancel, 0);
-  }
-  
-  if(GetButton3())
-  {
-    current_handler = &TestsHandler;
+    if(GetButton1())
+    {
+      GUI_DrawButtonL(label_start, 1);
+      RF_Init(DL_PSK_200, PCB, 0, 446000000);
+      state = 1;
+    }
+    else
+    {
+      GUI_DrawButtonL(label_start, 0);
+    }
+    
+    if(GetButton2())
+    {
+      GUI_DrawButtonR(label_back, 1);
+      current_handler = &TestsHandler;
+    }
+    else
+    {
+      GUI_DrawButtonR(label_back, 0);
+    }
   }
 }
 
@@ -476,75 +504,39 @@ void SettingsHandler()
       /*LCD_DrawString(10,(i*9)+5, "TX Power", COLOR_FILL, ALIGN_LEFT);
       my_sprintf(textbuf, "%d", nbfi.tx_pwr);
       LCD_DrawString(127,(i*9)+5, textbuf, COLOR_FILL, ALIGN_RIGHT);*/
-      LCD_DrawString(10,(i*9)+5, "TX BitRate", COLOR_FILL, ALIGN_LEFT);
+      LCD_DrawString(10,(i*9)+5, " TX BitRate", COLOR_FILL, ALIGN_LEFT);
       my_sprintf(textbuf, "%d", NBFi_Phy_To_Bitrate(nbfi.tx_phy_channel));
       LCD_DrawString(127,(i*9)+5, textbuf, COLOR_FILL, ALIGN_RIGHT);
       break;
     case 1:
-      LCD_DrawString(10,(i*9)+5, "TX Antenna", COLOR_FILL, ALIGN_LEFT);
+      LCD_DrawString(10,(i*9)+5, " TX Antenna", COLOR_FILL, ALIGN_LEFT);
       my_sprintf(textbuf, "%s", nbfi.tx_antenna?"SMA":"PCB");
       LCD_DrawString(127,(i*9)+5, textbuf, COLOR_FILL, ALIGN_RIGHT);
       break;
     case 2:
-      LCD_DrawString(10,(i*9)+5, "RX Antenna", COLOR_FILL, ALIGN_LEFT);
+      LCD_DrawString(10,(i*9)+5, " RX Antenna", COLOR_FILL, ALIGN_LEFT);
       my_sprintf(textbuf, "%s", nbfi.rx_antenna?"SMA":"PCB");
       LCD_DrawString(127,(i*9)+5, textbuf, COLOR_FILL, ALIGN_RIGHT);
       break;
     case 3:
-      LCD_DrawString(10,(i*9)+5, "NBFi Mode", COLOR_FILL, ALIGN_LEFT);          //LCD_DrawString(10,(i*9)+5, "UART Mode", COLOR_FILL, ALIGN_LEFT);
-      if(nbfi.mode == DRX)                                                      //added
-        my_sprintf(textbuf, "%s", "DRX");                                       //added
-      else                                                                      //added
-        my_sprintf(textbuf, "%s", nbfi.mode?"CRX":"NRX");                       //my_sprintf(textbuf, "%s", uart_mode?"TEXT":"SLIP");
+      LCD_DrawString(10,(i*9)+5, " NBFi Mode", COLOR_FILL, ALIGN_LEFT);
+      if(nbfi.mode == DRX)
+        my_sprintf(textbuf, "%s", "DRX");
+      else
+        my_sprintf(textbuf, "%s", nbfi.mode?"CRX":"NRX");
       LCD_DrawString(127,(i*9)+5, textbuf, COLOR_FILL, ALIGN_RIGHT);
       break;
     }
   }
   
+  // Button processing
   if(edit)
   {
     LCD_FillRect(0,(state_s*9)+10,128,10, COLOR_INVERT);
-    
+
     if(GetButton1())
     {
-      GUI_DrawButtonL(label_dec, 1);
-      switch(state_s)
-      {
-      case 0:
-        switch(nbfi.tx_phy_channel)
-        {
-          case UL_DBPSK_50_PROT_D:
-            break;
-          case UL_DBPSK_400_PROT_D:
-            nbfi.tx_phy_channel = UL_DBPSK_50_PROT_D;
-            break;
-          case UL_DBPSK_3200_PROT_D:
-            nbfi.tx_phy_channel = UL_DBPSK_400_PROT_D;
-            break;
-        }
-        //if(nbfi.tx_phy_channel > 0) nbfi.tx_pwr--;
-        break;
-      case 1:
-        nbfi.tx_antenna ^= 1;
-        break;
-      case 2:
-        nbfi.rx_antenna ^= 1;
-        break;
-      case 3:
-        nbfi.mode++;                                                            //added
-        nbfi.mode %= 3;                                                         //added
-        cnt_nbfi_mode = nbfi.mode;                                              //uart_mode ^= 1;
-        break;
-      }
-    }
-    else
-    {
-      GUI_DrawButtonL(label_dec, 0);
-    }
-    
-    if(GetButton2())
-    {
-      GUI_DrawButtonR(label_inc, 1);
+      GUI_DrawButtonL(label_inc, 1);
       switch(state_s)
       {
       case 0:
@@ -557,6 +549,7 @@ void SettingsHandler()
             nbfi.tx_phy_channel = UL_DBPSK_3200_PROT_D;
             break;
           case UL_DBPSK_3200_PROT_D:
+            nbfi.tx_phy_channel = UL_DBPSK_50_PROT_D;
             break;
         }
         //if(nbfi.tx_pwr < 26) nbfi.tx_pwr++;
@@ -568,56 +561,63 @@ void SettingsHandler()
         nbfi.rx_antenna ^= 1;
         break;
       case 3:
-        nbfi.mode++;                                                            //added
-        nbfi.mode %= 3;                                                         //added
-        cnt_nbfi_mode = nbfi.mode;                                              //uart_mode ^= 1;
+        nbfi.mode++;
+        nbfi.mode %= 3;
         break;
-        
-      }
+      }      
     }
     else
     {
-      GUI_DrawButtonR(label_inc, 0);
+      GUI_DrawButtonL(label_inc, 0);
     }
     
-    if(GetButton3())
+    if(GetButton2())
     {
+      GUI_DrawButtonR(label_back, 1);
       edit = 0;
-      return;
+    }
+    else
+    {
+      GUI_DrawButtonR(label_back, 0);
     }
   }
-
-  // Button processing
-  if(edit == 0)
+  else          //if (edit == 0);
   {
     // Cursor
     LCD_DrawString(5,(state_s*9)+5,">", COLOR_FILL, ALIGN_LEFT);
     
     if(GetButton1())
     {
-      GUI_DrawButtonL(label_next, 1);
-      state_s++;
-      state_s = state_s % 4;
-    }
-    else
-    {
-      GUI_DrawButtonL(label_next, 0);
-    }
-    
-    if(GetButton2())
-    {
-      GUI_DrawButtonR(label_edit, 1);
+      GUI_DrawButtonL(label_edit, 1);
       edit = 1;
     }
     else
     {
-      GUI_DrawButtonR(label_edit, 0);
+      GUI_DrawButtonL(label_edit, 0);
+    }
+    
+    if(GetButton2())
+    {
+      GUI_DrawButtonR(label_back, 1);
+      state_s = 0;
+      current_handler = &MainHandler;
+    }
+    else
+    {
+      GUI_DrawButtonR(label_back, 0);
     }
     
     if(GetButton3())
     {
-      state_s = 0;
-      current_handler = &MainHandler;
+      state_s--;
+      if(state_s > 4)
+        state_s = 4-1;
+    }
+    
+    if(GetButton4())
+    {
+      state_s++;
+      state_s = state_s % 4;
     }
   }
 }
@@ -648,29 +648,36 @@ void InfoHandler()
   // Button processing
   if(GetButton1())
   {
-    GUI_DrawButtonL(label_next, 1);
-    state_i++;
-    state_i = state_i % TABLE_SIZE(info_table);
-  }
-  else
-  {
-    GUI_DrawButtonL(label_next, 0);
-  }
-  
-  if(GetButton2())
-  {
-    GUI_DrawButtonR(label_enter, 1);
+    GUI_DrawButtonL(label_enter, 1);
     current_handler = info_table[state_i].handler;
   }
   else
   {
-    GUI_DrawButtonR(label_enter, 0);
+    GUI_DrawButtonL(label_enter, 0);
+  }
+  
+  if(GetButton2())
+  {
+    GUI_DrawButtonR(label_back, 1);
+    state_i = 0;
+    current_handler = &MainHandler;
+  }
+  else
+  {
+    GUI_DrawButtonR(label_back, 0);
   }
   
   if(GetButton3())
   {
-    state_i = 0;
-    current_handler = &MainHandler;
+    state_i--;
+    if(state_i > TABLE_SIZE(info_table))
+      state_i = TABLE_SIZE(info_table)-1;
+  }
+  
+  if(GetButton4())
+  {
+    state_i++;
+    state_i = state_i % TABLE_SIZE(info_table);    
   }
 }
 
@@ -698,7 +705,7 @@ void NBFiQuality()
   my_sprintf(textbuf, "%u", NBFi_Phy_To_Bitrate(nbfi.rx_phy_channel));
   LCD_DrawString(127,45, textbuf, COLOR_FILL, ALIGN_RIGHT);
   
-  if(GetButton3())
+  if(GetButton2())
   {
     current_handler = &InfoHandler;
   }
@@ -728,7 +735,7 @@ void NBFiStats()
   my_sprintf(textbuf, "%d", nbfi_state.DL_total);
   LCD_DrawString(127,45, textbuf, COLOR_FILL, ALIGN_RIGHT);
   
-  if(GetButton3())
+  if(GetButton2())
   {
     current_handler = &InfoHandler;
   }
@@ -740,7 +747,7 @@ void DevInfoHandler()
   
   // Device full ID
   LCD_DrawString(10,5,"ID:", COLOR_FILL, ALIGN_LEFT);
-  //    my_sprintf(textbuf, "ID: %02X%02X%02X%02X%02X%02X", nbfi.full_ID[5],nbfi.full_ID[4],nbfi.full_ID[3],nbfi.full_ID[2],nbfi.full_ID[1],nbfi.full_ID[0]);
+  // my_sprintf(textbuf, "ID: %02X%02X%02X%02X%02X%02X", nbfi.full_ID[5],nbfi.full_ID[4],nbfi.full_ID[3],nbfi.full_ID[2],nbfi.full_ID[1],nbfi.full_ID[0]);
   my_sprintf(textbuf, "%02X%02X%02X", nbfi.full_ID[1],nbfi.full_ID[2],nbfi.full_ID[3]);
   LCD_DrawString(127,5,textbuf, COLOR_FILL, ALIGN_RIGHT);
   
@@ -750,33 +757,37 @@ void DevInfoHandler()
   LCD_DrawString(10,15,"Time:", COLOR_FILL, ALIGN_LEFT);
   my_sprintf(textbuf, "%02d:%02d:%02d", TM->tm_hour, TM->tm_min, TM->tm_sec);
   LCD_DrawString(127,15,textbuf, COLOR_FILL, ALIGN_RIGHT);
-
   
   //    LCD_DrawString(10,23,"Buttons:", COLOR_FILL, ALIGN_LEFT);
   //    my_sprintf(textbuf, "%u", buttons_v);
   //    LCD_DrawString(127,23,textbuf, COLOR_FILL, ALIGN_RIGHT);
-  //
+  
   LCD_DrawString(10,25,"VCC:", COLOR_FILL, ALIGN_LEFT);
-  my_sprintf(textbuf, "%umV", ADC_VDDA);
+  my_sprintf(textbuf, "%umV", nbfi_measure_valtage_or_temperature(ADC_VDDA));
   LCD_DrawString(127,25,textbuf, COLOR_FILL, ALIGN_RIGHT);
-  //
+
   LCD_DrawString(10,35,"TEMP:", COLOR_FILL, ALIGN_LEFT);
-  my_sprintf(textbuf, "%d'C", ADC_temp);
+  my_sprintf(textbuf, "%d'C", nbfi_measure_valtage_or_temperature(ADC_TEMP));
   LCD_DrawString(127,35,textbuf, COLOR_FILL, ALIGN_RIGHT);
+  
+//  if(GetButton1())
+//  {
+//    GUI_DrawButtonL(label_reflash, 1);
+//    HAL_RebootToBootloader();
+//  }
+//  else
+//  {
+//    GUI_DrawButtonL(label_reflash, 0);
+//  }
   
   if(GetButton2())
   {
-    GUI_DrawButtonR(label_reflash, 1);
-                                                                                //HAL_RebootToBootloader();
+    GUI_DrawButtonR(label_back, 1);
+    current_handler = &InfoHandler;
   }
   else
   {
-    GUI_DrawButtonR(label_reflash, 0);
-  }
-  
-  if(GetButton3())
-  {
-    current_handler = &InfoHandler;
+    GUI_DrawButtonR(label_back, 0);
   }
 }
 
@@ -789,6 +800,7 @@ void GUI_Update()
   
   (*current_handler)();
   
+  ResetButtonFlags(0xff);                                                       //сброс всех флагов кнопок
   LCD_WriteBuffer();
 }
 

@@ -14,19 +14,11 @@
 #define SB3_PRESS       (64)
 #define SB4_PRESS       (128)
 
-#define IDLE_TIME       20                                                      //время бездействия в (сек)
-#define BUT_RESP_TIME   250                                                     //время отклика кнопок в (мс)
+#define IDLE_TIME       10                                                      //время бездействия в (сек)
+#define BUT_RESP_TIME   200                                                     //время отклика кнопок в (мс)
 
 //#define DEBUG_NO_SLEEP
 
-
-//typedef struct
-//{
-//  uint8_t button_events;
-//}wtimer_desc;
-
-//void CheckButtons(wtimer_desc *desc);
-void Buttons_Process_Start();
 bool GetButton1();
 bool GetButton2();
 bool GetButton3();

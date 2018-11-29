@@ -33,7 +33,7 @@
 
 #include <stdarg.h>
 #include <string.h>
-#include "stm32l0xx_hal.h"
+#include "stdio.h"
 
 
 #define ZEROPAD 1               // Pad with zero

@@ -1,4 +1,4 @@
-
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : main.c
@@ -36,10 +36,12 @@
   *
   ******************************************************************************
   */
+/* USER CODE END Header */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32l0xx_hal.h"
 
+/* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
 #include "wtimer.h"
@@ -51,9 +53,23 @@
 #include "waviotdvk.h"
 #include "time.h"
 #include "nbfi_misc.h"
-#include "adc.h"
 
 /* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc;
@@ -65,13 +81,10 @@ SPI_HandleTypeDef hspi1;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
-struct wtimer_desc everysecond_desc;
-struct wtimer_desc gui_update_desc;
-extern uint8_t nbfi_lock;
-static uint8_t cnt_button_not_pressed_sec = IDLE_TIME;                          //декрементируется 1 раз в секунду, если кнопки не нажаты
-bool status_sleep = 0;                                                          //static bool status_sleep = false;
+struct wtimer_desc everysecond_desc, gui_update_desc;
+static uint8_t cnt_button_idle_sec = IDLE_TIME;                                 //таймер бездействия кнопок (сек)
+bool status_sleep = 0;
 bool gui_update_state = 0;
-static uint8_t button_state;
 
 /* USER CODE END PV */
 
@@ -81,7 +94,6 @@ static void MX_GPIO_Init(void);
 static void MX_LPTIM1_Init(void);
 static void MX_ADC_Init(void);
 static void MX_SPI1_Init(void);
-
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 
@@ -90,56 +102,26 @@ void GUI_UpdateHandler(struct wtimer_desc *desc);
 
 /* USER CODE END PFP */
 
+/* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
 void GUI_UpdateHandler(struct wtimer_desc *desc)
 {
-  GUI_Update();                                                                 //обновись дисплей
-  if(gui_update_state)                                                          //если статус обновления дисплея                                                       
-  {
-    ScheduleTask(desc, 0, RELATIVE, MILLISECONDS(BUT_RESP_TIME));               //вернуться через 250 мс
-    gui_update_state = false;                                                   //сброс флага
-  }
-  else
-  {
-    ScheduleTask(desc, 0, RELATIVE, MILLISECONDS(1000));                        //вернуться через 1с
-  }
+  gui_update_state = true;
+  ScheduleTask(desc, 0, RELATIVE, SECONDS(1));                                  //вернуться через 1с
 }
 
 void EverySecond(struct wtimer_desc *desc)
 {
-  if(!status_sleep)
-  {  
-    cnt_button_not_pressed_sec--;                                               //декремент таймера бездействия
-    ADC_get();
-    
-    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);                       //POWERLED_ON
-    delay_ms(2);
-    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_RESET);                     //POWERLED_OFF
-    
-    ScheduleTask(desc, 0, RELATIVE, SECONDS(1));
-  }
-  else
-  {
-    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);                       //POWERLED_ON
-    delay_ms(2);
-    HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_RESET);                     //POWERLED_OFF
-    
-    ScheduleTask(desc, 0, RELATIVE, SECONDS(5));
-  }
-}
-
-void HAL_SYSTICK_Callback(void)
-{
-  if(!nbfi_lock) wtimer_runcallbacks();
+  cnt_button_idle_sec--;                                                        //декремент таймера бездействия    
+  ScheduleTask(desc, 0, RELATIVE, SECONDS(1));                                  //вернуться через 1с
 }
 
 /* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
-  *
-  * @retval None
+  * @retval int
   */
 int main(void)
 {
@@ -147,7 +129,7 @@ int main(void)
 
   /* USER CODE END 1 */
 
-  /* MCU Configuration----------------------------------------------------------*/
+  /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
@@ -166,55 +148,55 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_LPTIM1_Init();
-  //MX_ADC_Init();
+  MX_ADC_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   
   //HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);                       //POWERLED_ON
-  
+    
   ax5043_init();
   
-  /* GUI Init */
-  LCD_Init();
+  LCD_Init();                                                                   //GUI Init {
   Backlight(true);
-  GUI_Init();
-  Buttons_Process_Start();
-  RTC_Init();
-  ScheduleTask(&everysecond_desc, &EverySecond, RELATIVE, SECONDS(1));
+  GUI_Init();                                                                   
+  RTC_Init();                                                                   //GUI Init }
   ScheduleTask(&gui_update_desc, &GUI_UpdateHandler, RELATIVE, MILLISECONDS(BUT_RESP_TIME));
-  
-  ADC_init();                                                                   //ADC Init
+  ScheduleTask(&everysecond_desc, &EverySecond, RELATIVE, SECONDS(1));
   
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  { 
-    button_state = GetButtonState();                                            //текущее состояние кнопок
-    
-    if(button_state & (SB1_INT|SB2_INT|SB3_INT|SB4_INT))                        //если прерывание по кнопке
+  {
+    if(GetButtonState() & (SB1_INT|SB2_INT|SB3_INT|SB4_INT))                    //если прерывание по кнопке
     {
       ResetButtonFlags(SB1_INT|SB2_INT|SB3_INT|SB4_INT);                        //сброс флагов прерывания
-      cnt_button_not_pressed_sec = IDLE_TIME;                                   //сброс таймера бездействия
+      cnt_button_idle_sec = IDLE_TIME-1;                                        //сброс таймера бездействия
       if(status_sleep)
       {
         status_sleep = false;
         MX_GPIO_Init();
-        ADC_init();
+        MX_ADC_Init();
         LCD_Init();
         Backlight(true);                                                        //включение подсветки
         HAL_SPI_Init(&hspi1);
       }
     }
     
-    if(button_state & (SB1_PRESS|SB2_PRESS|SB3_PRESS|SB4_PRESS))                //если зафиксировано нажатие кнопки
+    if(GetButtonState() & (SB1_PRESS|SB2_PRESS|SB3_PRESS|SB4_PRESS))            //если зафиксировано нажатие кнопки
     {
-      if(!gui_update_state)                                                     //если дисплей не обновляется
-      {                                                        
-        ScheduleTask(&gui_update_desc, &GUI_UpdateHandler, RELATIVE, MILLISECONDS(BUT_RESP_TIME));  //поставить задачу
-        gui_update_state = true;                                                //флаг обновления дисплея
-      }
+      GUI_Update();
+      ScheduleTask(&gui_update_desc, &GUI_UpdateHandler, RELATIVE, MILLISECONDS(BUT_RESP_TIME));  //поставить задачу GUI_Update через BUT_RESP_TIME
+    }
+    
+    if(gui_update_state)
+    {
+      gui_update_state = false;
+      GUI_Update();
+      HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);                     //POWERLED_ON
+      HAL_Delay(2);
+      HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_RESET);                   //POWERLED_OFF
     }
     
     NBFi_ProcessRxPackets(1);
@@ -222,38 +204,43 @@ int main(void)
     #ifdef DEBUG_NO_SLEEP
     #warning DEBUG_NO_SLEEP
     #else   
-    if(cnt_button_not_pressed_sec == 0)
-    {
-      if (axradio_cansleep()&& NBFi_can_sleep()) 
+    if(cnt_button_idle_sec > IDLE_TIME)                                         //если время бездействия превысило IDLE_TIME
+    {                                    
+      if (axradio_cansleep() && NBFi_can_sleep()) 
       {
-        /////////////////////////////////////////////////////////////////////////////////////     DEINIT GPIO
-        ADC_deinit();
+        /////////////////////////// DEINIT periphery ////////////////////////////
+        ADC->CCR = 0; 
         HAL_SPI_DeInit(&hspi1);
-        HAL_GPIO_DeInit(GPIOH, POWERLED_Pin|LCD_PWR_Pin);
-        HAL_GPIO_DeInit(BACKLIGHT_GPIO_Port, BACKLIGHT_Pin);
-        HAL_GPIO_DeInit(GPIOB, AX_SPI_CS_Pin|LCD_A0_Pin|LCD_MOSI_Pin|LCD_SCK_Pin|LCD_RESET_Pin);
-        HAL_GPIO_DeInit(LCD_CS_GPIO_Port, LCD_CS_Pin);        
-        ///////////////////////////////////////////////////////////////////////////////////
-//        Backlight(false);                                                       //выключение подсветки
-//        HAL_GPIO_WritePin(LCD_RESET_GPIO_Port, LCD_RESET_Pin, GPIO_PIN_RESET);  //LCD_RESET = 0;
-//        HAL_GPIO_WritePin(LCD_PWR_GPIO_Port, LCD_PWR_Pin, GPIO_PIN_RESET);      //LCD_POWER = 0;
         
+        GPIO_InitTypeDef GPIO_InitStruct = {0};                                 //установка портов в GPIO_MODE_ANALOG {
+        GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+        GPIO_InitStruct.Pull = GPIO_NOPULL;
+        
+        GPIO_InitStruct.Pin = POWERLED_Pin|LCD_PWR_Pin;
+        HAL_GPIO_Init(GPIOH, &GPIO_InitStruct);
+        
+        GPIO_InitStruct.Pin = BACKLIGHT_Pin;
+        HAL_GPIO_Init(BACKLIGHT_GPIO_Port, &GPIO_InitStruct);
+        
+        GPIO_InitStruct.Pin = AX_SPI_CS_Pin|LCD_A0_Pin|LCD_MOSI_Pin|LCD_SCK_Pin|LCD_RESET_Pin;
+        HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+        
+        GPIO_InitStruct.Pin = LCD_CS_Pin;
+        HAL_GPIO_Init(LCD_CS_GPIO_Port, &GPIO_InitStruct);                      //установка портов в GPIO_MODE_ANALOG }
+        ////////////////////////////////////////////////////////////////////////
         status_sleep = true;
         HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
         SystemClock_Config();
-        Buttons_Process_Start();
-        wtimer_runcallbacks();
       }
     }
     #endif
     
-  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-  /* USER CODE BEGIN 3 */
+    /* USER CODE BEGIN 3 */
 
   }
   /* USER CODE END 3 */
-
 }
 
 /**
@@ -262,38 +249,33 @@ int main(void)
   */
 void SystemClock_Config(void)
 {
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-  RCC_OscInitTypeDef RCC_OscInitStruct;
-  RCC_ClkInitTypeDef RCC_ClkInitStruct;
-  RCC_PeriphCLKInitTypeDef PeriphClkInit;
-
-    /**Configure the main internal regulator output voltage 
-    */
+  /**Configure the main internal regulator output voltage 
+  */
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
-    /**Configure LSE Drive Capability 
-    */
+  /**Configure LSE Drive Capability 
+  */
   HAL_PWR_EnableBkUpAccess();
-
   __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
-
-    /**Initializes the CPU, AHB and APB busses clocks 
-    */
+  /**Initializes the CPU, AHB and APB busses clocks 
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSE;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = 16;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLLMUL_4;
   RCC_OscInitStruct.PLL.PLLDIV = RCC_PLLDIV_2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
-
-    /**Initializes the CPU, AHB and APB busses clocks 
-    */
+  /**Initializes the CPU, AHB and APB busses clocks 
+  */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
@@ -303,82 +285,95 @@ void SystemClock_Config(void)
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
-
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_LPTIM1;
   PeriphClkInit.LptimClockSelection = RCC_LPTIM1CLKSOURCE_LSE;
 
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
-
-    /**Configure the Systick interrupt time 
-    */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-
-    /**Configure the Systick 
-    */
-  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
-  /* SysTick_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SysTick_IRQn, 1, 0);
 }
 
-/* ADC init function */
+/**
+  * @brief ADC Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_ADC_Init(void)
 {
 
-  ADC_ChannelConfTypeDef sConfig;
+  /* USER CODE BEGIN ADC_Init 0 */
 
-    /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
-    */
+  /* USER CODE END ADC_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC_Init 1 */
+
+  /* USER CODE END ADC_Init 1 */
+  /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
+  */
   hadc.Instance = ADC1;
   hadc.Init.OversamplingMode = DISABLE;
   hadc.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
   hadc.Init.Resolution = ADC_RESOLUTION_12B;
-  hadc.Init.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  hadc.Init.SamplingTime = ADC_SAMPLETIME_160CYCLES_5;
   hadc.Init.ScanConvMode = ADC_SCAN_DIRECTION_FORWARD;
   hadc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc.Init.ContinuousConvMode = DISABLE;
-  hadc.Init.DiscontinuousConvMode = DISABLE;
+  hadc.Init.DiscontinuousConvMode = ENABLE;
   hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc.Init.DMAContinuousRequests = DISABLE;
-  hadc.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc.Init.EOCSelection = ADC_EOC_SEQ_CONV;
   hadc.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc.Init.LowPowerAutoWait = DISABLE;
   hadc.Init.LowPowerFrequencyMode = DISABLE;
-  hadc.Init.LowPowerAutoPowerOff = DISABLE;
+  hadc.Init.LowPowerAutoPowerOff = ENABLE;
   if (HAL_ADC_Init(&hadc) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
-
-    /**Configure for the selected ADC regular channel to be converted. 
-    */
+  /**Configure for the selected ADC regular channel to be converted. 
+  */
   sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
   sConfig.Rank = ADC_RANK_CHANNEL_NUMBER;
   if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
-
-    /**Configure for the selected ADC regular channel to be converted. 
-    */
+  /**Configure for the selected ADC regular channel to be converted. 
+  */
   sConfig.Channel = ADC_CHANNEL_VREFINT;
   if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
+  /* USER CODE BEGIN ADC_Init 2 */
+
+  HAL_ADCEx_Calibration_Start(&hadc, ADC_SINGLE_ENDED);
+  
+  /* USER CODE END ADC_Init 2 */
 
 }
 
-/* LPTIM1 init function */
+/**
+  * @brief LPTIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_LPTIM1_Init(void)
 {
 
+  /* USER CODE BEGIN LPTIM1_Init 0 */
+
+  /* USER CODE END LPTIM1_Init 0 */
+
+  /* USER CODE BEGIN LPTIM1_Init 1 */
+
+  /* USER CODE END LPTIM1_Init 1 */
   hlptim1.Instance = LPTIM1;
   hlptim1.Init.Clock.Source = LPTIM_CLOCKSOURCE_APBCLOCK_LPOSC;
   hlptim1.Init.Clock.Prescaler = LPTIM_PRESCALER_DIV32;
@@ -388,15 +383,29 @@ static void MX_LPTIM1_Init(void)
   hlptim1.Init.CounterSource = LPTIM_COUNTERSOURCE_INTERNAL;
   if (HAL_LPTIM_Init(&hlptim1) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
+  /* USER CODE BEGIN LPTIM1_Init 2 */
+
+  /* USER CODE END LPTIM1_Init 2 */
 
 }
 
-/* SPI1 init function */
+/**
+  * @brief SPI1 Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_SPI1_Init(void)
 {
 
+  /* USER CODE BEGIN SPI1_Init 0 */
+
+  /* USER CODE END SPI1_Init 0 */
+
+  /* USER CODE BEGIN SPI1_Init 1 */
+
+  /* USER CODE END SPI1_Init 1 */
   /* SPI1 parameter configuration*/
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_MASTER;
@@ -412,24 +421,22 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CRCPolynomial = 7;
   if (HAL_SPI_Init(&hspi1) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+    Error_Handler();
   }
+  /* USER CODE BEGIN SPI1_Init 2 */
+
+  /* USER CODE END SPI1_Init 2 */
 
 }
 
-/** Configure pins as 
-        * Analog 
-        * Input 
-        * Output
-        * EVENT_OUT
-        * EXTI
-     PA2   ------> LPUART1_TX
-     PA3   ------> LPUART1_RX
-*/
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_GPIO_Init(void)
 {
-
-  GPIO_InitTypeDef GPIO_InitStruct;
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -470,6 +477,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(BACKLIGHT_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : PA1 PA8 PA9 PA10 
+                           PA11 PA12 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10 
+                          |GPIO_PIN_11|GPIO_PIN_12;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
   /*Configure GPIO pins : PA2 PA3 */
   GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -499,6 +514,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : PB10 PB11 PB12 PB13 
+                           PB14 PB15 PB9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13 
+                          |GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
   /*Configure GPIO pins : SB3_Pin SB4_Pin */
   GPIO_InitStruct.Pin = SB3_Pin|SB4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
@@ -520,11 +543,9 @@ static void MX_GPIO_Init(void)
 
 /**
   * @brief  This function is executed in case of error occurrence.
-  * @param  file: The file name as string.
-  * @param  line: The line in file as a number.
   * @retval None
   */
-void _Error_Handler(char *file, int line)
+void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
@@ -542,7 +563,7 @@ void _Error_Handler(char *file, int line)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(uint8_t* file, uint32_t line)
+void assert_failed(uint8_t *file, uint32_t line)
 { 
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
@@ -550,13 +571,5 @@ void assert_failed(uint8_t* file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

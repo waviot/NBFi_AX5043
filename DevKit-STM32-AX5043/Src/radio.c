@@ -6,6 +6,7 @@
 #include "nbfi_config.h"
 #include "waviotdvk.h"                                                          //added
 #include "nbfi_misc.h"                                                          //added
+#include "adc.h"                                                                //added
 
 #define MODEM_ID  *((const uint32_t*)0x0801ff80)  
 #define KEY  ((const uint32_t*)0x0801ff84)            
@@ -74,9 +75,55 @@ const nbfi_settings_t nbfi_set_default =
   NBFI_DL_FREQ_BASE
 };
 
+static uint8_t nbfi_lock = 0;
 extern SPI_HandleTypeDef hspi1;
 extern LPTIM_HandleTypeDef hlptim1;
-extern uint8_t button_event_flags;                                              //added
+extern bool status_sleep;                                                       //added
+struct wtimer_desc buttons_desc;
+
+void CheckButtons(struct wtimer_desc *desc)
+{
+  if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(SB1_GPIO_Port, SB1_Pin))
+  {
+    SetButtonFlags(SB1_PRESS);                                                  //установка флага нажатия кнопки
+  }
+  else
+  {
+    //ResetButtonFlags(SB1_PRESS);                                                //сброс флага нажатия кнопки
+  }
+  
+  if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(SB2_GPIO_Port, SB2_Pin))
+  {
+    SetButtonFlags(SB2_PRESS);                                                  //установка флага нажатия кнопки
+  }
+  else
+  {
+    //ResetButtonFlags(SB2_PRESS);                                                //сброс флага нажатия кнопки
+  }
+  
+  if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(SB3_GPIO_Port, SB3_Pin))
+  {
+    SetButtonFlags(SB3_PRESS);                                                  //установка флага нажатия кнопки
+  }
+  else
+  {
+    //ResetButtonFlags(SB3_PRESS);                                                //сброс флага нажатия кнопки
+  }
+  
+  if(GPIO_PIN_RESET == HAL_GPIO_ReadPin(SB4_GPIO_Port, SB4_Pin))
+  {
+    SetButtonFlags(SB4_PRESS);                                                  //установка флага нажатия кнопки
+  }
+  else
+  {
+    //ResetButtonFlags(SB4_PRESS);                                                //сброс флага нажатия кнопки
+  }
+}
+
+void HAL_SYSTICK_Callback(void)
+{
+  if(!nbfi_lock) wtimer_runcallbacks();
+}
 
 void HAL_LPTIM_CompareMatchCallback(LPTIM_HandleTypeDef *hlptim)
 {
@@ -85,7 +132,7 @@ void HAL_LPTIM_CompareMatchCallback(LPTIM_HandleTypeDef *hlptim)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  if(GPIO_Pin == GPIO_PIN_0)
+  if(GPIO_Pin == AX_IRQ_Pin)
   {
     axradio_isr();
   }
@@ -97,7 +144,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
     else
     {
-//      button_event_flags &= ~SB1_INT;                                           //сброс флага нажатия кнопки
+      //ResetButtonFlags(SB1_INT);                                                //сброс флага нажатия кнопки
     }
     
     if(GPIO_Pin == SB2_Pin)
@@ -106,7 +153,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
     else
     {
-//      button_event_flags &= ~SB2_INT;                                           //сброс флага нажатия кнопки
+      //ResetButtonFlags(SB2_INT);                                                //сброс флага нажатия кнопки
     }    
     
     if(GPIO_Pin == SB3_Pin)
@@ -115,7 +162,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
     else
     {
-//      button_event_flags &= ~SB3_INT;                                           //сброс флага нажатия кнопки
+      //ResetButtonFlags(SB3_INT);                                                //сброс флага нажатия кнопки
     }    
     
     if(GPIO_Pin == SB4_Pin)
@@ -124,8 +171,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
     else
     {
-//      button_event_flags &= ~SB4_INT;                                           //сброс флага нажатия кнопки
+      //ResetButtonFlags(SB4_INT);                                                //сброс флага нажатия кнопки
     }
+    
+    if(!status_sleep)
+      ScheduleTask(&buttons_desc, &CheckButtons, RELATIVE, MILLISECONDS(50));   //опросить кнопоки через 50 мс
   }
 }
 
@@ -290,9 +340,10 @@ void nbfi_write_flash_settings(nbfi_settings_t* settings)
 
 uint32_t nbfi_measure_valtage_or_temperature(uint8_t val)
 {
-//  ADC_get();
-//  return val ? ADC_VDDA / 10 : ADC_temp;
-  return 0;
+  if(ADC_Get() == 0)
+    return val ? adc_temp : adc_vdda;
+  else
+    return 0;
 }
 
 uint32_t nbfi_update_rtc()
@@ -313,8 +364,6 @@ void nbfi_receive_complete(uint8_t * data, uint16_t length)
 {
   // NBFi_Send(data, length); //loopback
 }
-
-uint8_t nbfi_lock = 0;
 
 void nbfi_lock_unlock_nbfi_irq(uint8_t lock)
 {

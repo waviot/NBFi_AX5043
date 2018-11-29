@@ -3,10 +3,10 @@
 * Copyright (C) 2010 Limor Fried, Adafruit Industries
 */
 
+#include "main.h"                                                               //added
 #include <stdlib.h>
 #include "wtimer.h"
 #include "stlcd.h"
-//#include "spi.h"
 #include "fonts.h"
 
 #define LCD_INIT_INTERFACE() {DIRA |= 0x02; DIRC |= 0x01; DIRB |= 0x30;}
@@ -100,7 +100,7 @@ void ST7565_WriteBuffer (void)
     for (uint8_t c=0; c <LCDWIDTH; c++)
     {
       ST7565_WriteData (lcd_buffer[(LCDWIDTH*p)+c]);
-      wtimer_runcallbacks();
+      //wtimer_runcallbacks();
     }
   }
 }
