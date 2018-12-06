@@ -143,18 +143,18 @@ void NBFI_reg_func(uint8_t name, void* fn)
 	case NBFI_MEASURE_VOLTAGE_OR_TEMPERATURE:
 		__nbfi_measure_voltage_or_temperature = (uint32_t(*)(uint8_t))fn;
 		break;
-    case NBFI_UPDATE_RTC:
-        __nbfi_update_rtc = (uint32_t(*)(void))fn;
-        break;
-    case NBFI_RTC_SYNCHRONIZED:
-        __nbfi_rtc_synchronized = (void(*)(uint32_t))fn;
-        break;
-    case NBFI_LOCKUNLOCKNBFIIRQ:
-        __nbfi_lock_unlock_nbfi_irq = (void(*)(uint8_t))fn;
-        break; 
-    case NBFI_RESET:
-        __nbfi_reset = (void(*)(void))fn;
-        break;
+        case NBFI_UPDATE_RTC:
+            __nbfi_update_rtc = (uint32_t(*)(void))fn;
+            break;
+        case NBFI_RTC_SYNCHRONIZED:
+            __nbfi_rtc_synchronized = (void(*)(uint32_t))fn;
+            break;
+        case NBFI_LOCKUNLOCKNBFIIRQ:
+            __nbfi_lock_unlock_nbfi_irq = (void(*)(uint8_t))fn;
+            break; 
+        case NBFI_RESET:
+            __nbfi_reset = (void(*)(void))fn;
+            break;
 	default:
 		break;
 	}
@@ -166,15 +166,26 @@ nbfi_status_t NBFi_Send(uint8_t* payload, uint8_t length)
     nbfi_transport_packet_t* packet;
     uint8_t groupe = 0;
     uint8_t len = length;
-     
+    
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(1);
+    
     uint8_t free = NBFI_TX_PKTBUF_SIZE - NBFi_Packets_To_Send();
-    if((length <= nbfi.max_payload_len) && (free < nbfi.mack_mode + 3 ) ) return ERR_BUFFER_FULL;
-    else if((length/nbfi.max_payload_len + 3) > free) return ERR_BUFFER_FULL;
+    if((length <= nbfi.max_payload_len) && (free < nbfi.mack_mode + 3 ) ) 
+    {
+      if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
+      return ERR_BUFFER_FULL;
+    }
+    else if((length/nbfi.max_payload_len + 3) > free) 
+    {
+      if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
+      return ERR_BUFFER_FULL;
+    }
     if(length < nbfi.max_payload_len)
     {
         packet =  NBFi_AllocateTxPkt(length + 1);
         if(!packet)
         {
+            if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
             return ERR_BUFFER_FULL;
         }
         packet->phy_data.SYS = 1;
@@ -208,6 +219,7 @@ nbfi_status_t NBFi_Send(uint8_t* payload, uint8_t length)
         packet =  NBFi_AllocateTxPkt(l + first);
         if(!packet)
         {
+            if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
             return ERR_BUFFER_FULL;
         }
         
@@ -260,7 +272,7 @@ nbfi_status_t NBFi_Send(uint8_t* payload, uint8_t length)
     
     
     NBFi_Force_process();
-
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
     return OK;
 }
 
@@ -318,7 +330,6 @@ void NBFi_ProcessRxPackets(_Bool external)
             }
         }
         
-        if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
         
         uint8_t *data_ptr;
         if(group_with_crc)
@@ -330,6 +341,8 @@ void NBFi_ProcessRxPackets(_Bool external)
         else data_ptr = &data[0];
         
         if(groupe > 1) NBFi_Wait_Extra_Handler(0);
+        
+        if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
         
         if(rx_handler) rx_handler(data_ptr, total_length);
         
