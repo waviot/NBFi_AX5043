@@ -7,7 +7,7 @@
 #include <rf.h>
 
 #ifdef FORMAT_CODE
-#pragma default_function_attributes = @ "AXRADIO_FUNC"
+//#pragma default_function_attributes = @ "AXRADIO_FUNC"
 #endif
 
 
@@ -2196,6 +2196,6 @@ void ax5043_set_constants(void)
 }
 
 #ifdef FORMAT_CODE
-#pragma default_function_attributes = 
+//#pragma default_function_attributes = 
 #endif
 

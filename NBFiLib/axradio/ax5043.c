@@ -9,7 +9,7 @@
 #include "easyax5043.h"
 
 #ifdef FORMAT_CODE
-#pragma default_function_attributes = @ "AXRADIO_FUNC"
+//#pragma default_function_attributes = @ "AXRADIO_FUNC"
 #endif
      
      
@@ -301,5 +301,5 @@ void ax5043_hard_reset()
 }
 
 #ifdef FORMAT_CODE
-#pragma default_function_attributes = 
+//#pragma default_function_attributes = 
 #endif

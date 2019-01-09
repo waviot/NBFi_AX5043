@@ -39,7 +39,7 @@
 #include <string.h>
 
 #ifdef FORMAT_CODE
-#pragma default_function_attributes = @ "AXRADIO_FUNC"
+//#pragma default_function_attributes = @ "AXRADIO_FUNC"
 #endif
 
 
@@ -2220,5 +2220,5 @@ uint8_t axradio_agc_thaw(void)
 }
 
 #ifdef FORMAT_CODE
-#pragma default_function_attributes = 
+//#pragma default_function_attributes = 
 #endif
