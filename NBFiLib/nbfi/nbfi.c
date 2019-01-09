@@ -379,10 +379,13 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
     if(st->u.rx.phy.rssi < nbfi_state.noise) snr = 0;
     else snr = (st->u.rx.phy.rssi - nbfi_state.noise) & 0xff;
 
-    nbfi_last_snr = snr;
-
     nbfi_state.last_rssi = st->u.rx.phy.rssi;
-    nbfi_state.aver_rx_snr = (((uint16_t)nbfi_state.aver_rx_snr)*3 + snr)>>2;
+    
+    if(snr > 5)
+    {
+      nbfi_last_snr = snr;
+      nbfi_state.aver_rx_snr = (((uint16_t)nbfi_state.aver_rx_snr)*3 + snr)>>2;
+    }
 
     nbfi_transport_packet_t* pkt = 0;
 
@@ -667,6 +670,7 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
             if(n < noise_min) noise_min = n;
             if(--noise_min_cntr == 0)
             {
+                if(noise_min < -150) noise_min = -149;
                 if(noise_min == -150) nbfi_state.noise = n;
                 else nbfi_state.noise = noise_min;
                 noise_min = 0;
@@ -677,7 +681,7 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
         else
         {
             int8_t r = ax5043_spi_read(AX5043_RSSI);
-            noise_summ += r - (int16_t)axradio_phy_rssioffset;
+            noise_summ += (nbfi_state.rssi = (r - (int16_t)axradio_phy_rssioffset));
             noise_cntr++;
 
         }

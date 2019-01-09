@@ -85,6 +85,7 @@ typedef struct
     uint8_t UL_rating;
     uint8_t DL_rating;
     uint32_t DL_last_time;
+    int16_t rssi;
 }nbfi_state_t;
 
 
