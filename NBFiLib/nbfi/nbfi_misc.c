@@ -379,7 +379,7 @@ void NBFi_Clear_RX_Buffer()
 {
     for(uint8_t i = 0; i != NBFI_RX_PKTBUF_SIZE; i++ )
     {
-        nbfi_RX_pktBuf[i]->state = PACKET_CLEARED;
+        if(nbfi_RX_pktBuf[i]->state != PACKET_RECEIVED) nbfi_RX_pktBuf[i]->state = PACKET_CLEARED;
     }
 }
 

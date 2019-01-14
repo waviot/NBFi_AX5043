@@ -281,6 +281,7 @@ void NBFi_ProcessRxPackets(_Bool external)
     nbfi_transport_packet_t* pkt;
     uint8_t data[256];
     uint8_t groupe;
+    uint8_t last_group_iter;
     uint16_t total_length;
     _Bool group_with_crc = 0;
     process_rx_external = external;
@@ -314,17 +315,18 @@ void NBFi_ProcessRxPackets(_Bool external)
             {
                 uint8_t len;
                 uint8_t first = 0;
+                last_group_iter = (iter + i)&0x1f;
                 if((i == 0)&&(groupe > 1)) {len = nbfi.max_payload_len - 2; first = 2;}
                 else len = (memcpy_len>=nbfi.max_payload_len)?nbfi.max_payload_len:memcpy_len%nbfi.max_payload_len;
-                memcpy_xdata(data + i*nbfi.max_payload_len - 2*(i != 0), (void const*)(&nbfi_RX_pktBuf[(iter + i)&0x1f]->phy_data.payload[first]), len);
+                memcpy_xdata(data + i*nbfi.max_payload_len - 2*(i != 0), (void const*)(&nbfi_RX_pktBuf[last_group_iter]->phy_data.payload[first]), len);
                 memcpy_len -= len;
-                if(nbfi_RX_pktBuf[(iter + i)&0x1f]->phy_data.ACK) nbfi_RX_pktBuf[(iter + i)&0x1f]->state = PACKET_CLEARED;
-                else nbfi_RX_pktBuf[(iter + i)&0x1f]->state = PACKET_PROCESSED;
+                if(nbfi_RX_pktBuf[last_group_iter]->phy_data.ACK) nbfi_RX_pktBuf[last_group_iter]->state = PACKET_CLEARED;
+                else nbfi_RX_pktBuf[last_group_iter]->state = PACKET_PROCESSED;
 
                 if((nbfi.mack_mode < MACK_2) && (groupe == 1)) 
                 {
                   //NBFi_RxPacket_Free(nbfi_RX_pktBuf[(iter + i)&0x1f]);
-                  nbfi_RX_pktBuf[(iter + i)&0x1f]->state = PACKET_PROCESSED;
+                  nbfi_RX_pktBuf[last_group_iter]->state = PACKET_PROCESSED;
                 }
 
             }
@@ -335,7 +337,12 @@ void NBFi_ProcessRxPackets(_Bool external)
         if(group_with_crc)
         {
             total_length--;
-            if(CRC8((unsigned char*)(&data[1]), (unsigned char)(total_length)) != data[0]) return;
+            if(CRC8((unsigned char*)(&data[1]), (unsigned char)(total_length)) != data[0]) 
+            {
+                NBFi_Clear_RX_Buffer();
+                if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
+                return;
+            }
             data_ptr = &data[1];
         }
         else data_ptr = &data[0];

@@ -131,7 +131,7 @@ nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
     uint8_t lastcrc8;
     _Bool downlink;
 
-    memset_xdata(ul_buf,0,sizeof(ul_buf));
+    //memset_xdata(ul_buf,0,sizeof(ul_buf));
 
     if(nbfi.mode == TRANSPARENT) pkt->phy_data_length--;
 
@@ -196,15 +196,19 @@ nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
     }
     else
     {
-        if(nbfi.tx_phy_channel < UL_DBPSK_3200_PROT_D)
+        switch(nbfi.tx_phy_channel)
         {
-                tx_freq = nbfi.ul_freq_base + (((*((const uint32_t*)FULL_ID)+lastcrc8)%226)*100);
-                if(parity) tx_freq = tx_freq + 27500;
-        }
-        else
-        {
-            tx_freq = nbfi.ul_freq_base + 1600 + (((*((const uint32_t*)FULL_ID)+lastcrc8)%210)*100);
-            if(parity) tx_freq = tx_freq + 27500 - 1600;
+            case UL_DBPSK_3200_PROT_D:
+              tx_freq = nbfi.ul_freq_base + 1600 + (((*((const uint32_t*)FULL_ID)+lastcrc8)%210)*100);
+              if(parity) tx_freq = tx_freq + 27500 - 1600;
+            break;
+            case UL_DBPSK_25600_PROT_D:
+              tx_freq = nbfi.ul_freq_base + 12800;
+              if(parity) tx_freq = tx_freq + 25600;
+            default:
+              tx_freq = nbfi.ul_freq_base + (((*((const uint32_t*)FULL_ID)+lastcrc8)%226)*100);
+              if(parity) tx_freq = tx_freq + 27500;
+            break;
         }
     }
 
@@ -219,7 +223,7 @@ nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
 
     if(!nbfi.tx_freq) parity = !parity;
 
-    if((nbfi.mode == NRX) && parity) // For NRX send in ALOHA mode
+    if((nbfi.mode == NRX) && parity && (!nbfi.tx_freq)) // For NRX send in ALOHA mode
     {
       
       RF_Init(nbfi.tx_phy_channel, (rf_antenna_t)nbfi.tx_antenna, nbfi.tx_pwr, tx_freq);
@@ -233,7 +237,20 @@ nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
     
     RF_Init(nbfi.tx_phy_channel, (rf_antenna_t)nbfi.tx_antenna, nbfi.tx_pwr, tx_freq);
 
-    RF_Transmit(ul_buf, len + ZCODE_LEN, PADDING_4TO1, NONBLOCKING);
+    
+    switch (nbfi.tx_phy_channel)
+    {
+        case UL_DBPSK_3200_PROT_D:
+            RF_Transmit(ul_buf + 4, len + ZCODE_LEN + 1, PADDING_4TO1, NONBLOCKING);
+            break;
+        case UL_DBPSK_25600_PROT_D:
+            RF_Transmit(ul_buf, len + ZCODE_LEN + 5, PADDING_4TO1, NONBLOCKING);
+            break;
+        default:
+            RF_Transmit(ul_buf + 5, len + ZCODE_LEN, PADDING_4TO1, NONBLOCKING);
+            break;
+    }
+    
 
     nbfi_state.UL_total++;
 

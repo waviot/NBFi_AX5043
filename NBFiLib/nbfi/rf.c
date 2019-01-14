@@ -121,6 +121,7 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
     case UL_DBPSK_50_PROT_D:
     case UL_DBPSK_400_PROT_D:
     case UL_DBPSK_3200_PROT_D:
+    case UL_DBPSK_25600_PROT_D:
         ax5043_set_constants();
         
         RF_SetModeAndPower(power, TX, antenna);
