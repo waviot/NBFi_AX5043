@@ -669,6 +669,7 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
           if(t < MinVoltage || !MinVoltage) MinVoltage = t;
     }
 
+    if(need_to_calc_noise && (rf_state == STATE_CHANGED)) NBFi_RX_Controller();
     if(rf_state == STATE_RX)
     {
         if(++cal_noise_timer > 20*60*5) need_to_calc_noise = 1;

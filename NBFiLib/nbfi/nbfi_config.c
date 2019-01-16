@@ -115,16 +115,18 @@ void NBFi_Config_Set_TX_Chan(nbfi_phy_channel_t ch);
 void NBFi_Config_Set_RX_Chan(nbfi_phy_channel_t ch);
 void NBFi_Config_Send_Current_Mode(struct wtimer_desc *desc);
 
+uint8_t rx_delta = 10;
+uint8_t tx_delta = 10;
 
 static _Bool NBFI_Config_is_high_SNR_for_UP(uint8_t rx_tx)
 {
-    uint8_t delta;
+    //uint8_t delta;
     if(rx_tx & RX_CONF)
     {
         if(current_rx_rate < (NUM_OF_RX_RATES - 1))
         {
-            delta = RxSNRDegradationTable[current_rx_rate + 1] - RxSNRDegradationTable[current_rx_rate];
-            if(nbfi_state.aver_rx_snr  > RX_SNRLEVEL_FOR_UP + delta) return 1;
+            rx_delta = RxSNRDegradationTable[current_rx_rate + 1] - RxSNRDegradationTable[current_rx_rate];
+            if(nbfi_state.aver_rx_snr  > RX_SNRLEVEL_FOR_UP + rx_delta) return 1;
             else return 0;
         }
         else
@@ -140,8 +142,8 @@ static _Bool NBFI_Config_is_high_SNR_for_UP(uint8_t rx_tx)
     {
         if(current_tx_rate < (NUM_OF_TX_RATES - 1))
         {
-            delta = TxSNRDegradationTable[current_tx_rate + 1] - TxSNRDegradationTable[current_tx_rate];
-            if(nbfi_state.aver_tx_snr  > TX_SNRLEVEL_FOR_UP + delta) return 1;
+            tx_delta = TxSNRDegradationTable[current_tx_rate + 1] - TxSNRDegradationTable[current_tx_rate];
+            if(nbfi_state.aver_tx_snr  > TX_SNRLEVEL_FOR_UP + tx_delta) return 1;
             else return 0;
         }
         else
@@ -210,13 +212,14 @@ void NBFI_Config_Check_State()
 
     if(nbfi_state.aver_tx_snr < TX_SNRLEVEL_FOR_DOWN)
     {
-        if(!NBFi_Config_Tx_Power_Change(UP)) NBFi_Config_Rate_Change(TX_CONF, DOWN);
+        NBFi_Config_Tx_Power_Change(UP);
+        //if(!NBFi_Config_Tx_Power_Change(UP)) NBFi_Config_Rate_Change(TX_CONF, DOWN);
     }
 
     if(nbfi_state.aver_rx_snr < RX_SNRLEVEL_FOR_DOWN)
     {
         you_should_dl_power_step_up = (1 << 6);
-        NBFi_Config_Rate_Change(RX_CONF, DOWN);
+       // NBFi_Config_Rate_Change(RX_CONF, DOWN);
         return;
     }
 }
@@ -232,10 +235,10 @@ static _Bool NBFi_Config_Rate_Change(uint8_t rx_tx, nbfi_rate_direct_t dir )
         {
             if(++current_rx_rate > NUM_OF_RX_RATES - 1)  current_rx_rate = NUM_OF_RX_RATES - 1;
         }
-        if(dir == DOWN)
+        /*if(dir == DOWN)
         {
             if(((int8_t)(--current_rx_rate)) < 0 ) current_rx_rate = 0;
-        }
+        }*/
     }
 
     if((rx_tx & TX_CONF))
@@ -244,23 +247,24 @@ static _Bool NBFi_Config_Rate_Change(uint8_t rx_tx, nbfi_rate_direct_t dir )
         {
             if(++current_tx_rate > NUM_OF_TX_RATES - 1)  current_tx_rate = NUM_OF_TX_RATES - 1;
             if(RxRateTable[current_rx_rate] == DL_PSK_200) 
-              while(TxRateTable[current_tx_rate] != UL_DBPSK_50_PROT_D)
-              {
-                current_tx_rate--;
-                should_not_to_reduce_pwr = 1;
-              }
+            while(TxRateTable[current_tx_rate] != UL_DBPSK_50_PROT_D)
+            {
+              current_tx_rate--;
+              should_not_to_reduce_pwr = 1;
+            }
             if(RxRateTable[current_rx_rate] == DL_PSK_500) 
-              while(TxRateTable[current_tx_rate] != UL_DBPSK_400_PROT_D)
-              {
-                current_tx_rate--;
-                should_not_to_reduce_pwr = 1;
-              }
+            while(TxRateTable[current_tx_rate] != UL_DBPSK_400_PROT_D)
+            {
+              current_tx_rate--;
+              should_not_to_reduce_pwr = 1;
+            }
         }
-        if(dir == DOWN)
+        /*if(dir == DOWN)
         {
             if(((int8_t)(--current_tx_rate)) < 0 ) current_tx_rate = 0;
-        }
+        }*/
     }
+    
     if((nbfi.tx_phy_channel == TxRateTable[current_tx_rate]) && (nbfi.rx_phy_channel == RxRateTable[current_rx_rate]))
     {
         if(should_not_to_reduce_pwr) return 1;
@@ -282,8 +286,8 @@ static _Bool NBFi_Config_Rate_Change(uint8_t rx_tx, nbfi_rate_direct_t dir )
         NBFi_Config_Return();
         return 0;
     }
-    if(rx < current_rx_rate) nbfi_state.aver_rx_snr -= 10;
-    if(tx < current_tx_rate) nbfi_state.aver_tx_snr -= 10;
+    if(rx < current_rx_rate) nbfi_state.aver_rx_snr -= rx_delta;
+    if(tx < current_tx_rate) nbfi_state.aver_tx_snr -= tx_delta;
 
     return 1;
 }
@@ -565,11 +569,15 @@ void NBFi_Config_Set_Default()
 
 }
 
+extern void (* __nbfi_lock_unlock_nbfi_irq)(uint8_t);
+
 void NBFi_Config_Set_FastDl(_Bool fast, _Bool save_settings)
 {
   
     static nbfi_settings_t settings;
     static nbfi_state_t state; 
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(1);
+    
     if(fast)
     {
         if(save_settings) 
@@ -600,6 +608,8 @@ void NBFi_Config_Set_FastDl(_Bool fast, _Bool save_settings)
     }
 
     if(rf_state == STATE_RX) NBFi_RX();
+    
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
 }
 
 
