@@ -125,13 +125,18 @@ nbfi_status_t NBFi_TX_ProtocolE(nbfi_transport_packet_t* pkt)
 
 nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
 {
-    uint8_t ul_buf[64];
+   // uint8_t ul_buf[64];
+    
+    uint8_t ul_buffer[64+8];
+
+    uint8_t *ul_buf = &ul_buffer[8];
+
     uint8_t len = 0;
     static _Bool parity = 0;
     uint8_t lastcrc8;
     _Bool downlink;
 
-    //memset_xdata(ul_buf,0,sizeof(ul_buf));
+    memset_xdata(ul_buf,0,sizeof(ul_buf));
 
     if(nbfi.mode == TRANSPARENT) pkt->phy_data_length--;
 
@@ -241,13 +246,13 @@ nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
     switch (nbfi.tx_phy_channel)
     {
         case UL_DBPSK_3200_PROT_D:
-            RF_Transmit(ul_buf + 4, len + ZCODE_LEN + 1, PADDING_4TO1, NONBLOCKING);
+            RF_Transmit(ul_buffer + 7, len + ZCODE_LEN + 1, PADDING_4TO1, NONBLOCKING);
             break;
         case UL_DBPSK_25600_PROT_D:
-            RF_Transmit(ul_buf, len + ZCODE_LEN + 5, PADDING_4TO1, NONBLOCKING);
+            RF_Transmit(ul_buffer + 3, len + ZCODE_LEN + 5, PADDING_4TO1, NONBLOCKING);
             break;
         default:
-            RF_Transmit(ul_buf + 5, len + ZCODE_LEN, PADDING_4TO1, NONBLOCKING);
+            RF_Transmit(ul_buffer + 8, len + ZCODE_LEN, PADDING_4TO1, NONBLOCKING);
             break;
     }
     

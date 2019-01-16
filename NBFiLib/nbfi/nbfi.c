@@ -381,7 +381,7 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
 
     nbfi_state.DL_total++;
     nbfi_state.DL_last_time = NBFi_get_RTC();
-    if(++noise_min_cntr > NBFI_NOISE_DINAMIC[nbfi.rx_phy_channel]) noise_min_cntr =   NBFI_NOISE_DINAMIC[nbfi.rx_phy_channel];
+    noise_min_cntr =  NBFI_NOISE_DINAMIC[nbfi.rx_phy_channel];
     uint8_t snr;
     if(st->u.rx.phy.rssi < nbfi_state.noise) snr = 0;
     else snr = (st->u.rx.phy.rssi - nbfi_state.noise) & 0xff;
@@ -586,6 +586,8 @@ place_to_stack:
 static void NBFi_ProcessTasks(struct wtimer_desc *desc)
 {
    nbfi_transport_packet_t* pkt;
+   static _Bool need_to_calc_noise = 0;
+   static uint16_t cal_noise_timer = 20*60*5;
    if(nbfi.mode == OFF)
    {
         NBFi_RX_Controller();
@@ -593,7 +595,7 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
         ScheduleTask(desc, 0, RELATIVE, SECONDS(30));
         return;
    }
-   if((rf_busy == 0)&&(transmit == 0))
+   if((rf_busy == 0)&&(transmit == 0)&&(need_to_calc_noise == 0))
    {
         switch(nbfi_active_pkt->state)
         {
@@ -669,17 +671,20 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
 
     if(rf_state == STATE_RX)
     {
+        if(++cal_noise_timer > 20*60*5) need_to_calc_noise = 1;
         if(noise_cntr >= 10)
         {
             int16_t n = noise_summ/noise_cntr;
             noise_summ = 0;
             noise_cntr = 0;
+            if(noise_min == -150) noise_min = n;
             if(n < noise_min) noise_min = n;
             if(--noise_min_cntr == 0)
             {
                 if(noise_min < -150) noise_min = -149;
-                if(noise_min == -150) nbfi_state.noise = n;
                 else nbfi_state.noise = noise_min;
+                need_to_calc_noise = 0;
+                cal_noise_timer = 0;
                 noise_min = 0;
                 noise_min_cntr =  NBFI_NOISE_DINAMIC[nbfi.rx_phy_channel];
             }
@@ -693,6 +698,8 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
 
         }
     }
+    else noise_min_cntr =  NBFI_NOISE_DINAMIC[nbfi.rx_phy_channel];
+   
     if(nbfi.mode <= DRX && !NBFi_GetQueuedTXPkt() && (rf_busy == 0) && (transmit == 0) )
     {
         NBFi_RX_Controller();

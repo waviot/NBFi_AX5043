@@ -199,7 +199,7 @@ void NBFI_Config_Check_State()
     if(NBFI_Config_is_high_SNR_for_UP(TX_CONF))
     {
         if(!NBFi_Config_Rate_Change(TX_CONF, UP)) NBFi_Config_Tx_Power_Change(DOWN);
-        return;
+        //return;
     }
 
     if(NBFI_Config_is_high_SNR_for_UP(RX_CONF))
