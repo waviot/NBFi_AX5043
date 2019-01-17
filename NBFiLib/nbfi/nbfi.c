@@ -701,6 +701,8 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
     }
     else noise_min_cntr =  NBFI_NOISE_DINAMIC[nbfi.rx_phy_channel];
    
+   if(rf_state == STATE_CHANGED)  NBFi_RX_Controller();
+   
     if(nbfi.mode <= DRX && !NBFi_GetQueuedTXPkt() && (rf_busy == 0) && (transmit == 0) )
     {
         NBFi_RX_Controller();
