@@ -136,7 +136,7 @@ nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
     uint8_t lastcrc8;
     _Bool downlink;
 
-    memset_xdata(ul_buf,0,sizeof(ul_buf));
+    memset_xdata(ul_buffer,0, sizeof(ul_buffer));
 
     if(nbfi.mode == TRANSPARENT) pkt->phy_data_length--;
 
