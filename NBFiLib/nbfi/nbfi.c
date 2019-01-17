@@ -595,7 +595,7 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
         ScheduleTask(desc, 0, RELATIVE, SECONDS(30));
         return;
    }
-   if((rf_busy == 0)&&(transmit == 0)&&(need_to_calc_noise == 0))
+   if((rf_busy == 0)&&(transmit == 0)&&!((need_to_calc_noise == 1)&&(rf_state == STATE_RX)))
    {
         switch(nbfi_active_pkt->state)
         {
@@ -669,7 +669,7 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
           if(t < MinVoltage || !MinVoltage) MinVoltage = t;
     }
 
-    if(need_to_calc_noise && (rf_state == STATE_CHANGED)) NBFi_RX_Controller();
+    //if(need_to_calc_noise && (rf_state == STATE_CHANGED)) NBFi_RX_Controller();
     if(rf_state == STATE_RX)
     {
         if(++cal_noise_timer > 20*60*5) need_to_calc_noise = 1;
