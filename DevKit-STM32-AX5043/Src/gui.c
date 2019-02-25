@@ -377,6 +377,7 @@ void RSSiHandler()
   case 1:
     LCD_DrawString(10,5,"RX enabled", COLOR_FILL, ALIGN_LEFT);
     current_rssi = (int8_t)AX5043_RSSI - (int16_t)64;
+    current_rssi=nbfi_state.rssi;
     my_sprintf(textbuf, "RSSi = %i dBm", current_rssi);
     LCD_DrawString(10,23,textbuf, COLOR_FILL, ALIGN_LEFT);
     break;
