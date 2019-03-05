@@ -135,14 +135,14 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  nbfi_lock_unlock_nbfi_irq(1);
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  nbfi_lock_unlock_nbfi_irq(0);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -152,7 +152,7 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   
-  //HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);                       //POWERLED_ON
+  HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);                       //POWERLED_ON
     
   ax5043_init();
   
@@ -194,9 +194,9 @@ int main(void)
     {
       gui_update_state = false;
       GUI_Update();
-      HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);                     //POWERLED_ON
-      HAL_Delay(2);
-      HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_RESET);                   //POWERLED_OFF
+//      HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_SET);                     //POWERLED_ON
+//      HAL_Delay(2);
+//      HAL_GPIO_WritePin(GPIOH, POWERLED_Pin, GPIO_PIN_RESET);                   //POWERLED_OFF
     }
     
     NBFi_ProcessRxPackets(1);
