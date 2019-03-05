@@ -13,6 +13,9 @@
 #define MODEM_ID  *((const uint32_t*)0x0801ff80)  
 #define KEY  ((const uint32_t*)0x0801ff84)            
 
+//#define MODEM_ID  0x77cd42; 
+//const uint32_t KEY[8] = {0x8973ccae,0xd44852b1,0xd4adaef0,0x6052332c,0xb231661c,0x77699c76,0xbbe7ad55,0x05169c3f};        
+
 #define HW_ID     255
 #define HW_REV    0
 #define TX_MAX_POWER 15
