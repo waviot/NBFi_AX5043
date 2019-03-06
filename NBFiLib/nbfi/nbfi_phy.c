@@ -125,7 +125,6 @@ nbfi_status_t NBFi_TX_ProtocolE(nbfi_transport_packet_t* pkt)
 
 nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
 {
-   // uint8_t ul_buf[64];
     
     uint8_t ul_buffer[64+8];
 

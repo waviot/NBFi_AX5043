@@ -2387,6 +2387,12 @@
       <file>
         <name>$PROJ_DIR$\..\NBFiLib\misc\zcode.h</name>
       </file>
+      <file>
+        <name>$PROJ_DIR$\..\NBFiLib\misc\zcode_e.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\NBFiLib\misc\zcode_e.h</name>
+      </file>
     </group>
     <group>
       <name>nbfi</name>
