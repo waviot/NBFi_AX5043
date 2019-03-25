@@ -33,6 +33,6 @@ void ZCODE_E_Append(uint8_t * src_buf, uint8_t * dst_buf, _Bool parity)
     for(int i=0; i<9;i++)
     {
         dst_buf[i]      = (code[0][i] & (parity ? 0xAA : 0x55)) | (code[1][i] & (parity ? 0x55 : 0xAA));
-        dst_buf[i+8]    = (code[2][i] & (parity ? 0xAA : 0x55)) | (code[3][i] & (parity ? 0x55 : 0xAA));
+        dst_buf[i+9]    = (code[2][i] & (parity ? 0xAA : 0x55)) | (code[3][i] & (parity ? 0x55 : 0xAA));
     }
 }
