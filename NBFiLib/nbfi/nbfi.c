@@ -26,9 +26,9 @@ extern nbfi_dev_info_t dev_info;
 #pragma default_function_attributes = @ "NBFi_FUNC"
 #endif
 
-const uint32_t NBFI_DL_DELAY[10] = {30000, 30000, 30000, 5000, 5000, 5000, 1000, 1000, 500, 500};
-const uint32_t NBFI_DL_LISTEN_TIME[4] = {40000, 40000, 40000, 40000};
-const uint32_t NBFI_DL_ADD_RND_LISTEN_TIME[4] = {20000, 20000, 20000, 20000};
+const uint32_t NBFI_DL_DELAY[10] = {MILLISECONDS(30000), MILLISECONDS(30000), MILLISECONDS(30000), MILLISECONDS(5000), MILLISECONDS(5000), MILLISECONDS(5000), MILLISECONDS(1000), MILLISECONDS(1000), MILLISECONDS(500), MILLISECONDS(500)};
+const uint32_t NBFI_DL_LISTEN_TIME[4] = {MILLISECONDS(40000), MILLISECONDS(40000), MILLISECONDS(40000), MILLISECONDS(40000)};
+const uint32_t NBFI_DL_ADD_RND_LISTEN_TIME[4] = {MILLISECONDS(20000), MILLISECONDS(20000), MILLISECONDS(20000), MILLISECONDS(20000)};
 
 #define DRXLISTENAFTERSEND  20
 
@@ -375,7 +375,11 @@ void NBFi_ParseReceivedPacket(struct axradio_status *st)
         {
         NBFi_XTEA_OFB((uint8_t*)(st->u.rx.pktdata + 4), st->u.rx.pktlen - 5 - 3, st->u.rx.pktdata[3]&0x1f);
         }
-        if(*((uint16_t*)(&st->u.rx.pktdata[st->u.rx.pktlen - 4])) != CRC16((uint8_t *)(st->u.rx.pktdata + 4), st->u.rx.pktlen - 5 - 3, 0xFFFF)) return;
+        uint16_t crc_calc = CRC16((uint8_t *)(st->u.rx.pktdata + 4), st->u.rx.pktlen - 5 - 3, 0xFFFF);
+        uint16_t crc_rx = st->u.rx.pktdata[st->u.rx.pktlen - 3];
+        crc_rx <<= 8;
+        crc_rx |= st->u.rx.pktdata[st->u.rx.pktlen - 4];
+        if(crc_rx != crc_calc) return;
     }
 #endif
 

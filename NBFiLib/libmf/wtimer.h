@@ -3,7 +3,11 @@
 
 #include "libmfwtimer.h"
 
+#ifdef WTIMER_TIM_CLK
+#define SECONDS(x) 		((uint32_t)(x) * WTIMER_TIM_CLK)
+#else
 #define SECONDS(x) 		((uint32_t)(x) * 1000)
+#endif
 #define MILLISECONDS(x) (SECONDS(x) / 1000)
 
 #define ABSOLUTE    0
