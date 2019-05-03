@@ -90,6 +90,7 @@ extern nbfi_dev_info_t dev_info;
 #define UL868500_DL864000            10
 #define UL864000_DL864000            11 //KAZ
 #define UL868800_DL869100            12 //NEWRU
+#define UL866975_DL865000            13 //INDIA
 
 
 typedef enum
