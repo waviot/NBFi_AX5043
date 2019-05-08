@@ -188,8 +188,9 @@ uint8_t NBFi_Packets_To_Send()
         case PACKET_QUEUED:
         case PACKET_QUEUED_AGAIN:
         case PACKET_NEED_TO_SEND_RIGHT_NOW:
+             break;
         case PACKET_SENT_NOACKED:
-            break;
+            if(nbfi.mack_mode < MACK_2) break;
         default:
             packets_free++;
             continue;

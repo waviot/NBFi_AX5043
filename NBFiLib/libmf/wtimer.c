@@ -179,9 +179,16 @@ static uint8_t wtimer_checkexpired(void)
         }
 }
 
+uint16_t a,b;
 uint8_t wtimer_cansleep(void)
 {
-	return wtimer_state[1].queue == WTIMER_NULLDESC;
+	if((wtimer_state[0].queue == WTIMER_NULLDESC)&&((__wtimer_cc_get(0) > __wtimer_cnt_get(0))) &&( (__wtimer_cc_get(0) - __wtimer_cnt_get(0)) > 1))
+        {
+        
+          a = __wtimer_cc_get(0);
+          b = __wtimer_cnt_get(0);
+          return 1;
+        } else return 0;
 }
 
 typedef void (*handler_t)(struct wtimer_callback *desc);
