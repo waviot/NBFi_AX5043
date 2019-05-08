@@ -443,9 +443,13 @@ void NBFi_Resend_Pkt(nbfi_transport_packet_t* act_pkt, uint32_t mask)
         if(one&mask)
         {
           mask &= ~one;
-          pkt->state = PACKET_QUEUED_AGAIN;
-          if(last_resending_pkt == 0) last_resending_pkt = pkt;
-          nbfi_state.fault_total++;
+          if(++pkt->retry_num > nbfi.num_of_retries) pkt->state = PACKET_LOST;
+          else
+          {
+            pkt->state = PACKET_QUEUED_AGAIN;
+            if(last_resending_pkt == 0) last_resending_pkt = pkt;
+            nbfi_state.fault_total++;
+            }
         }
         else
         {

@@ -642,7 +642,7 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
                 }
                 else pkt->state = PACKET_SENT;
                 nbfi_active_pkt = pkt;
-                if(pkt->phy_data.SYS && !pkt->phy_data.ACK && NBFi_GetQueuedTXPkt()) pkt->phy_data.header |= MULTI_FLAG;
+                if(/*pkt->phy_data.SYS && */!pkt->phy_data.ACK && NBFi_GetQueuedTXPkt()) pkt->phy_data.header |= MULTI_FLAG;
 
                 if(pkt->phy_data.SYS && (pkt->phy_data.payload[0] == 0x08))
                 {
