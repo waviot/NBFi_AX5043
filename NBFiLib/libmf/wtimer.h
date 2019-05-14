@@ -40,6 +40,9 @@ extern void wtimer0_schedq(void);
 extern void wtimer0_update(void);
 extern void wtimer0_addcore(struct wtimer_desc *desc);
 extern uint8_t wtimer0_removecb_core(struct wtimer_desc *desc);
+
+extern uint8_t wtimer_runcallbacks_not_processed;
+
 uint8_t wtimer_idle(uint8_t flags);
 
 enum wtimer_func_t

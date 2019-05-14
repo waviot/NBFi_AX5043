@@ -18,6 +18,7 @@ uint16_t (* __wtimer_cc_get)(uint8_t chan);
 uint16_t (* __wtimer_cnt_get)(uint8_t chan);
 uint8_t (* __wtimer_check_cc_irq)(uint8_t chan);
 
+uint8_t wtimer_runcallbacks_not_processed = 0;
 
 void wtimer_reg_func(uint8_t name, void *fn)
 {
@@ -57,6 +58,7 @@ void wtimer_cc0_irq(void)
 	__wtimer_cc_irq_disable(0);
 	wtimer0_update();
 	wtimer0_schedq();
+        wtimer_runcallbacks_not_processed = 1;
 }
 
 static void wtimer_doinit(uint8_t wakeup)
@@ -182,7 +184,7 @@ static uint8_t wtimer_checkexpired(void)
 uint16_t a,b;
 uint8_t wtimer_cansleep(void)
 {
-	if(((__wtimer_cc_get(0) > __wtimer_cnt_get(0))) &&( (__wtimer_cc_get(0) - __wtimer_cnt_get(0)) > 1))
+	if(!wtimer_runcallbacks_not_processed && ((__wtimer_cc_get(0) > __wtimer_cnt_get(0))) &&( (__wtimer_cc_get(0) - __wtimer_cnt_get(0)) > 1))
         {
         
           a = __wtimer_cc_get(0);
@@ -223,7 +225,8 @@ uint8_t wtimer_runcallbacks(void)
 				__wtimer_globla_irq_enable();
 				if (exp)
 					break;
-				return ret;
+				wtimer_runcallbacks_not_processed = 0;
+                                return ret;
 			}
 		}
 	}
