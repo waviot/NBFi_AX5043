@@ -184,7 +184,7 @@ static uint8_t wtimer_checkexpired(void)
 uint16_t a,b;
 uint8_t wtimer_cansleep(void)
 {
-	if(!wtimer_runcallbacks_not_processed && ((__wtimer_cc_get(0) > __wtimer_cnt_get(0))) &&( (__wtimer_cc_get(0) - __wtimer_cnt_get(0)) > 1))
+	if(!wtimer_runcallbacks_not_processed /*&& ((__wtimer_cc_get(0) > __wtimer_cnt_get(0))) &&( (__wtimer_cc_get(0) - __wtimer_cnt_get(0)) > 1)*/)
         {
         
           a = __wtimer_cc_get(0);
