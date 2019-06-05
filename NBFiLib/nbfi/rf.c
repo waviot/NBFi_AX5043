@@ -14,6 +14,7 @@ nbfi_rf_state_s rf_state = STATE_OFF;
 nbfi_phy_channel_t nbfi_phy_channel;
 
 uint8_t PSK_BAND;
+uint8_t DBPSK_BAND;
 
 NBFi_ax5043_pins_s  nbfi_ax5043_pins;
 
@@ -103,9 +104,12 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
 
     if(phy_channel != OSC_CAL) nbfi_phy_channel = phy_channel;
 
-    if(freq > 600000000) PSK_BAND = 1;
-    else PSK_BAND = 0;
+    if(freq > 600000000) PSK_BAND = PSK_864;
+    else PSK_BAND = PSK_446_DBPSK_868;
 
+    if(freq < 440000000) DBPSK_BAND = DBPSK_434;
+    else DBPSK_BAND = PSK_446_DBPSK_868; 
+    
     ax5043_hard_reset();
     
     

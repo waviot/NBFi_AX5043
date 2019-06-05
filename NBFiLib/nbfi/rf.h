@@ -38,9 +38,17 @@ typedef struct
   uint16_t txpwr;
 } NBFi_ax5043_pins_s;
 
+typedef enum
+{
+    PSK_446_DBPSK_868 = 0,
+    PSK_864 = 1,
+    DBPSK_434 = 2
+}NBFi_radio_bands_t;
+
 extern  struct axradio_address fastdladdress;
 extern _Bool send_auto_corr;
 extern uint8_t PSK_BAND;
+extern uint8_t DBPSK_BAND;
 extern nbfi_rf_state_s rf_state;
 extern nbfi_phy_channel_t nbfi_phy_channel;
 extern _Bool rf_busy;
