@@ -178,8 +178,9 @@ void ax5043_set_registers(void)
     default:
         break;
     }
-    if(DBPSK_BAND == DBPSK_434)
+    if(DBPSK_BAND == PSK_446_DBPSK_458)
     {
+      ax5043_spi_write(AX5043_PLLVCOI                , 0x97);
       ax5043_spi_write(AX5043_0xF34, 0x28);
     }
 }
@@ -194,10 +195,8 @@ void ax5043_set_registers_tx(void)
     {
         switch(nbfi_phy_channel)
         {
- //       case UL_DBPSK_50_PROT_C:
         case UL_DBPSK_50_PROT_D:
  //       case UL_DBPSK_50_PROT_E:
- //       case UL_DBPSK_400_PROT_C:
         case UL_DBPSK_400_PROT_D:
   //      case UL_DBPSK_400_PROT_E:
         case UL_PSK_200:
@@ -224,7 +223,7 @@ void ax5043_set_registers_tx(void)
         }
 
     }
-    else
+    else 
     {
         switch(nbfi_phy_channel)
         {
@@ -234,7 +233,7 @@ void ax5043_set_registers_tx(void)
    //     case UL_DBPSK_400_PROT_C:
         case UL_DBPSK_400_PROT_D:
    //     case UL_DBPSK_400_PROT_E:
-            if(DBPSK_BAND == DBPSK_434)
+            if(DBPSK_BAND == PSK_446_DBPSK_458)
             {
               ax5043_spi_write(AX5043_PLLLOOP                , 0x0B);
               ax5043_spi_write(AX5043_PLLCPI                 , 0x10);
@@ -253,7 +252,7 @@ void ax5043_set_registers_tx(void)
    //     case UL_DBPSK_25600_PROT_E:
             ax5043_spi_write(AX5043_PLLLOOP                , 0x09);
             ax5043_spi_write(AX5043_PLLCPI                 , 0x02);
-            if(DBPSK_BAND == DBPSK_434) ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
+            if(DBPSK_BAND == PSK_446_DBPSK_458) ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
             else ax5043_spi_write(AX5043_PLLVCODIV              , 0x20);
             break;
         case UL_PSK_200:
@@ -292,10 +291,8 @@ void ax5043_set_registers_rx(void)
     {
         switch(nbfi_phy_channel)
         {
-   //     case UL_DBPSK_50_PROT_C:
         case UL_DBPSK_50_PROT_D:
    //     case UL_DBPSK_50_PROT_E:
-   //     case UL_DBPSK_400_PROT_C:
         case UL_DBPSK_400_PROT_D:
    //     case UL_DBPSK_400_PROT_E:
         case UL_DBPSK_3200_PROT_D:

@@ -51,7 +51,11 @@
 #elif BAND == UL864000_DL875000
 #define NBFI_UL_FREQ_BASE       (864000000 - 25000)
 #define NBFI_DL_FREQ_BASE       875000000
+#elif BAND == UL458550_DL453750
+#define NBFI_UL_FREQ_BASE       (458550000 - 25000)
+#define NBFI_DL_FREQ_BASE       453750000
 #endif 
+
 
 
 const nbfi_settings_t nbfi_set_default =

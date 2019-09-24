@@ -107,7 +107,7 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
     if(freq > 600000000) PSK_BAND = PSK_864;
     else PSK_BAND = PSK_446_DBPSK_868;
 
-    if(freq < 440000000) DBPSK_BAND = DBPSK_434;
+    if((freq < 500000000)&&(freq > 450000000)) DBPSK_BAND = PSK_446_DBPSK_458;
     else DBPSK_BAND = PSK_446_DBPSK_868; 
     
     ax5043_hard_reset();
