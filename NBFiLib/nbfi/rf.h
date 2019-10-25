@@ -41,8 +41,9 @@ typedef struct
 typedef enum
 {
     PSK_446_DBPSK_868 = 0,
-    PSK_864 = 1,
-    PSK_446_DBPSK_458 = 2
+    PSK_864_DBPSK_868 = 1,
+    PSK_446_DBPSK_458 = 2,
+    PSK_902_DBPSK_916 = 3
 }NBFi_radio_bands_t;
 
 extern  struct axradio_address fastdladdress;

@@ -92,6 +92,8 @@ extern nbfi_dev_info_t dev_info;
 #define UL868800_DL869100            12 //NEWRU
 #define UL866975_DL865000            13 //INDIA
 #define UL458550_DL453750            14 //UZ
+#define UL916500_DL902900            15 //ARGENTINA
+
 
 
 

@@ -935,14 +935,15 @@ nbfi_state_t* NBFi_get_state()
     return &nbfi_state;
 }
 
-void NBFi_Go_To_Sleep(_Bool sleep)
+nbfi_status_t NBFi_Go_To_Sleep(_Bool sleep)
 {
     static _Bool old_state = 1;
+    nbfi_status_t res = OK;
     if(sleep)
     {
         nbfi.mode = OFF;
         NBFi_Clear_TX_Buffer();
-        RF_Deinit();
+        res = RF_Deinit();
     }
     else
     {
@@ -957,6 +958,7 @@ void NBFi_Go_To_Sleep(_Bool sleep)
         }
     }
     old_state = sleep;
+    return res;
 }
 
 nbfi_status_t NBFI_Init()

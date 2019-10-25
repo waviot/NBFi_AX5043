@@ -91,42 +91,12 @@ void ax5043_set_registers(void)
             ax5043_spi_write(regs_DL_PSK_200[i], vals_DL_PSK_200[i]);
         }
         
-        if(PSK_BAND)
-        {
-            #ifdef GLONASS
-            ax5043_spi_write(AX5043_PLLVCOI                , 0x98);
-            #else
-            ax5043_spi_write(AX5043_PLLVCOI                , 0x99);
-            #endif // GLONASS
-            ax5043_spi_write(AX5043_0xF34                  , 0x08);
-
-        }
-        else
-        {
-            ax5043_spi_write(AX5043_PLLVCOI                , 0x97);
-            ax5043_spi_write(AX5043_0xF34                  , 0x28);
-        }
         break;
     }
     case DL_PSK_500:
     case UL_PSK_500: {
         for (int i = 0; i < sizeof(vals_DL_PSK_500); i++) {
             ax5043_spi_write(regs_DL_PSK_500[i], vals_DL_PSK_500[i]);
-        }
-        if(PSK_BAND)
-        {
-            #ifdef GLONASS
-            ax5043_spi_write(AX5043_PLLVCOI                , 0x98);
-            #else
-            ax5043_spi_write(AX5043_PLLVCOI                , 0x99);
-            #endif // GLONASS
-            ax5043_spi_write(AX5043_0xF34                  , 0x08);
-
-        }
-        else
-        {
-            ax5043_spi_write(AX5043_PLLVCOI                , 0x97);
-            ax5043_spi_write(AX5043_0xF34                  , 0x28);
         }
         break;
     }
@@ -135,22 +105,6 @@ void ax5043_set_registers(void)
         for (int i = 0; i < sizeof(vals_DL_PSK_5000); i++) {
             ax5043_spi_write(regs_DL_PSK_5000[i], vals_DL_PSK_5000[i]);
         }
-
-        if(PSK_BAND)
-        {
-            #ifdef GLONASS
-            ax5043_spi_write(AX5043_PLLVCOI                , 0x98);
-            #else
-            ax5043_spi_write(AX5043_PLLVCOI                , 0x99);
-            #endif // GLONASS
-            ax5043_spi_write(AX5043_0xF34                  , 0x08);
-
-        }
-        else
-        {
-            ax5043_spi_write(AX5043_PLLVCOI                , 0x97);
-            ax5043_spi_write(AX5043_0xF34                  , 0x28);
-        }
         break;
     }
     case DL_PSK_FASTDL:
@@ -158,31 +112,48 @@ void ax5043_set_registers(void)
         for (int i = 0; i < sizeof(vals_DL_PSK_FASTDL); i++) {
             ax5043_spi_write(regs_DL_PSK_FASTDL[i], vals_DL_PSK_FASTDL[i]);
         }
-        if(PSK_BAND)
-        {
-            #ifdef GLONASS
-            ax5043_spi_write(AX5043_PLLVCOI                , 0x98);
-            #else
-            ax5043_spi_write(AX5043_PLLVCOI                , 0x99);
-            #endif // GLONASS
-            ax5043_spi_write(AX5043_0xF34                  , 0x08);
-
-        }
-        else
-        {
-            ax5043_spi_write(AX5043_PLLVCOI                , 0x97);
-            ax5043_spi_write(AX5043_0xF34                  , 0x28);
-        }
         break;
     }
     default:
         break;
     }
-    if(DBPSK_BAND == PSK_446_DBPSK_458)
+    
+    if(nbfi_phy_channel <= DL_PSK_FASTDL)
     {
-      ax5043_spi_write(AX5043_PLLVCOI                , 0x97);
-      ax5043_spi_write(AX5043_0xF34, 0x28);
+        switch(PSK_BAND)
+        {
+          case PSK_864_DBPSK_868:
+            ax5043_spi_write(AX5043_PLLVCOI                , 0x99);
+            ax5043_spi_write(AX5043_0xF34                  , 0x08);
+            break;
+          case PSK_902_DBPSK_916:
+            ax5043_spi_write(AX5043_PLLVCOI                , 0x97);
+            ax5043_spi_write(AX5043_0xF34                  , 0x08);
+            break;
+          case PSK_446_DBPSK_868:
+          case PSK_446_DBPSK_458:
+            ax5043_spi_write(AX5043_PLLVCOI                , 0x97);
+            ax5043_spi_write(AX5043_0xF34                  , 0x28);
+            break;
+        }
     }
+    else
+    {
+        switch(DBPSK_BAND)
+        {
+          case PSK_446_DBPSK_458:
+            ax5043_spi_write(AX5043_PLLVCOI, 0x97);
+            ax5043_spi_write(AX5043_0xF34, 0x28);
+            break;
+          case PSK_902_DBPSK_916:
+            ax5043_spi_write(AX5043_PLLVCOI, 0x97);
+            break;
+          case PSK_446_DBPSK_868:
+          case PSK_864_DBPSK_868:          
+            break;
+        }
+    }
+    
 }
 
 void ax5043_set_registers_tx(void)
@@ -191,69 +162,46 @@ void ax5043_set_registers_tx(void)
     ax5043_spi_write(AX5043_0xF00                  , 0x0F);
     ax5043_spi_write(AX5043_0xF18                  , 0x06);
 
-    if(PSK_BAND)
+    switch(nbfi_phy_channel)
     {
-        switch(nbfi_phy_channel)
-        {
-        case UL_DBPSK_50_PROT_D:
- //       case UL_DBPSK_50_PROT_E:
-        case UL_DBPSK_400_PROT_D:
-  //      case UL_DBPSK_400_PROT_E:
-        case UL_PSK_200:
-        case DL_PSK_200:
-        case DL_PSK_500:
-        case UL_PSK_500:
-        case DL_PSK_5000:
-        case UL_PSK_5000:
-              ax5043_spi_write(AX5043_PLLLOOP                , 0x07);
-              ax5043_spi_write(AX5043_PLLCPI                 , 0x12);
-              ax5043_spi_write(AX5043_PLLVCODIV              , 0x20);
-            break;
-        case DL_PSK_FASTDL:
-        case UL_PSK_FASTDL:
-        case UL_DBPSK_3200_PROT_D:
-   //     case UL_DBPSK_3200_PROT_E:
-        case UL_DBPSK_25600_PROT_D:
-   //     case UL_DBPSK_25600_PROT_E:
-            ax5043_spi_write(AX5043_PLLLOOP                , 0x09);
-            ax5043_spi_write(AX5043_PLLCPI                 , 0x02);
-            ax5043_spi_write(AX5043_PLLVCODIV              , 0x20);
-        default:
-            break;
-        }
-
-    }
-    else 
-    {
-        switch(nbfi_phy_channel)
-        {
-   //     case UL_DBPSK_50_PROT_C:
         case UL_DBPSK_50_PROT_D:
    //     case UL_DBPSK_50_PROT_E:
-   //     case UL_DBPSK_400_PROT_C:
         case UL_DBPSK_400_PROT_D:
    //     case UL_DBPSK_400_PROT_E:
-            if(DBPSK_BAND == PSK_446_DBPSK_458)
-            {
+          switch(DBPSK_BAND)
+          {
+            case PSK_446_DBPSK_458:
               ax5043_spi_write(AX5043_PLLLOOP                , 0x0B);
               ax5043_spi_write(AX5043_PLLCPI                 , 0x10);
               ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
-            }
-            else 
-            {
+              break;
+            case PSK_446_DBPSK_868:
+            case PSK_864_DBPSK_868:
+            case PSK_902_DBPSK_916:
               ax5043_spi_write(AX5043_PLLLOOP                , 0x07);
               ax5043_spi_write(AX5043_PLLCPI                 , 0x12);
               ax5043_spi_write(AX5043_PLLVCODIV              , 0x20);
-            }
-            break;
+              break;
+              
+          }
+          break;
         case UL_DBPSK_3200_PROT_D:
    //     case UL_DBPSK_3200_PROT_E:
         case UL_DBPSK_25600_PROT_D:
    //     case UL_DBPSK_25600_PROT_E:
-            ax5043_spi_write(AX5043_PLLLOOP                , 0x09);
-            ax5043_spi_write(AX5043_PLLCPI                 , 0x02);
-            if(DBPSK_BAND == PSK_446_DBPSK_458) ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
-            else ax5043_spi_write(AX5043_PLLVCODIV              , 0x20);
+          switch(DBPSK_BAND)
+          {
+            case PSK_446_DBPSK_458:
+              ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
+              break;
+            case PSK_446_DBPSK_868:
+            case PSK_864_DBPSK_868:
+            case PSK_902_DBPSK_916:
+              ax5043_spi_write(AX5043_PLLVCODIV              , 0x20);
+              break;             
+          }          
+          ax5043_spi_write(AX5043_PLLLOOP                , 0x09);
+          ax5043_spi_write(AX5043_PLLCPI                 , 0x02);
             break;
         case UL_PSK_200:
         case DL_PSK_200:
@@ -261,75 +209,81 @@ void ax5043_set_registers_tx(void)
         case UL_PSK_500:
         case DL_PSK_5000:
         case UL_PSK_5000:
-            ax5043_spi_write(AX5043_PLLLOOP                , 0x0B);
-            ax5043_spi_write(AX5043_PLLCPI                 , 0x10);
-            ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
-            break;
+          switch(PSK_BAND)
+          {
+            case PSK_446_DBPSK_868:
+            case PSK_446_DBPSK_458:
+              ax5043_spi_write(AX5043_PLLLOOP                , 0x0B);
+              ax5043_spi_write(AX5043_PLLCPI                 , 0x10);
+              ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
+              break;
+            case PSK_864_DBPSK_868:
+            case PSK_902_DBPSK_916:
+              ax5043_spi_write(AX5043_PLLLOOP                , 0x07);
+              ax5043_spi_write(AX5043_PLLCPI                 , 0x12);
+              ax5043_spi_write(AX5043_PLLVCODIV              , 0x20);
+              break;           
+          }
+          break;
         case DL_PSK_FASTDL:
         case UL_PSK_FASTDL:
-            ax5043_spi_write(AX5043_PLLLOOP                , 0x09);
-            ax5043_spi_write(AX5043_PLLCPI                 , 0x02);
-            ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
+          switch(PSK_BAND)
+          {
+            case PSK_446_DBPSK_868:
+            case PSK_446_DBPSK_458:
+              ax5043_spi_write(AX5043_PLLLOOP                , 0x09);
+              ax5043_spi_write(AX5043_PLLCPI                 , 0x02);
+              ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
+              break;
+            case PSK_864_DBPSK_868:
+            case PSK_902_DBPSK_916:
+              ax5043_spi_write(AX5043_PLLLOOP                , 0x09);
+              ax5043_spi_write(AX5043_PLLCPI                 , 0x02);
+              ax5043_spi_write(AX5043_PLLVCODIV              , 0x20);
+              break;           
+          }
         default:
             break;
-        }
     }
-
+ 
 }
-
 
 void ax5043_set_registers_rx(void)
 {
-    if(PSK_BAND)
+    switch(PSK_BAND) 
     {
+      case PSK_864_DBPSK_868:
+      case PSK_902_DBPSK_916:
         ax5043_spi_write(AX5043_PLLLOOP                , 0x07);
         ax5043_spi_write(AX5043_PLLCPI                 , 0x08);
         ax5043_spi_write(AX5043_PLLVCODIV              , 0x20);
         ax5043_spi_write(AX5043_0xF18                  , 0x06);
-    }
-    else
-    {
+        break;
+      case PSK_446_DBPSK_458:
+      case PSK_446_DBPSK_868:
         switch(nbfi_phy_channel)
         {
-        case UL_DBPSK_50_PROT_D:
-   //     case UL_DBPSK_50_PROT_E:
-        case UL_DBPSK_400_PROT_D:
-   //     case UL_DBPSK_400_PROT_E:
-        case UL_DBPSK_3200_PROT_D:
-   //     case UL_DBPSK_3200_PROT_E:
-            ax5043_spi_write(AX5043_PLLLOOP                , 0x07);
-            ax5043_spi_write(AX5043_PLLCPI                 , 0x08);
-            ax5043_spi_write(AX5043_PLLVCODIV              , 0x20);
-            ax5043_spi_write(AX5043_0xF18                  , 0x06);
-            break;
-        case UL_DBPSK_25600_PROT_D:
- //     case UL_DBPSK_25600_PROT_E:
-            ax5043_spi_write(AX5043_PLLLOOP, 0x09);
-            ax5043_spi_write(AX5043_PLLCPI, 0x01);
-            ax5043_spi_write(AX5043_PLLVCODIV, 0x20);
-            ax5043_spi_write(AX5043_0xF18, 0x06);
-                  break;
-        case UL_PSK_200:
-        case DL_PSK_200:
-        case DL_PSK_500:
-        case UL_PSK_500:
-        case DL_PSK_5000:
-        case UL_PSK_5000:
-            ax5043_spi_write(AX5043_PLLLOOP                , 0x0B);
-            ax5043_spi_write(AX5043_PLLCPI                 , 0x10);
-            ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
-            ax5043_spi_write(AX5043_0xF18                  , 0x02);
-            break;
-        case DL_PSK_FASTDL:
-        case UL_PSK_FASTDL:
-            ax5043_spi_write(AX5043_PLLLOOP                , 0x09);
-            ax5043_spi_write(AX5043_PLLCPI                 , 0x01);
-            ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
-            ax5043_spi_write(AX5043_0xF18                  , 0x02);
-
-        default:
-            break;
+          case UL_PSK_200:
+          case DL_PSK_200:
+          case DL_PSK_500:
+          case UL_PSK_500:
+          case DL_PSK_5000:
+          case UL_PSK_5000:
+              ax5043_spi_write(AX5043_PLLLOOP                , 0x0B);
+              ax5043_spi_write(AX5043_PLLCPI                 , 0x10);
+              ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
+              ax5043_spi_write(AX5043_0xF18                  , 0x02);
+              break;
+          case DL_PSK_FASTDL:
+          case UL_PSK_FASTDL:
+              ax5043_spi_write(AX5043_PLLLOOP                , 0x09);
+              ax5043_spi_write(AX5043_PLLCPI                 , 0x01);
+              ax5043_spi_write(AX5043_PLLVCODIV              , 0x24);
+              ax5043_spi_write(AX5043_0xF18                  , 0x02);
+          default:
+              break;
         }
+        break;
     }
     ax5043_spi_write(AX5043_XTALCAP                , 0x00);
     ax5043_spi_write(AX5043_0xF00                  , 0x0F);
@@ -352,7 +306,6 @@ void ax5043_set_registers_rxcont_singleparamset(void)
     ax5043_spi_write(AX5043_FREQDEV03              , 0x00);
     switch(nbfi_phy_channel)
     {
-//    case UL_DBPSK_50_PROT_C:
     case UL_DBPSK_50_PROT_D:
 //    case UL_DBPSK_50_PROT_E:
     case UL_PSK_200:
@@ -369,7 +322,6 @@ void ax5043_set_registers_rxcont_singleparamset(void)
         break;
     case DL_PSK_500:
     case UL_PSK_500:
-//    case UL_DBPSK_400_PROT_C:
     case UL_DBPSK_400_PROT_D:
 //    case UL_DBPSK_400_PROT_E:
         ax5043_spi_write(AX5043_AGCGAIN3               , 0xE8);
@@ -471,8 +423,6 @@ uint8_t axradio_phy_innerfreqloop = 1;
 
 int32_t axradio_conv_freq_fromreg(int32_t f)
 {
-    if(PSK_BAND)
-    {
         switch(nbfi_phy_channel)
         {
             case DL_PSK_FASTDL:
@@ -500,32 +450,6 @@ int32_t axradio_conv_freq_fromreg(int32_t f)
             break;
         }
 
-    }
-    else
-    {
-        switch(nbfi_phy_channel)
-        {
-            case DL_PSK_FASTDL:
-            case UL_PSK_FASTDL:
-                CONSTMULFIX16(0x912ffc);
-                break;
-            case DL_PSK_5000:
-            case UL_PSK_5000:
-                CONSTMULFIX16(0xc9a63);
-            break;
-            case UL_DBPSK_3200_PROT_D:
- //           case UL_DBPSK_3200_PROT_E:
-                CONSTMULFIX16(0x20438d);
-            break;
-            case UL_DBPSK_25600_PROT_D:
-            //case UL_DBPSK_25600_PROT_E:
-                CONSTMULFIX16(0x1021c6b);
-                break;
-            default:
-                CONSTMULFIX16(0x810e);/* scale by 0.001969 (true 0.001969) */
-            break;
-        }
-    }
 }
 
 int32_t axradio_conv_timeinterval_totimer0(int32_t dt)
@@ -547,10 +471,8 @@ uint8_t axradio_byteconv(uint8_t b)
 {
     switch(nbfi_phy_channel)
     {
-//    case UL_DBPSK_50_PROT_C:
     case UL_DBPSK_50_PROT_D:
 //    case UL_DBPSK_50_PROT_E:
-//    case UL_DBPSK_400_PROT_C:
     case UL_DBPSK_400_PROT_D:
 //    case UL_DBPSK_400_PROT_E:
     case UL_DBPSK_3200_PROT_D:
@@ -574,11 +496,8 @@ void axradio_byteconv_buffer(uint8_t *buf, uint16_t buflen)
 {
     switch(nbfi_phy_channel)
     {
-//    case UL_DBPSK_50:
-//    case UL_DBPSK_50_PROT_C:
     case UL_DBPSK_50_PROT_D:
 //    case UL_DBPSK_50_PROT_E:
-//    case UL_DBPSK_400_PROT_C:
     case UL_DBPSK_400_PROT_D:
 //    case UL_DBPSK_400_PROT_E:
     case UL_DBPSK_3200_PROT_D:
@@ -598,10 +517,8 @@ uint16_t axradio_framing_check_crc(uint8_t *pkt, uint16_t cnt)
 {
     switch(nbfi_phy_channel)
     {
-//    case UL_DBPSK_50_PROT_C:
     case UL_DBPSK_50_PROT_D:
 //    case UL_DBPSK_50_PROT_E:
-//    case UL_DBPSK_400_PROT_C:
     case UL_DBPSK_400_PROT_D:
 //    case UL_DBPSK_400_PROT_E:
     case UL_DBPSK_3200_PROT_D:
@@ -626,10 +543,8 @@ uint16_t axradio_framing_append_crc(uint8_t *pkt, uint16_t cnt)
     uint32_t s;
     switch(nbfi_phy_channel)
     {
-//    case UL_DBPSK_50_PROT_C:
     case UL_DBPSK_50_PROT_D:
 //    case UL_DBPSK_50_PROT_E:
-//    case UL_DBPSK_400_PROT_C:
     case UL_DBPSK_400_PROT_D:
 //    case UL_DBPSK_400_PROT_E:
     case UL_DBPSK_3200_PROT_D:

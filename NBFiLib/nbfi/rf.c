@@ -103,18 +103,18 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
     rf_busy = 1;
 
     if(phy_channel != OSC_CAL) nbfi_phy_channel = phy_channel;
-
-    if(freq > 600000000) PSK_BAND = PSK_864;
+   
+    if(freq > 900000000) PSK_BAND = PSK_902_DBPSK_916;
+    if(freq > 600000000) PSK_BAND = PSK_864_DBPSK_868;
     else PSK_BAND = PSK_446_DBPSK_868;
-
+    
+    if(freq > 900000000) DBPSK_BAND = PSK_902_DBPSK_916; 
     if((freq < 500000000)&&(freq > 450000000)) DBPSK_BAND = PSK_446_DBPSK_458;
     else DBPSK_BAND = PSK_446_DBPSK_868; 
     
     ax5043_hard_reset();
-    
-    
+       
     ax5043_tcxo_set_reset(1);
-
 
     switch(phy_channel)
     {
