@@ -16,7 +16,7 @@ nbfi_phy_channel_t nbfi_phy_channel;
 uint8_t PSK_BAND;
 uint8_t DBPSK_BAND;
 
-NBFi_ax5043_pins_s  nbfi_ax5043_pins;
+NBFi_ax5043_pins_s  nbfi_ax5043_pins = {0,0,0,0,0,0,0};
 
 void    NBFi_TX_Finished();
 void    NBFi_ParseReceivedPacket(struct axradio_status *st);
@@ -112,9 +112,6 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
     if((freq < 500000000)&&(freq > 450000000)) DBPSK_BAND = PSK_446_DBPSK_458;
     else DBPSK_BAND = PSK_446_DBPSK_868; 
     
-    ax5043_hard_reset();
-       
-    ax5043_tcxo_set_reset(1);
 
     switch(phy_channel)
     {
@@ -126,9 +123,13 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
     case UL_DBPSK_400_PROT_D:
     case UL_DBPSK_3200_PROT_D:
     case UL_DBPSK_25600_PROT_D:
-        ax5043_set_constants();
         
         RF_SetModeAndPower(power, TX, antenna);
+        if(nbfi_ax5043_pins.hard_reset_on_every_init) ax5043_hard_reset();        
+        ax5043_tcxo_set_reset(1);
+        
+        ax5043_set_constants();
+        
         
         RF_SetFreq(freq);
         
@@ -152,10 +153,13 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
     case DL_PSK_FASTDL:
     case DL_PSK_500:
     case DL_PSK_5000:
-        ax5043_set_constants();
         
         RF_SetModeAndPower(power, RX, antenna);
-
+        if(nbfi_ax5043_pins.hard_reset_on_every_init) ax5043_hard_reset();        
+        ax5043_tcxo_set_reset(1);
+        
+        ax5043_set_constants();
+                
         RF_SetLocalAddress((uint8_t *)&fastdladdress);
 
         RF_SetFreq(freq);
@@ -174,6 +178,8 @@ nbfi_status_t RF_Init(  nbfi_phy_channel_t  phy_channel,
         rf_state = STATE_RX;
         return OK;
     case OSC_CAL:
+        if(nbfi_ax5043_pins.hard_reset_on_every_init) ax5043_hard_reset();        
+        ax5043_tcxo_set_reset(1);
         axradio_set_mode(AXRADIO_MODE_ASYNC_RECEIVE);
         axradio_set_mode(AXRADIO_MODE_OFF);
         delay_ms(2);

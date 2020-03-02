@@ -36,6 +36,7 @@ typedef struct
   uint8_t antsel;
   uint8_t cfga;
   uint16_t txpwr;
+  uint8_t hard_reset_on_every_init;
 } NBFi_ax5043_pins_s;
 
 typedef enum

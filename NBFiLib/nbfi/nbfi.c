@@ -1003,6 +1003,14 @@ uint8_t NBFi_can_sleep()
   return (!rf_busy) && (rf_state == STATE_OFF) && (NBFi_Packets_To_Send() == 0);
 }
 
+void  NBFi_direct_write_to_sysclk_pin(_Bool en)
+{
+      if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(1);
+          ax5043_spi_write(AX5043_PINFUNCSYSCLK, en);
+      if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
+}
+
+
 #ifdef FORMAT_CODE
 #pragma default_function_attributes =
 #endif
