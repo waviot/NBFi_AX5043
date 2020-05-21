@@ -16,7 +16,7 @@ nbfi_phy_channel_t nbfi_phy_channel;
 uint8_t PSK_BAND;
 uint8_t DBPSK_BAND;
 
-NBFi_ax5043_pins_s  nbfi_ax5043_pins = {0,0,0,0,0,0,0};
+NBFi_ax5043_pins_s  nbfi_ax5043_pins = {0,0,0,0,0,0,1};
 
 void    NBFi_TX_Finished();
 void    NBFi_ParseReceivedPacket(struct axradio_status *st);
