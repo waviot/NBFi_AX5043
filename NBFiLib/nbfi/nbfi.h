@@ -148,4 +148,5 @@ uint8_t         NBFi_can_sleep();
 uint32_t        NBFi_get_RTC();
 void            NBFi_set_RTC(uint32_t time);
 void            NBFi_direct_write_to_sysclk_pin(_Bool en);
+void			NBFi_watchdog();
 #endif // NBFI_H

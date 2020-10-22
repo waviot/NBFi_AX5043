@@ -1010,6 +1010,18 @@ void  NBFi_direct_write_to_sysclk_pin(_Bool en)
       if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
 }
 
+void NBFi_watchdog()
+{
+  	static uint16_t nbfi_busy_timer = 0;
+	if(NBFi_Packets_To_Send()) nbfi_busy_timer++;
+	else nbfi_busy_timer = 0;
+	if(nbfi_busy_timer > 60*60) //more than 1 hour tx buffer is permanently full
+	{
+		nbfi_busy_timer = 0;
+		NBFi_Clear_TX_Buffer();		
+	}
+}
+
 
 #ifdef FORMAT_CODE
 #pragma default_function_attributes =
