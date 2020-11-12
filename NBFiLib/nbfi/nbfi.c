@@ -26,9 +26,16 @@ extern nbfi_dev_info_t dev_info;
 #pragma default_function_attributes = @ "NBFi_FUNC"
 #endif
 
+
 const uint32_t NBFI_DL_DELAY[10] = {MILLISECONDS(30000), MILLISECONDS(30000), MILLISECONDS(30000), MILLISECONDS(5000), MILLISECONDS(5000), MILLISECONDS(5000), MILLISECONDS(1000), MILLISECONDS(1000), MILLISECONDS(500), MILLISECONDS(500)};
 const uint32_t NBFI_DL_LISTEN_TIME[4] = {MILLISECONDS(40000), MILLISECONDS(40000), MILLISECONDS(40000), MILLISECONDS(40000)};
 const uint32_t NBFI_DL_ADD_RND_LISTEN_TIME[4] = {MILLISECONDS(20000), MILLISECONDS(20000), MILLISECONDS(20000), MILLISECONDS(20000)};
+
+
+const uint32_t NBFI_DL_DELAY_NO_LATANCY[10] = {MILLISECONDS(5900), MILLISECONDS(5900), MILLISECONDS(5700), MILLISECONDS(740), MILLISECONDS(740),  MILLISECONDS(2280),MILLISECONDS(95), MILLISECONDS(230), MILLISECONDS(30), MILLISECONDS(30)};
+const uint32_t NBFI_DL_LISTEN_TIME_NO_LATANCY[4] = {MILLISECONDS(5700), MILLISECONDS(2280), MILLISECONDS(900), MILLISECONDS(900)};
+const uint32_t NBFI_DL_ADD_RND_LISTEN_TIME_NO_LATANCY[4] = {MILLISECONDS(100), MILLISECONDS(100), MILLISECONDS(100), MILLISECONDS(100)};
+
 
 #define DRXLISTENAFTERSEND  20
 
@@ -112,6 +119,18 @@ uint32_t (* __nbfi_update_rtc)(void) = 0;
 void (* __nbfi_rtc_synchronized)(uint32_t) = 0;
 void (* __nbfi_lock_unlock_nbfi_irq)(uint8_t) = 0;
 void (* __nbfi_reset)(void) = 0;
+
+
+
+static uint32_t NBFi_get_total_request_timeout()
+{
+  uint32_t result = (nbfi.num_of_retries > 5)?NBFI_DL_DELAY_NO_LATANCY[nbfi.tx_phy_channel - 20]:NBFI_DL_DELAY[nbfi.tx_phy_channel - 20];
+  
+  result += (nbfi.num_of_retries > 5)?NBFI_DL_LISTEN_TIME_NO_LATANCY[nbfi.rx_phy_channel]:NBFI_DL_LISTEN_TIME[nbfi.rx_phy_channel];
+  
+  return result + rand()%((nbfi.num_of_retries > 5)?NBFI_DL_ADD_RND_LISTEN_TIME_NO_LATANCY[nbfi.rx_phy_channel]:NBFI_DL_ADD_RND_LISTEN_TIME[nbfi.rx_phy_channel]);
+  
+}
 
 
 void NBFI_reg_func(uint8_t name, void* fn)
@@ -560,7 +579,7 @@ place_to_stack:
           nbfi_active_pkt_old_state = nbfi_active_pkt->state;
           nbfi_active_pkt->state = PACKET_WAIT_FOR_EXTRA_PACKETS;
         }
-        ScheduleTask(&wait_for_extra_desc, NBFi_Wait_Extra_Handler, RELATIVE, NBFI_DL_LISTEN_TIME[nbfi.rx_phy_channel]);
+        ScheduleTask(&wait_for_extra_desc, NBFi_Wait_Extra_Handler, RELATIVE, (nbfi.num_of_retries > 5)?NBFI_DL_LISTEN_TIME_NO_LATANCY[nbfi.rx_phy_channel]:NBFI_DL_LISTEN_TIME[nbfi.rx_phy_channel]);
         wait_Extra = 1;
     }
     else
@@ -606,14 +625,14 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
         case PACKET_WAIT_ACK:
             if(!wait_Receive)
             {
-                ScheduleTask(&dl_receive_desc, NBFi_Receive_Timeout_cb, RELATIVE, NBFI_DL_DELAY[nbfi.tx_phy_channel - 20] + NBFI_DL_LISTEN_TIME[nbfi.rx_phy_channel] + rand()%(NBFI_DL_ADD_RND_LISTEN_TIME[nbfi.rx_phy_channel]));
+                ScheduleTask(&dl_receive_desc, NBFi_Receive_Timeout_cb, RELATIVE, NBFi_get_total_request_timeout());
                 wait_Receive = 1;
             }
             break;
         case PACKET_WAIT_FOR_EXTRA_PACKETS:
             if(!wait_Extra)
             {
-                ScheduleTask(&wait_for_extra_desc, NBFi_Wait_Extra_Handler, RELATIVE, NBFI_DL_LISTEN_TIME[nbfi.rx_phy_channel]);
+                ScheduleTask(&wait_for_extra_desc, NBFi_Wait_Extra_Handler, RELATIVE, (nbfi.num_of_retries > 5)?NBFI_DL_LISTEN_TIME_NO_LATANCY[nbfi.rx_phy_channel]:NBFI_DL_LISTEN_TIME[nbfi.rx_phy_channel]);
                 wait_Extra = 1;
             }
             break;
@@ -631,7 +650,7 @@ static void NBFi_ProcessTasks(struct wtimer_desc *desc)
                         case DRX:
                         case CRX:
                             pkt->state = PACKET_WAIT_ACK;
-                            ScheduleTask(&dl_receive_desc, NBFi_Receive_Timeout_cb, RELATIVE, NBFI_DL_DELAY[nbfi.tx_phy_channel - 20] + NBFI_DL_LISTEN_TIME[nbfi.rx_phy_channel] + rand()%(NBFI_DL_ADD_RND_LISTEN_TIME[nbfi.rx_phy_channel]));
+                            ScheduleTask(&dl_receive_desc, NBFi_Receive_Timeout_cb, RELATIVE, NBFi_get_total_request_timeout());
                             wait_Receive = 1;
                             break;
                         case NRX:
@@ -746,7 +765,7 @@ static void NBFi_Receive_Timeout_cb(struct wtimer_desc *desc)
 {
     if(rf_busy)
     {
-        ScheduleTask(desc, NBFi_Receive_Timeout_cb, RELATIVE, NBFI_DL_LISTEN_TIME[nbfi.rx_phy_channel]);
+        ScheduleTask(desc, NBFi_Receive_Timeout_cb, RELATIVE, (nbfi.num_of_retries > 5)?NBFI_DL_LISTEN_TIME_NO_LATANCY[nbfi.rx_phy_channel]:NBFI_DL_LISTEN_TIME[nbfi.rx_phy_channel]);
         return;
     }
     wtimer0_remove(&dl_receive_desc);
