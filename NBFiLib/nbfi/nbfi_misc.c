@@ -14,10 +14,11 @@ extern nbfi_state_t nbfi_state;
 extern nbfi_transport_packet_t idle_pkt;
 extern nbfi_transport_packet_t* nbfi_active_pkt;
 
+/*
 #ifdef FORMAT_CODE
 #pragma default_function_attributes = @ "NBFi_FUNC"
 #endif
-
+*/
 nbfi_transport_packet_t* NBFi_AllocateTxPkt(uint8_t payload_length)
 {
     uint8_t ptr = nbfi_TXbuf_head%NBFI_TX_PKTBUF_SIZE;
@@ -696,7 +697,8 @@ void delay_ms(uint16_t ms)
     }
     while (delaymstimer);
 }
-
+/*
 #ifdef FORMAT_CODE
 #pragma default_function_attributes =
 #endif
+*/

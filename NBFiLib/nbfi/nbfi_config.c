@@ -22,11 +22,11 @@ _Bool NBFi_Config_Tx_Idle();
 
 nbfi_settings_t nbfi;
 
-
+/*
 #ifdef FORMAT_CODE
 #pragma default_function_attributes = @ "NBFi_FUNC"
 #endif
-
+*/
 nbfi_dev_info_t dev_info =
 {
     0x700000,
@@ -458,7 +458,7 @@ _Bool NBFi_Config_Parser(uint8_t* buf)
                         if(buf[1] != 0xff) nbfi.mode = (nbfi_mode_t)buf[1];
                         if(buf[2] != 0xff) nbfi.mack_mode = (nbfi_mack_mode_t)buf[2];
                         if(buf[3] != 0xff) NBFi_Config_Set_TX_Chan((nbfi_phy_channel_t)buf[3]);
-                        if(buf[4] != 0xff) {NBFi_Config_Set_RX_Chan((nbfi_phy_channel_t)buf[4]); rf_state = STATE_CHANGED;}
+                        if(buf[4] != 0xff) {NBFi_Config_Set_RX_Chan((nbfi_phy_channel_t)buf[4]); if(rf_state == STATE_RX) rf_state = STATE_CHANGED;}
                         if(buf[5] != 0xff) nbfi.tx_pwr = buf[5];
                         if(buf[6] != 0xff) nbfi.num_of_retries = buf[6];
                         break;
@@ -484,7 +484,7 @@ _Bool NBFi_Config_Parser(uint8_t* buf)
                     case NBFI_PARAM_ANT:
                         if(buf[1] != 0xff) nbfi.tx_pwr = buf[1];
                         if(buf[2] != 0xff) nbfi.tx_antenna = buf[2];
-                        if(buf[3] != 0xff) {nbfi.rx_antenna = buf[3]; rf_state = STATE_CHANGED;}
+                        if(buf[3] != 0xff) {nbfi.rx_antenna = buf[3]; if(rf_state == STATE_RX) rf_state = STATE_CHANGED;}
                         break;
                     case NBFI_PARAM_DL_ADD:
                         for(uint8_t i = 0; i != 3; i++)  nbfi.dl_ID[i] = buf[1 + i];
@@ -712,7 +712,8 @@ nbfi_settings_t* NBFi_get_settings()
 {
     return &nbfi;
 }
-
+/*
 #ifdef FORMAT_CODE
 #pragma default_function_attributes =
 #endif
+*/

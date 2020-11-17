@@ -22,9 +22,10 @@ nbfi_state_t nbfi_state = {0,0,0,0,-150,0,0,0,0,0,0,0,0};
 
 extern nbfi_dev_info_t dev_info;
 
+/*
 #ifdef FORMAT_CODE
 #pragma default_function_attributes = @ "NBFi_FUNC"
-#endif
+#endif*/
 
 
 const uint32_t NBFI_DL_DELAY[10] = {MILLISECONDS(30000), MILLISECONDS(30000), MILLISECONDS(30000), MILLISECONDS(5000), MILLISECONDS(5000), MILLISECONDS(5000), MILLISECONDS(1000), MILLISECONDS(1000), MILLISECONDS(500), MILLISECONDS(500)};
@@ -1041,7 +1042,8 @@ void NBFi_watchdog()
 	}
 }
 
-
+/*
 #ifdef FORMAT_CODE
 #pragma default_function_attributes =
 #endif
+*/
