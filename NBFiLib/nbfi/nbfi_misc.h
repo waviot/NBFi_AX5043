@@ -71,6 +71,7 @@ uint8_t                             CRC8(uint8_t* data, uint8_t len);
 uint32_t                            CRC32(const uint8_t *buf, uint8_t len);
 uint16_t                            NBFi_Phy_To_Bitrate(nbfi_phy_channel_t ch);
 uint8_t                             NBFi_Get_TX_Iter();
+uint8_t         					NBFi_Packets_To_Send();
 void 				    delay_ms(uint16_t ms);
 
 #endif

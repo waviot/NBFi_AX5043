@@ -88,6 +88,33 @@ typedef struct
     int16_t rssi;
 }nbfi_state_t;
 
+typedef struct
+{
+    nbfi_mode_t mode;
+    nbfi_phy_channel_t tx_phy_channel;
+    nbfi_phy_channel_t rx_phy_channel;
+    nbfi_handshake_t   handshake_mode;
+    nbfi_mack_mode_t   mack_mode;
+    uint8_t     num_of_retries;
+    uint8_t     max_payload_len;
+    uint8_t     dl_ID[3];
+    uint8_t     temp_ID[3];
+    uint8_t     broadcast_ID[3];
+    uint8_t     full_ID[6];
+    uint32_t    tx_freq;
+    uint32_t    rx_freq;
+    uint8_t     tx_antenna;
+    uint8_t     rx_antenna;
+    int8_t      tx_pwr;
+    uint16_t    heartbeat_interval;
+    uint8_t     heartbeat_num;
+    uint8_t     additional_flags;
+    uint32_t    ul_freq_base;
+    uint32_t    dl_freq_base;
+    uint8_t     reserved[3];
+}nbfi_settings_t;
+
+
 
 typedef enum
 {
@@ -142,11 +169,15 @@ nbfi_status_t   NBFI_Init();
 nbfi_status_t   NBFi_Go_To_Sleep(_Bool sleep);
 nbfi_status_t   NBFi_Send(uint8_t* payload, uint8_t length);
 void            NBFi_ProcessRxPackets(_Bool external);
-uint8_t         NBFi_Packets_To_Send();
+//uint8_t         NBFi_Packets_To_Send();
+uint8_t 		NBFi_get_Packets_to_Send();
 nbfi_state_t*   NBFi_get_state();
 uint8_t         NBFi_can_sleep();
 uint32_t        NBFi_get_RTC();
 void            NBFi_set_RTC(uint32_t time);
 void            NBFi_direct_write_to_sysclk_pin(_Bool en);
 void			NBFi_watchdog();
+_Bool 			NBFi_send_Packet_to_Config_Parser(uint8_t* buf);
+void 			NBFi_get_Settings(nbfi_settings_t* settings);
+void            NBFi_set_Settings(nbfi_settings_t*);
 #endif // NBFI_H

@@ -24,34 +24,8 @@
 #define NBFI_QUALITY_EX                 0x0F
 #define NBFI_PARAM_BROADCAST_ADD        0x10
 
-
-typedef struct
-{
-    nbfi_mode_t mode;
-    nbfi_phy_channel_t tx_phy_channel;
-    nbfi_phy_channel_t rx_phy_channel;
-    nbfi_handshake_t   handshake_mode;
-    nbfi_mack_mode_t   mack_mode;
-    uint8_t     num_of_retries;
-    uint8_t     max_payload_len;
-    uint8_t     dl_ID[3];
-    uint8_t     temp_ID[3];
-    uint8_t     broadcast_ID[3];
-    uint8_t     full_ID[6];
-    uint32_t    tx_freq;
-    uint32_t    rx_freq;
-    uint8_t     tx_antenna;
-    uint8_t     rx_antenna;
-    int8_t      tx_pwr;
-    uint16_t    heartbeat_interval;
-    uint8_t     heartbeat_num;
-    uint8_t     additional_flags;
-    uint32_t    ul_freq_base;
-    uint32_t    dl_freq_base;
-    uint8_t     reserved[3];
-}nbfi_settings_t;
-
 extern nbfi_settings_t nbfi;
+
 
 //aditional flags:
 #define NBFI_FLG_FIXED_BAUD_RATE            0x01

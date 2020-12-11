@@ -856,15 +856,20 @@ static void NBFi_update_RTC()
 
 uint32_t NBFi_get_RTC()
 {
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(1);
     NBFi_update_RTC();
-    return nbfi_rtc;
+    uint32_t rtc = nbfi_rtc;
+	if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
+    return rtc;
 }
 
 void NBFi_set_RTC(uint32_t time)
 {
+   if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(1);
    NBFi_update_RTC();
    nbfi_rtc = time;
    if(__nbfi_rtc_synchronized) __nbfi_rtc_synchronized(nbfi_rtc);
+   if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
 }
 
 
@@ -959,6 +964,7 @@ nbfi_status_t NBFi_Go_To_Sleep(_Bool sleep)
 {
     static _Bool old_state = 1;
     nbfi_status_t res = OK;
+	if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(1);
     if(sleep)
     {
         nbfi.mode = OFF;
@@ -978,6 +984,7 @@ nbfi_status_t NBFi_Go_To_Sleep(_Bool sleep)
         }
     }
     old_state = sleep;
+	if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
     return res;
 }
 
@@ -1019,8 +1026,11 @@ nbfi_status_t NBFI_Init()
 }
 
 uint8_t NBFi_can_sleep()
-{
-  return (!rf_busy) && (rf_state == STATE_OFF) && (NBFi_Packets_To_Send() == 0);
+{  
+  if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(1);
+  uint8_t can = (!rf_busy) && (rf_state == STATE_OFF) && (NBFi_Packets_To_Send() == 0);
+  if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
+  return can;
 }
 
 void  NBFi_direct_write_to_sysclk_pin(_Bool en)
@@ -1040,6 +1050,41 @@ void NBFi_watchdog()
 		nbfi_busy_timer = 0;
 		NBFi_Clear_TX_Buffer();		
 	}
+}
+
+uint8_t NBFi_get_Packets_to_Send()
+{
+    uint8_t n;
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(1);
+    n = NBFi_Packets_To_Send();
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
+    return n;
+}
+
+
+_Bool NBFi_send_Packet_to_Config_Parser(uint8_t* buf)
+{
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(1);
+    _Bool has_reply = NBFi_Config_Parser(buf);
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
+    return has_reply;
+}
+
+void NBFi_get_Settings(nbfi_settings_t* settings)
+{
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(1);
+    memcpy(settings, &nbfi , sizeof(nbfi_settings_t));
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
+}
+
+void NBFi_set_Settings(nbfi_settings_t* settings)
+{
+    
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(1);
+    
+    memcpy(&nbfi, settings , sizeof(nbfi_settings_t));
+   
+    if(__nbfi_lock_unlock_nbfi_irq) __nbfi_lock_unlock_nbfi_irq(0);
 }
 
 /*

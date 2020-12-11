@@ -708,10 +708,13 @@ void NBFi_Config_Set_Device_Info(nbfi_dev_info_t *info)
         if(dev_info.key) XTEA_Set_KEY(dev_info.key);
 }
 
+
+
 nbfi_settings_t* NBFi_get_settings()
 {
     return &nbfi;
 }
+
 /*
 #ifdef FORMAT_CODE
 #pragma default_function_attributes =
