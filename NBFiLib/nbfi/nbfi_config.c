@@ -73,7 +73,7 @@ extern uint8_t  string[50];
 nbfi_settings_t nbfi_prev;
 
 _Bool nbfi_settings_changed = 0;
-
+_Bool nbfi_settings_need_to_save_to_flash = 0;
 
 #define NUM_OF_TX_RATES    3
 #define NUM_OF_RX_RATES    4
@@ -110,7 +110,7 @@ void NBFi_Config_Return();
 _Bool NBFi_Config_Send_Mode(_Bool, uint8_t);
 void NBFi_Config_Set_Default();
 void NBFi_ReadConfig(nbfi_settings_t *settings);
-void NBFi_WriteConfig();
+//void NBFi_WriteConfig();
 void NBFi_Config_Set_TX_Chan(nbfi_phy_channel_t ch);
 void NBFi_Config_Set_RX_Chan(nbfi_phy_channel_t ch);
 void NBFi_Config_Send_Current_Mode(struct wtimer_desc *desc);
@@ -521,7 +521,8 @@ _Bool NBFi_Config_Parser(uint8_t* buf)
                 }
                 if(buf[0]>>6 == WRITE_PARAM_AND_SAVE_CMD)
                 {
-                    NBFi_WriteConfig();
+                    //NBFi_WriteConfig();
+                    nbfi_settings_need_to_save_to_flash = 1;
                     NBFi_Config_Send_Mode(0, NBFI_PARAM_MODE);
                     return 0;
                 }
@@ -594,9 +595,10 @@ void NBFi_Config_Set_FastDl(_Bool fast, _Bool save_settings)
         }
         NBFi_Clear_TX_Buffer();
         uint32_t dl_base_freq = nbfi.dl_freq_base;
+        int16_t dl_offset = nbfi.fast_dl_offset;
         memcpy(&nbfi, &nbfi_fastdl, sizeof(nbfi_settings_t));
-        if((nbfi.fast_dl_offset == 0) || (nbfi.fast_dl_offset == ((int16_t)0xffff))) nbfi.fast_dl_offset = 2000;
-        nbfi.tx_freq = nbfi.rx_freq = dl_base_freq + (((uint32_t)(nbfi.fast_dl_offset))*1000);
+        if((dl_offset == 0) || (dl_offset == ((int16_t)0xffff))) dl_offset = 2000;
+        nbfi.tx_freq = nbfi.rx_freq = dl_base_freq + (((uint32_t)(dl_offset))*1000);
         NBFi_Configure_IDs();
         for(uint8_t i = 0; i != 3; i++) nbfi.dl_ID[i] = nbfi.temp_ID[i];   //default DL address
 
@@ -652,12 +654,14 @@ read_default:
 
 }
 
+
 extern void (* __nbfi_write_flash_settings)(nbfi_settings_t*);
+/*
 void NBFi_WriteConfig()
 {
 	if(__nbfi_write_flash_settings == 0) return;
 	__nbfi_write_flash_settings(&nbfi);
-}
+}*/
 
 void NBFi_Clear_Saved_Configuration()
 {

@@ -183,4 +183,5 @@ void			NBFi_watchdog();
 _Bool 			NBFi_send_Packet_to_Config_Parser(uint8_t* buf);
 void 			NBFi_get_Settings(nbfi_settings_t* settings);
 void            NBFi_set_Settings(nbfi_settings_t*);
+void            NBFI_Main_Level_Loop();
 #endif // NBFI_H
