@@ -23,6 +23,7 @@
 #define NBFI_DL_BASE_FREQ               0x0E
 #define NBFI_QUALITY_EX                 0x0F
 #define NBFI_PARAM_BROADCAST_ADD        0x10
+#define NBFI_FAST_DL_OFFSET             0x11
 
 extern nbfi_settings_t nbfi;
 
@@ -89,7 +90,7 @@ typedef union
         uint8_t info;
 }NBFi_station_info_s;
 
- 
+
 
 extern NBFi_station_info_s nbfi_station_info;
 
