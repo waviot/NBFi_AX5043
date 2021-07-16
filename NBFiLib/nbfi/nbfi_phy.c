@@ -7,7 +7,7 @@
 #include "zcode.h"
 #include "zcode_e.h"
 #include <string.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 
 #define memset_xdata memset
 #define memcpy_xdata memcpy
@@ -75,7 +75,7 @@ nbfi_status_t NBFi_TX_ProtocolE(nbfi_transport_packet_t* pkt)
         ul_buf[len++] = (lastcrc16>>8)&0xff;
     }
 
-    last_pkt_crc = CRC32(ul_buf + 4, 15); 
+    last_pkt_crc = CRC32(ul_buf + 4, 15);
 
     ul_buf[len++] = (uint8_t)(last_pkt_crc >> 16);
     ul_buf[len++] = (uint8_t)(last_pkt_crc >> 8);
@@ -125,7 +125,7 @@ nbfi_status_t NBFi_TX_ProtocolE(nbfi_transport_packet_t* pkt)
 
 nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
 {
-    
+
     uint8_t ul_buffer[64+8];
 
     uint8_t *ul_buf = &ul_buffer[8];
@@ -187,7 +187,7 @@ nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
     }
     else  ul_buf[len++] = lastcrc8;
 
-    last_pkt_crc = CRC32(ul_buf + 4, 13); 
+    last_pkt_crc = CRC32(ul_buf + 4, 13);
 
     ul_buf[len++] = (uint8_t)(last_pkt_crc >> 16);
     ul_buf[len++] = (uint8_t)(last_pkt_crc >> 8);
@@ -229,19 +229,19 @@ nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
 
     if((nbfi.mode == NRX) && parity && (!nbfi.tx_freq)) // For NRX send in ALOHA mode
     {
-      
+
       RF_Init(nbfi.tx_phy_channel, (rf_antenna_t)nbfi.tx_antenna, nbfi.tx_pwr, tx_freq);
-      
+
       RF_Transmit(ul_buf, len + ZCODE_LEN, PADDING_4TO1, BLOCKING);
-      
+
       nbfi_state.UL_total++;
-      
+
       return NBFi_TX_ProtocolD(pkt);
     }
-    
+
     RF_Init(nbfi.tx_phy_channel, (rf_antenna_t)nbfi.tx_antenna, nbfi.tx_pwr, tx_freq);
 
-    
+
     switch (nbfi.tx_phy_channel)
     {
         case UL_DBPSK_3200_PROT_D:
@@ -254,7 +254,7 @@ nbfi_status_t NBFi_TX_ProtocolD(nbfi_transport_packet_t* pkt)
             RF_Transmit(ul_buffer + 8, len + ZCODE_LEN, PADDING_4TO1, NONBLOCKING);
             break;
     }
-    
+
 
     nbfi_state.UL_total++;
 
@@ -298,10 +298,10 @@ nbfi_status_t NBFi_TX(nbfi_transport_packet_t* pkt)
         if(nbfi.tx_freq == 0) tx_freq = nbfi.dl_freq_base;
         else tx_freq = nbfi.tx_freq;
 
-        if(nbfi.tx_phy_channel == UL_PSK_FASTDL)
+        /*if(nbfi.tx_phy_channel == UL_PSK_FASTDL)
         {
             tx_freq += 1000000;
-        }
+        }*/
 
         RF_SetDstAddress((uint8_t *)&fastdladdress);
 

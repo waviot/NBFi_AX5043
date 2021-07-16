@@ -10,7 +10,7 @@
 #define NBFI_RX_PKTBUF_SIZE     32
 
 typedef enum
-{   
+{
     NRX         =   0,
     DRX         =   1,
     CRX         =   2,
@@ -111,8 +111,11 @@ typedef struct
     uint8_t     additional_flags;
     uint32_t    ul_freq_base;
     uint32_t    dl_freq_base;
-    uint8_t     reserved[3];
+    int16_t    fast_dl_offset;
+    uint8_t     reserved[1];
+
 }nbfi_settings_t;
+
 
 
 
