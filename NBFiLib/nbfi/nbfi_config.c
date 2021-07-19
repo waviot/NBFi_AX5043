@@ -598,7 +598,7 @@ void NBFi_Config_Set_FastDl(_Bool fast, _Bool save_settings)
         int16_t dl_offset = nbfi.fast_dl_offset;
         memcpy(&nbfi, &nbfi_fastdl, sizeof(nbfi_settings_t));
         if((dl_offset == 0) || (dl_offset == ((int16_t)0xffff))) dl_offset = 2000;
-        nbfi.tx_freq = nbfi.rx_freq = dl_base_freq + (((uint32_t)(dl_offset))*1000);
+        nbfi.tx_freq = nbfi.rx_freq = dl_base_freq + (((uint32_t)(dl_offset - 1000))*1000);
         NBFi_Configure_IDs();
         for(uint8_t i = 0; i != 3; i++) nbfi.dl_ID[i] = nbfi.temp_ID[i];   //default DL address
 

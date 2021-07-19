@@ -298,10 +298,10 @@ nbfi_status_t NBFi_TX(nbfi_transport_packet_t* pkt)
         if(nbfi.tx_freq == 0) tx_freq = nbfi.dl_freq_base;
         else tx_freq = nbfi.tx_freq;
 
-        /*if(nbfi.tx_phy_channel == UL_PSK_FASTDL)
+        if(nbfi.tx_phy_channel == UL_PSK_FASTDL)
         {
             tx_freq += 1000000;
-        }*/
+        }
 
         RF_SetDstAddress((uint8_t *)&fastdladdress);
 
